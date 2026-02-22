@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import HeroSection from "../components/home/HeroSection";
-import LoginForm from "@/components/auth/LoginForm";
+import AuthForm from "@/components/auth/AuthForm";
 import { Loader } from "lucide-react";
 
 export default function Home() {
@@ -41,11 +41,11 @@ export default function Home() {
     );
   }
 
-  // Show login form if not authenticated
+  // Show auth form if not authenticated
   if (!isAuth) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center p-4">
-        <LoginForm />
+        <AuthForm />
       </div>
     );
   }
