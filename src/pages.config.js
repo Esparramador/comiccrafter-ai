@@ -57,6 +57,7 @@ import MyComics from './pages/MyComics';
 import MyDrafts from './pages/MyDrafts';
 import VideoProjects from './pages/VideoProjects';
 import MyMedia from './pages/MyMedia';
+import VideoStudio from './pages/VideoStudio';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +72,7 @@ export const PAGES = {
     "MyDrafts": MyDrafts,
     "VideoProjects": VideoProjects,
     "MyMedia": MyMedia,
+    "VideoStudio": VideoStudio,
 }
 
 export const pagesConfig = {
