@@ -103,7 +103,7 @@ Be concise. Respond in the story's language except visual_prompt must be English
         }
       }),
       base44.integrations.Core.GenerateImage({
-        prompt: `Epic comic book cover for "${title}". ${styleMap[style]}. Characters: ${identityRef}. Dramatic composition, vibrant colors, cinematic quality, professional cover art.`,
+        prompt: `Epic comic book cover for "${title}". ${activeStylePrompt}. Characters: ${identityRef}. Dramatic composition, vibrant colors, cinematic quality, professional cover art.`,
         ...(characterRefPhotos.length > 0 ? { existing_image_urls: characterRefPhotos } : {})
       })
     ]);
