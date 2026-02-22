@@ -28,7 +28,7 @@ export default function VideoViewer({ project, onBack }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [view, setView] = useState("player");
-  const [fps] = useState(4);
+  const [fps, setFps] = useState(2);
 
   const scenes = project.generated_scenes || [];
   const scene = scenes[currentScene];
