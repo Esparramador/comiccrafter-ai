@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Upload, Zap, Sparkles, Plus, X, Loader2, Eye } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AuthGuard from "@/components/auth/AuthGuard";
-import Model3DViewer from "@/components/3d/Model3DViewer";
+
 
 function Create3DModelContent() {
   const [step, setStep] = useState(0);
@@ -164,7 +164,22 @@ Genera JSON con:
             </h1>
           </div>
 
-          <Model3DViewer modelUrl={generatedModel.gltf_url} modelName={generatedModel.name} />
+          {/* Modelo 3D Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 rounded-xl border border-white/10 bg-white/[0.03] mb-8"
+          >
+            {generatedModel.preview_image && (
+              <img src={generatedModel.preview_image} alt={generatedModel.name} className="w-full rounded-lg mb-4" />
+            )}
+            <div className="text-center">
+              <p className="text-gray-400 text-sm mb-3">Modelo 3D generado exitosamente</p>
+              <a href={generatedModel.gltf_url} target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-300 text-sm font-medium">
+                Ver modelo completo →
+              </a>
+            </div>
+          </motion.div>
 
           {/* Personalizaciones */}
           <motion.div
