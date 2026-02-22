@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 export default function AuthGuard({ children, requireAdmin = false, requireFounder = false }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
@@ -27,7 +28,8 @@ export default function AuthGuard({ children, requireAdmin = false, requireFound
         
         // Initialize user profile and founder status
         try {
-          await base44.functions.invoke('initializeFounder', {});
+          const profileRes = await base44.functions.invoke('initializeFounder', {});
+          setUserProfile(profileRes.data?.profile);
         } catch (err) {
           console.error('Profile initialization error:', err);
         }
@@ -63,8 +65,7 @@ export default function AuthGuard({ children, requireAdmin = false, requireFound
   }
 
   // Check role restrictions (founder check)
-  const founderEmail = Deno.env?.get?.('FOUNDER_EMAIL') || '';
-  if (requireFounder && user?.email !== founderEmail) {
+  if (requireFounder && !userProfile?.is_founder) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
         <div className="text-center">
