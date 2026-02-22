@@ -102,11 +102,9 @@ export default function ShortsCharacterStep({ characters, setCharacters }) {
             <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
               className="relative p-5 rounded-2xl border border-white/5 bg-white/[0.02] group"
             >
-              {characters.length > 1 && (
-                <button onClick={() => removeCharacter(index)} className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/5 hover:bg-red-500/20 flex items-center justify-center text-gray-500 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100">
+              <button onClick={() => removeCharacter(index)} className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/5 hover:bg-red-500/20 flex items-center justify-center text-gray-500 hover:text-red-400 transition-all">
                   <X className="w-4 h-4" />
                 </button>
-              )}
               <div className="flex items-center gap-2 mb-4">
                 <UserCircle className="w-4 h-4 text-pink-400" />
                 <span className="text-xs font-medium text-pink-400 uppercase tracking-wider">Personaje {index + 1}</span>

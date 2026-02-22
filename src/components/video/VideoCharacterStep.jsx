@@ -112,11 +112,9 @@ export default function VideoCharacterStep({ characters, setCharacters, narrator
           >
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500 font-medium">Personaje {i + 1}</span>
-              {i > 0 && (
-                <button onClick={() => removeChar(i)} className="text-red-400 hover:text-red-300">
+              <button onClick={() => removeChar(i)} className="text-red-400 hover:text-red-300">
                   <X className="w-4 h-4" />
                 </button>
-              )}
             </div>
 
             <Input
