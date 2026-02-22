@@ -43,13 +43,15 @@ export default function AuthForm() {
       setIsLoading(true);
       setError("");
       
-      // Usar Google Sign-In con ID Token
+      // Obtener config de Google del backend (API key encriptada)
+      const configResponse = await base44.functions.invoke('getGoogleAuthConfig', {});
+      const { clientId } = configResponse.data;
+
       if (window.google?.accounts?.id) {
         window.google.accounts.id.initialize({
-          client_id: 'AIzaSyDQU7I5duFFxNS3M2ArP8lTh_eNEdrbPG8',
+          client_id: clientId,
           callback: async (response) => {
             if (response.credential) {
-              // Enviar token a Base44 para verificación
               try {
                 const result = await base44.functions.invoke('verifyGoogleToken', {
                   token: response.credential,
