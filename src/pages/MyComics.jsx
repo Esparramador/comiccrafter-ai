@@ -12,7 +12,15 @@ export default function MyComics() {
 
   const { data: comics, isLoading } = useQuery({
     queryKey: ["comics"],
-    queryFn: () => base44.entities.ComicProject.list("-created_date"),
+    queryFn: async () => {
+      try {
+        const user = await base44.auth.me();
+        if (!user?.email) return [];
+        return base44.entities.ComicProject.filter({ created_by: user.email }, "-created_date", 100);
+      } catch {
+        return [];
+      }
+    },
     initialData: [],
   });
 

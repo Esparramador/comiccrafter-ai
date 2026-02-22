@@ -36,12 +36,30 @@ export default function MyDrafts() {
 
   const { data: drafts = [], isLoading: draftsLoading } = useQuery({
     queryKey: ["drafts"],
-    queryFn: () => base44.entities.Draft.list("-updated_date"),
+    queryFn: async () => {
+      try {
+        const user = await base44.auth.me();
+        if (!user?.email) return [];
+        return base44.entities.Draft.filter({ created_by: user.email }, "-updated_date", 100);
+      } catch {
+        return [];
+      }
+    },
+    initialData: [],
   });
 
   const { data: assets = [], isLoading: assetsLoading } = useQuery({
     queryKey: ["assets"],
-    queryFn: () => base44.entities.GeneratedAsset.list("-created_date"),
+    queryFn: async () => {
+      try {
+        const user = await base44.auth.me();
+        if (!user?.email) return [];
+        return base44.entities.GeneratedAsset.filter({ created_by: user.email }, "-created_date", 100);
+      } catch {
+        return [];
+      }
+    },
+    initialData: [],
   });
 
   const deleteDraftMutation = useMutation({

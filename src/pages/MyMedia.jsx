@@ -87,12 +87,30 @@ export default function MyMedia() {
 
   const { data: shorts = [], refetch: refetchShorts } = useQuery({
     queryKey: ["animated_shorts"],
-    queryFn: () => base44.entities.AnimatedShort.list("-created_date", 50),
+    queryFn: async () => {
+      try {
+        const user = await base44.auth.me();
+        if (!user?.email) return [];
+        return base44.entities.AnimatedShort.filter({ created_by: user.email }, "-created_date", 50);
+      } catch {
+        return [];
+      }
+    },
+    initialData: [],
   });
 
   const { data: videos = [], refetch: refetchVideos } = useQuery({
     queryKey: ["video_projects"],
-    queryFn: () => base44.entities.VideoProject.list("-created_date", 50),
+    queryFn: async () => {
+      try {
+        const user = await base44.auth.me();
+        if (!user?.email) return [];
+        return base44.entities.VideoProject.filter({ created_by: user.email }, "-created_date", 50);
+      } catch {
+        return [];
+      }
+    },
+    initialData: [],
   });
 
   const handleDelete = async (id, type) => {

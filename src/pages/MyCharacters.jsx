@@ -17,7 +17,15 @@ export default function MyCharacters() {
 
   const { data: characters = [], isLoading } = useQuery({
     queryKey: ["characters"],
-    queryFn: () => base44.entities.Character.list("-created_date", 100),
+    queryFn: async () => {
+      try {
+        const user = await base44.auth.me();
+        if (!user?.email) return [];
+        return base44.entities.Character.filter({ created_by: user.email }, "-created_date", 100);
+      } catch {
+        return [];
+      }
+    },
     initialData: [],
   });
 
