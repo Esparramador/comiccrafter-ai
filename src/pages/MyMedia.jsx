@@ -192,7 +192,9 @@ export default function MyMedia() {
               />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(shorts || []).map(s => (
+                {Array.isArray(shorts) && shorts
+                  .filter(s => s?.id)
+                  .map(s => (
                     <MediaCard key={s.id} item={s} type="short" onView={setViewingShort} onDelete={handleDelete} />
                   ))}
               </div>
@@ -213,7 +215,9 @@ export default function MyMedia() {
               />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(videos || []).map(v => (
+                {Array.isArray(videos) && videos
+                  .filter(v => v?.id)
+                  .map(v => (
                     <MediaCard key={v.id} item={v} type="video" onView={setViewingVideo} onDelete={handleDelete} />
                   ))}
               </div>

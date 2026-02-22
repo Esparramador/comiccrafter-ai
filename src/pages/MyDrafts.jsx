@@ -94,7 +94,9 @@ export default function MyDrafts() {
 
   const activeTabConfig = tabs.find(t => t.id === activeTab);
   const assetType = assetTypeMap[activeTab];
-  const tabAssets = assets.filter(a => a.type === assetType);
+  const tabAssets = (Array.isArray(assets) ? assets : [])
+    .filter(a => a?.type === assetType)
+    .filter(a => a?.id);
 
   const isLoading = draftsLoading || assetsLoading;
 
@@ -141,20 +143,22 @@ export default function MyDrafts() {
             <p className="text-gray-600 text-sm mt-1">Crea uno con nuestras herramientas y aparecerá aquí.</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            <AnimatePresence mode="popLayout">
-              {tabAssets.map(asset => (
-                <AssetCard
-                  key={asset.id}
-                  asset={asset}
-                  onPreview={setPreviewAsset}
-                  onDelete={handleDeleteAsset}
-                  isDeleting={deletingId === asset.id}
-                />
-              ))}
-            </AnimatePresence>
-          </div>
-        )}
+           <div className="space-y-3">
+             <AnimatePresence mode="popLayout">
+               {Array.isArray(tabAssets) && tabAssets
+                 .filter(asset => asset?.id)
+                 .map(asset => (
+                   <AssetCard
+                     key={asset.id}
+                     asset={asset}
+                     onPreview={setPreviewAsset}
+                     onDelete={handleDeleteAsset}
+                     isDeleting={deletingId === asset.id}
+                   />
+                 ))}
+             </AnimatePresence>
+           </div>
+         )}
 
         {/* Preview Modal */}
         {previewAsset && (
