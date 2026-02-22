@@ -90,6 +90,7 @@ export default function ComicViewer() {
             <FlipbookViewer
               pages={comic.generated_pages || []}
               coverUrl={comic.cover_image_url}
+              onPageSave={handlePageSave}
             />
           </div>
 
