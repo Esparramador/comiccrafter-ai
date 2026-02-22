@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import JSZip from "jszip";
 import { Button } from "@/components/ui/button";
-import { Download, FileImage, FolderOpen, Loader2, CheckCircle2 } from "lucide-react";
+import { Download, FileImage, FolderOpen, Loader2, CheckCircle2, FileText } from "lucide-react";
 
 export default function ExportPanel({ comic }) {
   const [zipLoading, setZipLoading] = useState(false);
