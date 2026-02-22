@@ -2,10 +2,16 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import HeroSection from "../components/home/HeroSection";
 import AuthForm from "@/components/auth/AuthForm";
+import { useCapacitorInit } from "@/components/app/CapacitorInit";
+import { usePerformanceOptimization } from "@/components/app/PerformanceOptimizer";
 import { Loader } from "lucide-react";
 
 export default function Home() {
   const [isAuth, setIsAuth] = useState(null);
+
+  // Inicializar Capacitor y optimizaciones
+  useCapacitorInit();
+  usePerformanceOptimization();
 
   useEffect(() => {
     checkAuth();
