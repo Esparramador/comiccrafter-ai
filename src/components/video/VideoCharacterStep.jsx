@@ -1,13 +1,36 @@
 import React, { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, X, Plus, Mic, Volume2 } from "lucide-react";
+import { Upload, X, Plus, Mic, Volume2, Library } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import ElevenLabsVoicePicker from "@/components/voices/ElevenLabsVoicePicker";
 
 export default function VideoCharacterStep({ characters, setCharacters, narratorVoiceId, setNarratorVoiceId }) {
   const fileRefs = useRef([]);
+  const [showLibrary, setShowLibrary] = useState(false);
+
+  const { data: savedCharacters = [] } = useQuery({
+    queryKey: ['characters'],
+    queryFn: () => base44.entities.Character.list()
+  });
+
+  const addCharacterFromLibrary = (savedChar) => {
+    const newChar = {
+      name: savedChar.name,
+      description: savedChar.description || "",
+      photo_url: savedChar.photo_urls?.[0] || "",
+      voice_profile: null,
+      elevenlabs_voice_id: ""
+    };
+    setCharacters([...characters, newChar]);
+    setShowLibrary(false);
+  };
+
+  const isCharacterAdded = (savedCharId) => {
+    return characters.some(c => c.name === savedCharId);
+  };
 
   const updateChar = (i, key, val) => {
     const updated = [...characters];
