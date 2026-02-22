@@ -21,15 +21,6 @@ export default function Home() {
     try {
       const authenticated = await base44.auth.isAuthenticated();
       setIsAuth(authenticated);
-
-      if (authenticated) {
-        // Send confirmation email on first login
-        try {
-          await base44.functions.invoke('sendConfirmationEmail', {});
-        } catch (error) {
-          console.error('Error sending confirmation email:', error);
-        }
-      }
     } catch (error) {
       console.error('Auth check error:', error);
       setIsAuth(false);
