@@ -24,7 +24,9 @@ export default function HeroCarousel() {
     try {
       const data = await base44.entities.GalleryImage.list();
       if (data && data.length > 0) {
-        setImages(data.sort((a, b) => (a.order || 0) - (b.order || 0)));
+        const sorted = data.sort((a, b) => (a.order || 0) - (b.order || 0));
+        // Duplicar imágenes para efecto infinito
+        setImages([...sorted, ...sorted, ...sorted]);
       } else {
         // Generar imágenes iniciales si no hay
         generateInitialImages();
@@ -63,7 +65,8 @@ export default function HeroCarousel() {
       );
 
       await Promise.all(images.map(img => base44.entities.GalleryImage.create(img)));
-      setImages(images);
+      // Duplicar imágenes para efecto infinito
+      setImages([...images, ...images, ...images]);
     } catch (err) {
       console.error('Error generating images:', err);
     } finally {
@@ -107,12 +110,12 @@ export default function HeroCarousel() {
 
       {/* Dots - Bottom center */}
       <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {images.map((_, idx) => (
+        {images.length > 0 && images.slice(0, Math.ceil(images.length / 3)).map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrent(idx)}
             className={`w-2 h-2 rounded-full transition-all ${
-              idx === current ? "bg-white w-6" : "bg-white/50"
+              idx === current % Math.ceil(images.length / 3) ? "bg-white w-6" : "bg-white/50"
             }`}
           />
         ))}
