@@ -138,10 +138,10 @@ export default function AIRecommendations({ analysis }) {
       )}
 
       {/* Canales de Adquisición */}
-      {analysis.acquisitionChannels && (
+      {acquisitionChannels.length > 0 && (
         <div className="mt-6 space-y-2">
           <h4 className="font-semibold text-white mb-3">Canales de Adquisición</h4>
-          {analysis.acquisitionChannels.map((channel, idx) => (
+          {acquisitionChannels.map((channel, idx) => (
             <div
               key={idx}
               className="p-4 rounded-lg bg-white/5 border border-white/10"
