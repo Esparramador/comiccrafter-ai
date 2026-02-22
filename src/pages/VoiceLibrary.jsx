@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { AuthGuard } from "@/components/auth/AuthGuard";
+import AuthGuard from "@/components/auth/AuthGuard";
 import VoiceRecorder from "@/components/voices/VoiceRecorder";
 import VoiceCard from "@/components/voices/VoiceCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
