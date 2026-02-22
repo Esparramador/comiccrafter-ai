@@ -164,11 +164,11 @@ export default function AIRecommendations({ analysis }) {
       )}
 
       {/* Partnerships */}
-      {analysis.partnerships && (
+      {partnerships.length > 0 && (
         <div className="mt-6 p-4 rounded-lg bg-white/5 border border-white/10">
           <h4 className="font-semibold text-white mb-3">Partnerships Estratégicos</h4>
           <ul className="space-y-2">
-            {analysis.partnerships.map((partner, idx) => (
+            {partnerships.map((partner, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm text-gray-300">
                 <span className="text-pink-400 mt-1">→</span>
                 <span>{partner}</span>
