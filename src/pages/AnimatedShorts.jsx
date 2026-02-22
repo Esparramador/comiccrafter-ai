@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Film, Sparkles, ArrowLeft, ArrowRight, Wand2 } from "lucide-react";
+import { Film, ArrowLeft, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { saveShortDraft, loadShortDraft, clearShortDraft } from "@/components/drafts/drafts";
+import DraftBanner from "@/components/create/DraftBanner";
 
 import ShortsCharacterStep from "@/components/shorts/ShortsCharacterStep";
 import ShortsStoryStep from "@/components/shorts/ShortsStoryStep";
