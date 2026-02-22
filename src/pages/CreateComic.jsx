@@ -84,7 +84,7 @@ For each page provide:
 - visual_prompt (English only, image generation prompt including: "${styleMap[style]}, comic page with panels, black panel borders, professional comic art, sharp lines")
 - page_summary (one sentence)
 
-Be concise. Respond in the story's language except visual_prompt must be English.`,
+Be concise. ALL dialogues and speech bubble text MUST be written in ${languageName}. visual_prompt must always be in English.`,
         response_json_schema: {
           type: "object",
           properties: {
