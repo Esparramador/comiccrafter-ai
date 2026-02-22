@@ -193,12 +193,20 @@ function LayoutInner({ children, currentPageName }) {
   );
 }
 
+function LayoutWithProvider({ children, currentPageName }) {
+  return (
+    <LayoutInner currentPageName={currentPageName}>
+      {children}
+    </LayoutInner>
+  );
+}
+
 export default function Layout({ children, currentPageName }) {
   return (
     <LangProvider>
-      <LayoutInner currentPageName={currentPageName}>
+      <LayoutWithProvider currentPageName={currentPageName}>
         {children}
-      </LayoutInner>
+      </LayoutWithProvider>
     </LangProvider>
   );
 }
