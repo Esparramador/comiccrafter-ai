@@ -99,7 +99,7 @@ export default function Welcome() {
       await loadGoogleScript();
       
       window.google.accounts.id.initialize({
-        client_id: "783742843638-88j2f3nqkp6hvk4nvlqnvtoj08g7t6o1.apps.googleusercontent.com",
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
         callback: handleCredentialResponse
       });
       window.google.accounts.id.prompt();
