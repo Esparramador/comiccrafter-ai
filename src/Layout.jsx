@@ -15,6 +15,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "MyComics", label: "Mis Cómics", icon: BookOpen },
     { name: "MyCharacters", label: "Mis Personajes", icon: Users },
     { name: "CoverGenerator", label: "Portadas IA", icon: Zap },
+    { name: "AnimatedShorts", label: "Cortos IA", icon: Film },
   ];
 
   const isHome = currentPageName === "Home";
