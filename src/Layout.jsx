@@ -104,8 +104,19 @@ function LayoutInner({ children, currentPageName }) {
             {/* User Menu + Lang + Mobile Toggle */}
             <div className="flex items-center gap-2">
               {user && (
-                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                  <span className="text-xs text-gray-400">{user.full_name || user.email}</span>
+                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 relative group">
+                  <span className="text-xs text-gray-400 cursor-pointer">{user.full_name || user.email}</span>
+                  
+                  {/* Dropdown menu */}
+                  <div className="absolute top-full right-0 mt-1 w-40 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-t-lg border-b border-white/5 flex items-center gap-2"
+                    >
+                      <LogOut className="w-3 h-3" />
+                      Cerrar sesión
+                    </button>
+                  </div>
                 </div>
               )}
               <LangSwitcher />
