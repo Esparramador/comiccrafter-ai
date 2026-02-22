@@ -125,6 +125,9 @@ function LayoutInner({ children, currentPageName }) {
       <main className={isHome ? "" : "pt-20"}>
         {children}
       </main>
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
     </div>
   );
 }
