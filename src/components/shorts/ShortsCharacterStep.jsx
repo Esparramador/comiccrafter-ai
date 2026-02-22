@@ -115,6 +115,14 @@ export default function ShortsCharacterStep({ characters, setCharacters }) {
                 <Input placeholder="Nombre del personaje" value={char.name} onChange={e => updateCharacter(index, "name", e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-pink-500/50" />
                 <Textarea placeholder="Describe al personaje: personalidad, apariencia, poderes, rol en el corto..." value={char.description} onChange={e => updateCharacter(index, "description", e.target.value)} className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-pink-500/50 h-20 resize-none" />
                 <div>
+                  <p className="text-xs text-gray-500 mb-1.5 flex items-center gap-1"><Mic className="w-3 h-3" /> Voz del personaje</p>
+                  <VoiceSelector
+                    selectedVoice={char.voice_profile || null}
+                    onSelect={v => updateCharacter(index, "voice_profile", v)}
+                    characterName={char.name}
+                  />
+                </div>
+                <div>
                   <p className="text-xs text-gray-500 mb-2">Fotos de referencia</p>
                   <div className="flex flex-wrap gap-2">
                     {photos.map((url, pi) => (
