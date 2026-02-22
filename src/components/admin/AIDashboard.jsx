@@ -59,8 +59,8 @@ export default function AIDashboard() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+      >
         <div>
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
             <Brain className="w-6 h-6 text-violet-400" />
@@ -75,31 +75,31 @@ export default function AIDashboard() {
           <Button
             onClick={loadAnalysis}
             disabled={loading}
-            variant="outline" className="bg-background text-slate-950 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/5">
-
-
-            {loading ?
-            <>
+            variant="outline"
+            className="border-white/20 hover:bg-white/5"
+          >
+            {loading ? (
+              <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 Analizando...
-              </> :
-
-            <>
+              </>
+            ) : (
+              <>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Actualizar
               </>
-            }
+            )}
           </Button>
 
-          {analysis &&
-          <Button
-            onClick={handleDownloadReport}
-            className="bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500">
-
+          {analysis && (
+            <Button
+              onClick={handleDownloadReport}
+              className="bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500"
+            >
               <Download className="w-4 h-4 mr-2" />
               Descargar
             </Button>
-          }
+          )}
         </div>
       </motion.div>
 
