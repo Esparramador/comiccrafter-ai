@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lock, AlertCircle, CheckCircle2, Loader2, Eye, EyeOff } from "lucide-react";
 import AdminSubscriptions from "@/components/admin/AdminSubscriptions";
+import AIDashboard from "@/components/admin/AIDashboard";
 import { motion } from "framer-motion";
 
 export default function AdminPanel() {
@@ -379,7 +380,7 @@ export default function AdminPanel() {
                 Panel de Administrador
               </h1>
               <p className="text-gray-400">
-                Gestiona suscripciones, planes y configuración de la app
+                Gestiona suscripciones, planes y monetización de la app
               </p>
             </div>
 
@@ -402,11 +403,21 @@ export default function AdminPanel() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 space-y-12">
+          {/* AI Dashboard */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+          >
+            <AIDashboard />
+          </motion.div>
+
+          {/* Subscriptions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
           >
             <AdminSubscriptions />
           </motion.div>
