@@ -57,36 +57,37 @@ export default function VoiceRecorder({ onVoiceRecorded }) {
   };
 
   const saveVoice = async () => {
-    if (!recordedBlob || !voiceName.trim()) {
-      alert("Por favor, graba una voz y asigna un nombre");
-      return;
-    }
+   if (!recordedBlob || !voiceName.trim()) {
+     alert("Por favor, graba una voz y asigna un nombre");
+     return;
+   }
 
-    try {
-      setIsProcessing(true);
-      const { file_url } = await base44.integrations.Core.UploadFile({
-        file: recordedBlob
-      });
+   try {
+     setIsProcessing(true);
+     const { file_uri } = await base44.integrations.Core.UploadPrivateFile({
+       file: recordedBlob
+     });
 
-      await base44.entities.CustomVoice.create({
-        name: voiceName,
-        description: voiceDescription,
-        audio_url: file_url,
-        duration_seconds: Math.round(recordedBlob.size / 16000),
-        openai_voice: "alloy"
-      });
+     await base44.entities.CustomVoice.create({
+       name: voiceName,
+       description: voiceDescription,
+       audio_file_uri: file_uri,
+       duration_seconds: Math.round(recordedBlob.size / 16000),
+       openai_voice: "alloy",
+       is_private: true
+     });
 
-      setRecordedBlob(null);
-      setVoiceName("");
-      setVoiceDescription("");
-      onVoiceRecorded?.();
-      alert("¡Voz guardada exitosamente!");
-    } catch (error) {
-      console.error("Error saving voice:", error);
-      alert("Error al guardar la voz");
-    } finally {
-      setIsProcessing(false);
-    }
+     setRecordedBlob(null);
+     setVoiceName("");
+     setVoiceDescription("");
+     onVoiceRecorded?.();
+     alert("¡Voz guardada exitosamente!");
+   } catch (error) {
+     console.error("Error saving voice:", error);
+     alert("Error al guardar la voz");
+   } finally {
+     setIsProcessing(false);
+   }
   };
 
   return (
