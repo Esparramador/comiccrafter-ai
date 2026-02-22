@@ -74,10 +74,11 @@ export default function ComicViewer() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">{comic.title}</h1>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-white truncate">{comic.title}</h1>
             <p className="text-xs text-gray-500">
               {comic.generated_pages?.length || 0} páginas · {comic.style}
+              {saving && <span className="ml-2 text-violet-400">Guardando...</span>}
             </p>
           </div>
         </div>
