@@ -18,6 +18,9 @@ export default function VideoProjects() {
   const [projectType, setProjectType] = useState("children_film");
   const [targetAge, setTargetAge] = useState("3-6");
   const [characters, setCharacters] = useState([{ name: "", description: "", photo_url: "", voice_profile: null, elevenlabs_voice_id: "" }]);
+  const [selectedGenre, setSelectedGenre] = useState("adventure");
+  const [selectedThemes, setSelectedThemes] = useState(["friendship"]);
+  const [tone, setTone] = useState("inspirador");
   const [title, setTitle] = useState("");
   const [story, setStory] = useState("");
   const [moralLesson, setMoralLesson] = useState("");
