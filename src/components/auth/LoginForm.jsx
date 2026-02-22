@@ -19,12 +19,7 @@ export default function LoginForm({ onSuccess }) {
     try {
       setIsLoading(true);
       setError("");
-      // Base44 Google OAuth
-      await base44.auth.redirectToLogin();
-      // After redirect, onSuccess will be called when user returns
-      if (onSuccess) {
-        setTimeout(() => onSuccess(), 500);
-      }
+      await base44.auth.redirectToLogin('/');
     } catch (err) {
       setError("Error al iniciar sesión con Google");
       setIsLoading(false);
