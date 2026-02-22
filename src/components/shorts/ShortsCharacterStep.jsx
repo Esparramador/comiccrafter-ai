@@ -2,10 +2,11 @@ import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, X, UserCircle, Plus, Camera, Library, Check } from "lucide-react";
+import { Upload, X, UserCircle, Plus, Camera, Library, Check, Mic } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import VoiceSelector from "@/components/voices/VoiceSelector";
 
 export default function ShortsCharacterStep({ characters, setCharacters }) {
   const fileInputRefs = useRef({});
