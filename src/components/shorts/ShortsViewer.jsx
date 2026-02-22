@@ -350,11 +350,19 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
                     </div>
                   )}
                   {frame.dialogue && (
-                    <div>
-                      <p className="text-[10px] text-gray-600 uppercase tracking-wider mb-0.5">Diálogo</p>
-                      <p className="text-xs text-white italic">"{frame.dialogue}"</p>
-                    </div>
-                  )}
+                      <div>
+                        <div className="flex items-center justify-between mb-0.5">
+                          <p className="text-[10px] text-gray-600 uppercase tracking-wider">Diálogo</p>
+                          <FrameAudioPlayer
+                            frame={frame}
+                            voiceProfile={short.character_descriptions?.find(c =>
+                              frame.dialogue?.toLowerCase().includes(c.name?.toLowerCase())
+                            )?.voice_profile || (short.character_descriptions?.[0]?.voice_profile)}
+                          />
+                        </div>
+                        <p className="text-xs text-white italic">"{frame.dialogue}"</p>
+                      </div>
+                    )}
                   {frame.sound_effect && (
                     <div>
                       <p className="text-[10px] text-gray-600 uppercase tracking-wider mb-0.5">SFX</p>
