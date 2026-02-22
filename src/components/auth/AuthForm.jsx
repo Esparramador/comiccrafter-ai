@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  Mail,
-  Lock,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function AuthForm() {
