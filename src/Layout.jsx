@@ -106,10 +106,23 @@ function LayoutInner({ children, currentPageName }) {
                   <span className="text-xs text-gray-400 cursor-pointer">{user.full_name || user.email}</span>
                   
                   {/* Dropdown menu */}
-                  <div className="absolute top-full right-0 mt-1 w-40 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="absolute top-full right-0 mt-1 w-48 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <button
+                      onClick={() => {
+                        try {
+                          base44.auth.redirectToLogin({ provider: 'google' });
+                        } catch (error) {
+                          console.error('Error redirecting to Google login:', error);
+                        }
+                      }}
+                      className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 border-b border-white/5 flex items-center gap-2"
+                    >
+                      <Users className="w-3 h-3" />
+                      Cambiar cuenta
+                    </button>
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-t-lg border-b border-white/5 flex items-center gap-2"
+                      className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-b-lg flex items-center gap-2"
                     >
                       <LogOut className="w-3 h-3" />
                       Cerrar sesión

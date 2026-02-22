@@ -9,9 +9,10 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCw,
+  RefreshCw,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
@@ -22,10 +23,11 @@ export default function Model3DViewer({ model, onClose }) {
   const [suggestions, setSuggestions] = useState([]);
   const [isModifying, setIsModifying] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [currentModel, setCurrentModel] = useState(model);
 
   // Inicializar Three.js scene
   useEffect(() => {
-    if (!mountRef.current || !model?.gltf_url) return;
+    if (!mountRef.current || !currentModel?.preview_image) return;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a0a0f);
@@ -36,48 +38,56 @@ export default function Model3DViewer({ model, onClose }) {
       0.1,
       1000
     );
-    camera.position.z = 3;
+    camera.position.set(0, 0, 3);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(
       mountRef.current.clientWidth,
       mountRef.current.clientHeight
     );
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimización móvil
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
-    // Lighting
-    const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
-    light1.position.set(5, 5, 5);
-    scene.add(light1);
+    // Iluminación profesional
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    directionalLight.position.set(5, 10, 7);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
 
-    const light2 = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(light2);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
 
-    // Load GLTF model
-    const loader = new GLTFLoader();
-    loader.load(
-      model.gltf_url,
-      (gltf) => {
-        const mesh = gltf.scene;
-        mesh.scale.set(1.5, 1.5, 1.5);
-        scene.add(mesh);
+    const pointLight = new THREE.PointLight(0x4c1d95, 0.4);
+    pointLight.position.set(-5, 5, 5);
+    scene.add(pointLight);
 
-        // Auto-rotate
-        const animate = () => {
-          requestAnimationFrame(animate);
-          mesh.rotation.y += 0.005;
-          renderer.render(scene, camera);
-        };
-        animate();
-      },
-      undefined,
-      (error) => {
-        console.error("Error loading model:", error);
-      }
-    );
+    // Canvas preview como fallback visual
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    
+    image.onload = () => {
+      canvas.width = 512;
+      canvas.height = 512;
+      ctx.drawImage(image, 0, 0, 512, 512);
+      
+      const texture = new THREE.CanvasTexture(canvas);
+      const geometry = new THREE.PlaneGeometry(2, 2);
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
 
-    // Handle resize
+      let rotation = 0;
+      const animate = () => {
+        requestAnimationFrame(animate);
+        mesh.rotation.z += 0.001;
+        renderer.render(scene, camera);
+      };
+      animate();
+    };
+    
+    image.src = currentModel.preview_image;
+
     const handleResize = () => {
       if (!mountRef.current) return;
       const width = mountRef.current.clientWidth;
@@ -88,25 +98,29 @@ export default function Model3DViewer({ model, onClose }) {
     };
 
     window.addEventListener("resize", handleResize);
-    sceneRef.current = { scene, camera, renderer, mesh: null };
 
     return () => {
       window.removeEventListener("resize", handleResize);
       renderer.dispose();
-      mountRef.current?.removeChild(renderer.domElement);
+      if (mountRef.current?.contains(renderer.domElement)) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
     };
-  }, [model?.gltf_url]);
+  }, [currentModel?.preview_image]);
 
-  // Generar sugerencias
+  // Generar sugerencias de IA
   const generateSuggestions = async () => {
     setLoadingSuggestions(true);
     try {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `El usuario está personalizando un modelo 3D de "${model.name}".
-        Descripción original: "${model.description}"
-        Basándote en esto, sugiere 5 ideas creativas y específicas para mejorar o modificar el modelo 3D.
-        
-        Devuelve un JSON con estructura: {"suggestions": ["idea1", "idea2", ...]}`,
+        prompt: `Usuario personalizando modelo 3D: "${currentModel.name}"
+Descripción: "${currentModel.description}"
+Versión: ${currentModel.version}
+
+Sugiere 5 modificaciones creativas, específicas y prácticas para mejorar este modelo 3D. 
+Incluye: ropa, accesorios, expresiones, estilos, detalles que harían el modelo más interesante.
+
+JSON: {"suggestions": ["idea1", "idea2", ...]}`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -133,13 +147,15 @@ export default function Model3DViewer({ model, onClose }) {
     setIsModifying(true);
     try {
       const response = await base44.functions.invoke("modify3DModel", {
-        model_id: model.id,
+        model_id: currentModel.id,
         comments,
       });
 
-      // Aquí podrías actualizar el visor con el modelo modificado
-      setComments("");
-      setSuggestions([]);
+      if (response.data?.updated_model) {
+        setCurrentModel(response.data.updated_model);
+        setComments("");
+        setSuggestions([]);
+      }
     } catch (error) {
       console.error("Error modifying model:", error);
     } finally {
@@ -148,12 +164,16 @@ export default function Model3DViewer({ model, onClose }) {
   };
 
   // Descargar modelo
-  const downloadModel = async (format = "glb") => {
+  const downloadModel = async (format = "png") => {
     try {
-      const link = document.createElement("a");
-      link.href = model.gltf_url;
-      link.download = `${model.name}.${format}`;
-      link.click();
+      const res = await fetch(currentModel.preview_image);
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${currentModel.name}_preview.${format}`;
+      a.click();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading model:", error);
     }
@@ -168,7 +188,10 @@ export default function Model3DViewer({ model, onClose }) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <h2 className="text-xl font-bold">{model.name} - Vista Previa 3D</h2>
+          <div>
+            <h2 className="text-xl font-bold text-white">{currentModel.name}</h2>
+            <p className="text-xs text-gray-500">Versión {currentModel.version} • Estilo: {currentModel.style}</p>
+          </div>
           <Button
             variant="ghost"
             size="icon"
@@ -181,23 +204,18 @@ export default function Model3DViewer({ model, onClose }) {
 
         <div className="flex-1 flex gap-4 overflow-hidden p-4">
           {/* Visor 3D */}
-          <div className="flex-1 relative bg-black/20 rounded-lg overflow-hidden border border-white/10">
+          <div className="flex-1 relative bg-gradient-to-b from-black/40 to-black/20 rounded-lg overflow-hidden border border-white/10">
             <div ref={mountRef} className="w-full h-full" />
             <div className="absolute bottom-4 left-4 flex gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-white/20"
-              >
-                <ZoomIn className="w-4 h-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-white/20"
-              >
-                <ZoomOut className="w-4 h-4" />
-              </Button>
+              <button className="w-9 h-9 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition-all flex items-center justify-center" title="Zoom in">
+                <ZoomIn className="w-4 h-4 text-gray-400" />
+              </button>
+              <button className="w-9 h-9 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition-all flex items-center justify-center" title="Zoom out">
+                <ZoomOut className="w-4 h-4 text-gray-400" />
+              </button>
+              <button className="w-9 h-9 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition-all flex items-center justify-center" title="Rotar">
+                <RotateCw className="w-4 h-4 text-gray-400" />
+              </button>
             </div>
           </div>
 
@@ -268,44 +286,41 @@ export default function Model3DViewer({ model, onClose }) {
 
             {/* Descargas */}
             <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-              <h3 className="font-medium mb-3 flex items-center gap-2">
+              <h3 className="font-medium mb-3 flex items-center gap-2 text-white">
                 <Download className="w-4 h-4" />
                 Descargar
               </h3>
               <div className="space-y-2">
                 <Button
-                  onClick={() => downloadModel("glb")}
+                  onClick={() => downloadModel("png")}
                   variant="outline"
-                  className="w-full text-sm border-white/20"
+                  className="w-full text-sm border-white/20 text-gray-300 hover:text-white"
                 >
-                  GLB/GLTF
+                  Imagen PNG
                 </Button>
                 <Button
-                  onClick={() => downloadModel("obj")}
+                  onClick={() => downloadModel("jpg")}
                   variant="outline"
-                  className="w-full text-sm border-white/20"
+                  className="w-full text-sm border-white/20 text-gray-300 hover:text-white"
                 >
-                  OBJ
-                </Button>
-                <Button
-                  onClick={() => downloadModel("stl")}
-                  variant="outline"
-                  className="w-full text-sm border-white/20"
-                >
-                  STL (Impresión 3D)
+                  Imagen JPG
                 </Button>
               </div>
             </div>
 
-            {/* Info del Modelo */}
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-sm">
-              <p className="text-gray-400">
-                <span className="font-medium">Versión:</span> {model.version}
-              </p>
-              <p className="text-gray-400 mt-1">
-                <span className="font-medium">Estilo:</span> {model.style}
-              </p>
-            </div>
+            {/* Historial de cambios */}
+            {currentModel.modification_history?.length > 0 && (
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                <h3 className="text-xs font-semibold text-white mb-2">Historial</h3>
+                <div className="space-y-1 text-[10px] text-gray-500 max-h-24 overflow-y-auto">
+                  {currentModel.modification_history.map((mod, idx) => (
+                    <p key={idx} className="truncate">
+                      v{idx + 1}: {mod.modification}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
