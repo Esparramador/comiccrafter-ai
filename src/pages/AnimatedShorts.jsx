@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Film, Sparkles, ArrowLeft, ArrowRight, Wand2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import ShortsCharacterStep from "../components/shorts/ShortsCharacterStep";
-import ShortsStoryStep from "../components/shorts/ShortsStoryStep";
-import ShortsStyleStep from "../components/shorts/ShortsStyleStep";
-import ShortsGenerateStep from "../components/shorts/ShortsGenerateStep";
-import ShortsViewer from "../components/shorts/ShortsViewer";
+import ShortsCharacterStep from "@/components/shorts/ShortsCharacterStep";
+import ShortsStoryStep from "@/components/shorts/ShortsStoryStep";
+import ShortsStyleStep from "@/components/shorts/ShortsStyleStep";
+import ShortsGenerateStep from "@/components/shorts/ShortsGenerateStep";
+import ShortsViewer from "@/components/shorts/ShortsViewer";
 
 const STEPS = ["Personajes", "Historia", "Estilo", "Generar"];
 
