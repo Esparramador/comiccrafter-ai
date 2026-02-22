@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
-import { Sparkles, ArrowRight, Zap, BookOpen } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, BookOpen, Pyramid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useLang } from "@/components/i18n/i18n";
