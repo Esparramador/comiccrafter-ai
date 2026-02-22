@@ -28,10 +28,36 @@ export default function VideoProjects() {
   const [customPrompt, setCustomPrompt] = useState("");
   const [narratorVoiceId, setNarratorVoiceId] = useState("");
 
+  const [draftId, setDraftId] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("");
   const [generatedProject, setGeneratedProject] = useState(null);
+
+  // Load draft from URL param on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("draftId");
+    if (!id) return;
+    base44.entities.Draft.filter({ id }).then(results => {
+      const d = results[0];
+      if (!d) return;
+      const data = d.data || {};
+      setDraftId(d.id);
+      setProjectType(data.projectType || "children_film");
+      setTargetAge(data.targetAge || "3-6");
+      setCharacters(data.characters || [{ name: "", description: "", photo_url: "", voice_profile: null, elevenlabs_voice_id: "" }]);
+      setTitle(data.title || "");
+      setStory(data.story || "");
+      setMoralLesson(data.moralLesson || "");
+      setLanguage(data.language || "es");
+      setStyle(data.style || "cartoon_2d");
+      setSceneCount(data.sceneCount || 10);
+      setMusicMood(data.musicMood || "magical");
+      setCustomPrompt(data.customPrompt || "");
+      setNarratorVoiceId(data.narratorVoiceId || "");
+    });
+  }, []);
 
   const canAdvance = () => {
     if (step === 0) return !!projectType;
