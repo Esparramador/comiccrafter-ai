@@ -239,6 +239,16 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+        <AnimatePresence>
+          {draft && (
+            <DraftBanner
+              draft={draft}
+              type="comic"
+              onRestore={restoreDraft}
+              onDiscard={() => { clearComicDraft(); setDraft(null); }}
+            />
+          )}
+        </AnimatePresence>
         <StepIndicator currentStep={step} />
 
         {step === 0 && <CharacterStep characters={characters} setCharacters={setCharacters} />}
