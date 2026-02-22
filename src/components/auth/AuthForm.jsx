@@ -101,36 +101,6 @@ export default function AuthForm() {
           </p>
         </div>
 
-        {/* Mode Toggle */}
-        <div className="flex gap-2 mb-6 bg-white/5 p-1 rounded-lg border border-white/10">
-          <button
-            onClick={() => {
-              setMode("login");
-              setError("");
-            }}
-            className={`flex-1 py-2 rounded-md font-semibold transition-all ${
-              mode === "login"
-                ? "bg-violet-600 text-white"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Acceder
-          </button>
-          <button
-            onClick={() => {
-              setMode("signup");
-              setError("");
-            }}
-            className={`flex-1 py-2 rounded-md font-semibold transition-all ${
-              mode === "signup"
-                ? "bg-violet-600 text-white"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Registrarse
-          </button>
-        </div>
-
         {/* Error Message */}
         {error && (
           <motion.div
@@ -142,114 +112,12 @@ export default function AuthForm() {
           </motion.div>
         )}
 
-        {/* Google Login */}
-        <div
-          id="google-signin-button"
-          className="w-full mb-4 flex justify-center"
-        ></div>
+        {/* Google Login Button */}
+        <div id="google-signin-button" className="w-full mb-6"></div>
 
-        {/* Divider */}
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-white/10"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-900 text-gray-500">
-              o continúa con email
-            </span>
-          </div>
-        </div>
-
-        {/* Email/Password Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              <Mail className="w-4 h-4 inline mr-2" />
-              Email
-            </label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
-              className="bg-white/5 border-white/10 text-white placeholder-gray-600 h-11"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              <Lock className="w-4 h-4 inline mr-2" />
-              Contraseña
-            </label>
-            <div className="relative">
-              <Input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="bg-white/5 border-white/10 text-white placeholder-gray-600 h-11 pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-              >
-                {showPassword ? (
-                       <EyeOff className="w-4 h-4" />
-                     ) : (
-                       <Eye className="w-4 h-4" />
-                     )}
-                   </button>
-                 </div>
-                </div>
-
-                {mode === "signup" && (
-                 <div>
-                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                     Confirmar tu contraseña
-                   </label>
-              <div className="relative">
-                <Input
-                  type={showConfirm ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="bg-white/5 border-white/10 text-white placeholder-gray-600 h-11 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-                >
-                  {showConfirm ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 h-11 rounded-xl font-semibold flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                {mode === "login" ? "Acceder" : "Registrarse"}
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </Button>
-        </form>
-
-        {/* Footer */}
-        <p className="text-center text-gray-600 text-xs">
-          Google es la forma más rápida y segura de acceder
+        {/* Info Text */}
+        <p className="text-center text-gray-400 text-sm">
+          Usa tu cuenta de Google para acceder de forma rápida y segura
         </p>
       </div>
     </motion.div>
