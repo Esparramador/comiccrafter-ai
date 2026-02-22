@@ -47,18 +47,20 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Home from './pages/Home';
-import CreateComic from './pages/CreateComic';
 import ComicViewer from './pages/ComicViewer';
+import CreateComic from './pages/CreateComic';
+import Home from './pages/Home';
 import MyComics from './pages/MyComics';
+import CoverGenerator from './pages/CoverGenerator';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "CreateComic": CreateComic,
     "ComicViewer": ComicViewer,
+    "CreateComic": CreateComic,
+    "Home": Home,
     "MyComics": MyComics,
+    "CoverGenerator": CoverGenerator,
 }
 
 export const pagesConfig = {
