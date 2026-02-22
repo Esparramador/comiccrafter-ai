@@ -15,13 +15,13 @@ function LayoutInner({ children, currentPageName }) {
 
   const navItems = [
     { name: "Home", label: n.home, icon: Sparkles },
-    { name: "MyComics", label: n.myComics, icon: BookOpen },
-    { name: "MyCharacters", label: n.characters, icon: Users },
     { name: "CoverGenerator", label: n.covers, icon: Zap },
     { name: "AnimatedShorts", label: n.shorts, icon: Film },
+    { name: "VoiceLibrary", label: "Voces", icon: Mic },
+    { name: "MyComics", label: n.myComics, icon: BookOpen },
+    { name: "MyCharacters", label: n.characters, icon: Users },
     { name: "MyMedia", label: "Mis Vídeos", icon: Baby },
     { name: "MyDrafts", label: n.drafts, icon: FileText },
-    { name: "VoiceLibrary", label: "Voces", icon: Mic },
   ];
 
   const isHome = currentPageName === "Home";
