@@ -24,31 +24,45 @@ export default function CreateComic() {
   const [pageCount, setPageCount] = useState(6);
   const [customPrompt, setCustomPrompt] = useState("");
   const [language, setLanguage] = useState("es");
-  const [draft, setDraft] = useState(() => loadComicDraft());
+  const [draftId, setDraftId] = useState(null);
 
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generationStatus, setGenerationStatus] = useState("");
 
+  // Load draft from URL param on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("draftId");
+    if (!id) return;
+    base44.entities.Draft.filter({ id }).then(results => {
+      const d = results[0];
+      if (!d) return;
+      const data = d.data || {};
+      setDraftId(d.id);
+      setCharacters(data.characters || [{ name: "", description: "", photo_url: "" }]);
+      setTitle(data.title || "");
+      setStory(data.story || "");
+      setStyle(data.style || "anime");
+      setPageCount(data.pageCount || 6);
+      setCustomPrompt(data.customPrompt || "");
+      setLanguage(data.language || "es");
+      setStep(data.step || 0);
+    });
+  }, []);
+
   // Auto-save draft on every change
   useEffect(() => {
     if (isGenerating) return;
-    saveComicDraft({ characters, title, story, style, pageCount, customPrompt, language, step });
+    const data = { characters, title, story, style, pageCount, customPrompt, language, step };
+    const saveTitle = title || "Borrador cómic";
+    if (draftId) {
+      base44.entities.Draft.update(draftId, { title: saveTitle, data });
+    } else if (title || story || characters.some(c => c.name)) {
+      base44.entities.Draft.create({ title: saveTitle, type: "comic", data }).then(d => setDraftId(d.id));
+    }
   }, [characters, title, story, style, pageCount, customPrompt, language, step, isGenerating]);
-
-  const restoreDraft = () => {
-    if (!draft) return;
-    setCharacters(draft.characters || [{ name: "", description: "", photo_url: "" }]);
-    setTitle(draft.title || "");
-    setStory(draft.story || "");
-    setStyle(draft.style || "anime");
-    setPageCount(draft.pageCount || 6);
-    setCustomPrompt(draft.customPrompt || "");
-    setLanguage(draft.language || "es");
-    setStep(draft.step || 0);
-    setDraft(null);
-  };
 
   const canAdvance = () => {
     if (step === 0) return characters.some(c => c.name && c.name.trim() !== "");
