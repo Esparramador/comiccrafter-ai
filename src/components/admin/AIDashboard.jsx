@@ -104,31 +104,31 @@ export default function AIDashboard() {
       </motion.div>
 
       {/* Error */}
-      {error &&
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300">
-
+      {error && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300"
+        >
           {error}
         </motion.div>
-      }
+      )}
 
       {/* Loading State */}
-      {loading &&
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          {[1, 2, 3, 4].map((i) =>
-        <div
-          key={i}
-          className="h-40 bg-white/5 rounded-lg animate-pulse border border-white/10" />
-
-        )}
+      {loading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-40 bg-white/5 rounded-lg animate-pulse border border-white/10"
+            />
+          ))}
         </motion.div>
-      }
+      )}
 
       {/* Content */}
       {analysis && !loading &&
