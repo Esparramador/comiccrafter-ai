@@ -1,0 +1,17 @@
+{
+  "appId": "com.tuapp.comiccrafter",
+  "appName": "ComicCrafter",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "serverClientId": "780148240699-nj2vmf4giq1rcv8no8eus2kg3dok7o9e.apps.googleusercontent.com,
+      "forceCodeForRefreshToken": true
+    }
+  }
+}
