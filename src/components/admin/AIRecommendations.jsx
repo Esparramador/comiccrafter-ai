@@ -5,9 +5,14 @@ import { ChevronDown, Zap, Users, Landmark } from "lucide-react";
 export default function AIRecommendations({ analysis }) {
   const [expandedOpportunity, setExpandedOpportunity] = useState(0);
 
-  if (!analysis?.opportunities) {
+  if (!analysis || typeof analysis !== 'object') {
     return <div className="text-gray-400">Sin datos disponibles</div>;
   }
+
+  const opportunities = Array.isArray(analysis.opportunities) ? analysis.opportunities : [];
+  const acquisitionChannels = Array.isArray(analysis.acquisitionChannels) ? analysis.acquisitionChannels : [];
+  const premiumFeatures = Array.isArray(analysis.premiumFeatures) ? analysis.premiumFeatures : [];
+  const partnerships = Array.isArray(analysis.partnerships) ? analysis.partnerships : [];
 
   const container = {
     hidden: { opacity: 0 },
