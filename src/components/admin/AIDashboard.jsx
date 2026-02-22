@@ -10,8 +10,8 @@ import {
   BarChart3,
   RefreshCw,
   Download,
-  ChevronDown } from
-"lucide-react";
+  ChevronDown,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import AIRecommendations from "./AIRecommendations";
 import AIMetrics from "./AIMetrics";
