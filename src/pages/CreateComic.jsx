@@ -69,22 +69,38 @@ export default function CreateComic() {
     setGenerationStatus("Generando guion y portada...");
     const [scriptResult, coverResult] = await Promise.all([
       base44.integrations.Core.InvokeLLM({
-        prompt: `You are a comic book writer. Create a concise but vivid comic script.
+        prompt: `You are an expert comic book writer AND a professional narrative writer with deep knowledge of classical story structure and linguistic correctness (following RAE standards for Spanish or equivalent authorities for other languages).
 
 TITLE: ${title}
 STORY: ${story}
 CHARACTERS: ${characterDescriptions}
 STYLE: ${style}
 PAGES: ${pageCount}
+LANGUAGE FOR DIALOGUES: ${languageName}
 
-For each page provide:
-- panel_count (2-5)
-- panel_descriptions (brief visual description)
-- dialogues (speech bubbles text)
-- visual_prompt (English only, image generation prompt including: "${styleMap[style]}, comic page with panels, black panel borders, professional comic art, sharp lines")
-- page_summary (one sentence)
+## NARRATIVE STRUCTURE RULES (apply strictly):
+Distribute the ${pageCount} pages following the classic three-act structure:
+- ACT 1 — PLANTEAMIENTO (first ~25% of pages): Introduce characters, setting and the initial situation. Hook the reader immediately. Establish the conflict seed.
+- ACT 2 — NUDO / DESARROLLO (middle ~50% of pages): Escalate the conflict, add complications, character development, emotional peaks. Each page must raise tension or reveal something new. Include a mid-point twist if possible.
+- ACT 3 — DESENLACE (final ~25% of pages): Resolve the central conflict satisfyingly. Provide emotional closure. The last page must leave a strong final impression (emotional, visual or narrative punch).
 
-Be concise. ALL dialogues and speech bubble text MUST be written in ${languageName}. visual_prompt must always be in English.`,
+## WRITING QUALITY RULES:
+- Dialogues must be natural, character-specific (each character has a distinct voice) and emotionally engaging.
+- Apply correct grammar, spelling and syntax following the standards of the ${languageName} language.
+- Use varied, rich vocabulary — avoid repetition of the same words.
+- Sentences in speech bubbles should be concise (max 15-20 words per bubble) and punchy.
+- Panel descriptions must be vivid and cinematically precise (camera angle, lighting, emotion on faces, body language).
+- Maintain narrative coherence: events, character actions and emotional arcs must be consistent across all pages.
+
+## OUTPUT FORMAT — For each page provide:
+- panel_count (2-5 panels per page, vary it for rhythm)
+- panel_descriptions (detailed visual description of each panel including camera angle, mood and action)
+- dialogues (all speech bubbles and captions, written ONLY in ${languageName}, respecting grammar and spelling rules)
+- visual_prompt (English only — image generation prompt: "${styleMap[style]}, comic page with ${'{panel_count}'} panels, black panel borders, professional comic art, sharp lines, [scene description]")
+- page_summary (one sentence, what happens narratively)
+- act (1, 2, or 3 — which act this page belongs to)
+
+ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must ALWAYS be in English.`,
         response_json_schema: {
           type: "object",
           properties: {
