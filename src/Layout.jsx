@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LangProvider, useLang } from "@/components/i18n/i18n";
 import LangSwitcher from "@/components/ui/LangSwitcher";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 
 function LayoutInner({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
