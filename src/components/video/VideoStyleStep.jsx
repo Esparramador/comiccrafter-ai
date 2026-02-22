@@ -9,6 +9,7 @@ const STYLES = [
   { id: "watercolor", label: "Acuarela", emoji: "🌸", desc: "Suave, pastel, artístico" },
   { id: "anime", label: "Anime Ghibli", emoji: "🌿", desc: "Studio Ghibli, Totoro" },
   { id: "disney_classic", label: "Disney Clásico", emoji: "🏰", desc: "Animación clásica de Disney" },
+  { id: "realistic_3d", label: "Realista 3D", emoji: "🎬", desc: "Renderizado fotorrealista, cinemático" },
 ];
 
 const MOODS = [
@@ -57,12 +58,12 @@ export default function VideoStyleStep({ style, setStyle, sceneCount, setSceneCo
          <Slider
            value={[sceneCount]}
            onValueChange={([v]) => setSceneCount(v)}
-           min={4} max={16} step={2}
+           min={4} max={200} step={2}
            className="w-full"
          />
          <div className="flex justify-between text-[10px] text-gray-600 mt-1">
            <span>4 escenas (~2 min)</span>
-           <span>16 escenas (~8 min)</span>
+           <span>200 escenas (~100 min)</span>
          </div>
        </div>
 
