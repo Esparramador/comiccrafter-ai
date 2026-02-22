@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Play, Pause, SkipBack, SkipForward, Maximize2, Minimize2,
   Film, Download, ArrowLeft, ChevronLeft, ChevronRight,
-  Grid3X3, FileText, Zap, Pencil, Volume2, Music
+  Grid3X3, FileText, Zap, Pencil, Volume2, Music, X
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import FrameEditor from "@/components/editor/FrameEditor";
@@ -122,27 +122,31 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
 
         {/* Header */}
         {!fullscreen && (
-          <div className="flex items-center gap-3 mb-6">
-            <Button variant="ghost" size="icon" onClick={onBack} className="text-gray-400 hover:text-white">
-              <ArrowLeft className="w-5 h-5" />
+          <div className="flex items-center justify-between gap-3 mb-6">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" onClick={onBack} className="text-gray-400 hover:text-white">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl font-bold text-white truncate">{short.title}</h1>
+                <p className="text-xs text-gray-500">{short.genre} · {total} fotogramas · {short.style}</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setShowScript(!showScript)} className="border-white/10 text-gray-300 hover:text-white gap-1.5 text-xs rounded-xl">
+              <FileText className="w-3.5 h-3.5" /> Guion
             </Button>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold text-white truncate">{short.title}</h1>
-              <p className="text-xs text-gray-500">{short.genre} · {total} fotogramas · {short.style}</p>
+            <Button variant="outline" size="sm" onClick={downloadFrames} className="border-white/10 text-gray-300 hover:text-white gap-1.5 text-xs rounded-xl">
+              <Download className="w-3.5 h-3.5" /> ZIP
+            </Button>
+            <Button variant="outline" size="sm" onClick={downloadScript} className="border-white/10 text-gray-300 hover:text-white gap-1.5 text-xs rounded-xl">
+              <FileText className="w-3.5 h-3.5" /> .txt
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onBack} className="text-gray-400 hover:text-white hover:bg-white/10">
+              <X className="w-5 h-5" />
+            </Button>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowScript(!showScript)} className="border-white/10 text-gray-300 hover:text-white gap-1.5 text-xs rounded-xl">
-                <FileText className="w-3.5 h-3.5" /> Guion
-              </Button>
-              <Button variant="outline" size="sm" onClick={downloadFrames} className="border-white/10 text-gray-300 hover:text-white gap-1.5 text-xs rounded-xl">
-                <Download className="w-3.5 h-3.5" /> ZIP
-              </Button>
-              <Button variant="outline" size="sm" onClick={downloadScript} className="border-white/10 text-gray-300 hover:text-white gap-1.5 text-xs rounded-xl">
-                <FileText className="w-3.5 h-3.5" /> .txt
-              </Button>
             </div>
-          </div>
-        )}
+            )}
 
         {/* Script overlay */}
         <AnimatePresence>
