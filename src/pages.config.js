@@ -58,6 +58,7 @@ import MyDrafts from './pages/MyDrafts';
 import MyMedia from './pages/MyMedia';
 import VideoProjects from './pages/VideoProjects';
 import VideoStudio from './pages/VideoStudio';
+import AdminPanel from './pages/AdminPanel';
 import __Layout from './Layout.jsx';
 
 
@@ -73,6 +74,7 @@ export const PAGES = {
     "MyMedia": MyMedia,
     "VideoProjects": VideoProjects,
     "VideoStudio": VideoStudio,
+    "AdminPanel": AdminPanel,
 }
 
 export const pagesConfig = {
