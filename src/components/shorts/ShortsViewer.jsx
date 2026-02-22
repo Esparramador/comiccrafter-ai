@@ -26,6 +26,16 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
   const [fps, setFps] = useState(2); // frames per second for autoplay
   const intervalRef = useRef(null);
 
+  const handleFrameSave = async (updatedFrame) => {
+    const newFrames = short.generated_frames.map(f =>
+      f.frame_number === updatedFrame.frame_number ? updatedFrame : f
+    );
+    const updatedShort = { ...short, generated_frames: newFrames };
+    await base44.entities.AnimatedShort.update(short.id, updatedShort);
+    setShort(updatedShort);
+    setShowEditor(false);
+  };
+
   const frames = short.generated_frames || [];
   const total = frames.length;
   const frame = frames[current];
