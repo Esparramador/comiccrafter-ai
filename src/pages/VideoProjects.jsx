@@ -72,6 +72,22 @@ export default function VideoProjects() {
     setProgress(0);
     setStatus("Escribiendo el guion...");
 
+    // Save draft when generation starts
+    const data = { projectType, targetAge, characters, title, story, moralLesson, language, style, sceneCount, musicMood, customPrompt, narratorVoiceId };
+    const saveTitle = title || "Borrador vídeo";
+    let activeDraftId = draftId;
+    if (activeDraftId) {
+      await base44.entities.Draft.update(activeDraftId, { title: saveTitle, data }).catch(async () => {
+        const d = await base44.entities.Draft.create({ title: saveTitle, type: "video", data });
+        activeDraftId = d.id;
+        setDraftId(d.id);
+      });
+    } else {
+      const d = await base44.entities.Draft.create({ title: saveTitle, type: "video", data });
+      activeDraftId = d.id;
+      setDraftId(d.id);
+    }
+
     const validChars = characters.filter(c => c.name?.trim());
     const charDescriptions = validChars.map(c =>
       `${c.name}: ${c.description || "protagonist"}${c.photo_url ? " (has reference photo)" : ""}`
