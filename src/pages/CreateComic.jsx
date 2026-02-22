@@ -44,23 +44,24 @@ export default function CreateComic() {
       `${c.name}: ${c.description}${c.photo_url ? " (tiene foto de referencia)" : ""}`
     ).join("\n");
 
-    // Step 1: Generate the script
+    // Step 1: Generate the script — full panel-level breakdown
     const scriptResult = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are a professional comic book writer. Create a detailed comic book script for the following:
+      prompt: `You are a master comic book writer and storyboard artist. Create a DETAILED, professional comic script.
 
 TITLE: ${title}
 STORY: ${story}
 CHARACTERS: ${characterDescriptions}
-STYLE: ${style}
-PAGES: ${pageCount}
+VISUAL STYLE: ${style}
+TOTAL PAGES: ${pageCount}
 
-Create a page-by-page breakdown with:
-- Panel descriptions (what's happening visually in each panel)
-- Dialogue/text for speech bubbles
-- Camera angles and composition notes
-- Emotional tone for each panel
+For EACH page produce:
+1. panel_count: number of panels (2–6, vary for pacing)
+2. panel_descriptions: detailed visual description of ALL panels on that page (camera angles, character poses, expressions, backgrounds, lighting)
+3. dialogues: all speech/thought bubbles with character names and balloon positions (top-left, center, bottom-right, etc.)
+4. visual_prompt: a single cohesive image-generation prompt for the full page, written in English, that describes the page layout, all panels, characters referencing their descriptions, environment, mood, lighting. Always include: "comic book page, multiple panels with black borders, professional comic art, ${style} style, masterpiece, 8k, cinematic lighting, sharp detailed lines"
+5. page_summary: one sentence describing what happens on this page
 
-Make it dramatic, engaging, and visually interesting. Respond in the same language as the story.`,
+Make the story dramatic, with great pacing and emotional impact. Write in the same language as the story (except visual_prompt which must be in English).`,
       response_json_schema: {
         type: "object",
         properties: {
@@ -70,8 +71,11 @@ Make it dramatic, engaging, and visually interesting. Respond in the same langua
               type: "object",
               properties: {
                 page_number: { type: "number" },
+                panel_count: { type: "number" },
                 panel_descriptions: { type: "string" },
-                visual_prompt: { type: "string" }
+                dialogues: { type: "string" },
+                visual_prompt: { type: "string" },
+                page_summary: { type: "string" }
               }
             }
           }
@@ -104,10 +108,12 @@ Make it dramatic, engaging, and visually interesting. Respond in the same langua
         .filter(c => c.photo_url)
         .map(c => c.photo_url);
 
-      const imagePrompt = `Comic book page layout with multiple panels. ${styleMap[style]}. 
-${page.visual_prompt}. 
-Characters: ${characterDescriptions}.
-Professional comic book quality, detailed backgrounds, expressive characters that resemble real people with ${style} artistic treatment. Full comic page with panel borders and speech bubbles.`;
+      // Build InstantID-style prompt: style descriptor + visual_prompt + character identity injection
+      const identityRef = validCharacters.map(c =>
+        `${c.name} (${c.description || "main character"}${c.photo_url ? ", use reference photo for face likeness" : ""})`
+      ).join("; ");
+
+      const imagePrompt = `${styleMap[style]}, comic book page with ${page.panel_count || 4} panels separated by black borders. ${page.visual_prompt}. Characters: ${identityRef}. Dialogues/text placement: ${page.dialogues || ""}. High detail, expressive faces with realistic likeness to reference photos, professional comic page layout, speech bubbles with text, masterpiece quality, 8k.`;
 
       const imageResult = await base44.integrations.Core.GenerateImage({
         prompt: imagePrompt,
@@ -117,7 +123,10 @@ Professional comic book quality, detailed backgrounds, expressive characters tha
       generatedPages.push({
         page_number: i + 1,
         image_url: imageResult.url,
-        panel_descriptions: page.panel_descriptions
+        panel_descriptions: page.panel_descriptions,
+        dialogues: page.dialogues,
+        page_summary: page.page_summary,
+        panel_count: page.panel_count
       });
     }
 
