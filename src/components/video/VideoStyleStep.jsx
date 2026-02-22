@@ -22,6 +22,7 @@ const MOODS = [
 
 export default function VideoStyleStep({ style, setStyle, sceneCount, setSceneCount, musicMood, setMusicMood, customPrompt, setCustomPrompt, targetAge }) {
   const recommendedCount = targetAge === "0-3" ? 6 : targetAge === "3-6" ? 8 : 10;
+  const durationMinutes = Math.round(sceneCount * 0.5);
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
