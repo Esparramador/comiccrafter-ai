@@ -1,19 +1,28 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
+  if (req.method !== 'POST') {
+    return Response.json({ error: 'Method not allowed' }, { status: 405 });
+  }
+
   try {
     const base44 = createClientFromRequest(req);
     const { email, full_name, profile_image } = await req.json();
 
-    if (!email) {
-      return Response.json({ error: 'Email requerido' }, { status: 400 });
+    // Validar entrada
+    if (!email || typeof email !== 'string') {
+      return Response.json({ error: 'Email requerido y debe ser string' }, { status: 400 });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return Response.json({ error: 'Email inválido' }, { status: 400 });
     }
 
     // Verificar si el usuario existe
     const existingUsers = await base44.asServiceRole.entities.User.filter({ email });
     
-    if (existingUsers.length > 0) {
-      // Usuario existe - retornar datos
+    if (existingUsers && existingUsers.length > 0) {
       return Response.json({
         success: true,
         user: existingUsers[0],
@@ -21,16 +30,23 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Usuario no existe - crear nuevo (Auto-register)
+    // Crear nuevo usuario (Upsert pattern)
     const newUser = await base44.asServiceRole.entities.User.create({
       email,
-      full_name: full_name || email.split('@')[0],
+      full_name: full_name && typeof full_name === 'string' 
+        ? full_name.trim() 
+        : email.split('@')[0],
       role: 'user'
     });
 
-    // Si tiene foto de perfil, actualizar
-    if (profile_image) {
-      await base44.auth.updateMe({ profile_image });
+    // Actualizar perfil si se proporciona imagen
+    if (profile_image && typeof profile_image === 'string') {
+      try {
+        await base44.auth.updateMe({ profile_image });
+      } catch (err) {
+        console.warn('Failed to update profile image:', err.message);
+        // No fallar si no se puede actualizar la imagen
+      }
     }
 
     return Response.json({
@@ -39,6 +55,10 @@ Deno.serve(async (req) => {
       isNewUser: true
     });
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error('Login error:', error);
+    return Response.json({ 
+      error: 'Login failed',
+      details: error.message 
+    }, { status: 500 });
   }
 });
