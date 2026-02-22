@@ -10,8 +10,8 @@ import {
   BarChart3,
   RefreshCw,
   Download,
-  ChevronDown,
-} from "lucide-react";
+  ChevronDown } from
+"lucide-react";
 import { motion } from "framer-motion";
 import AIRecommendations from "./AIRecommendations";
 import AIMetrics from "./AIMetrics";
@@ -59,8 +59,8 @@ export default function AIDashboard() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-      >
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+
         <div>
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
             <Brain className="w-6 h-6 text-violet-400" />
@@ -75,98 +75,98 @@ export default function AIDashboard() {
           <Button
             onClick={loadAnalysis}
             disabled={loading}
-            variant="outline"
-            className="border-white/20 hover:bg-white/5"
-          >
-            {loading ? (
-              <>
+            variant="outline" className="bg-background text-slate-950 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/5">
+
+
+            {loading ?
+            <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 Analizando...
-              </>
-            ) : (
-              <>
+              </> :
+
+            <>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Actualizar
               </>
-            )}
+            }
           </Button>
 
-          {analysis && (
-            <Button
-              onClick={handleDownloadReport}
-              className="bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500"
-            >
+          {analysis &&
+          <Button
+            onClick={handleDownloadReport}
+            className="bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500">
+
               <Download className="w-4 h-4 mr-2" />
               Descargar
             </Button>
-          )}
+          }
         </div>
       </motion.div>
 
       {/* Error */}
-      {error && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300"
-        >
+      {error &&
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300">
+
           {error}
         </motion.div>
-      )}
+      }
 
       {/* Loading State */}
-      {loading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-40 bg-white/5 rounded-lg animate-pulse border border-white/10"
-            />
-          ))}
+      {loading &&
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {[1, 2, 3, 4].map((i) =>
+        <div
+          key={i}
+          className="h-40 bg-white/5 rounded-lg animate-pulse border border-white/10" />
+
+        )}
         </motion.div>
-      )}
+      }
 
       {/* Content */}
-      {analysis && !loading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="space-y-6"
-        >
+      {analysis && !loading &&
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="space-y-6">
+
           {/* Tabs */}
           <div className="flex gap-2 border-b border-white/10">
             {[
-              { id: "overview", label: "Resumen", icon: BarChart3 },
-              { id: "opportunities", label: "Oportunidades", icon: Zap },
-              { id: "metrics", label: "Métricas", icon: TrendingUp },
-              { id: "actions", label: "Acciones", icon: Target },
-            ].map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-all ${
-                  activeTab === id
-                    ? "text-violet-400 border-b-2 border-violet-400"
-                    : "text-gray-400 hover:text-gray-300"
-                }`}
-              >
+          { id: "overview", label: "Resumen", icon: BarChart3 },
+          { id: "opportunities", label: "Oportunidades", icon: Zap },
+          { id: "metrics", label: "Métricas", icon: TrendingUp },
+          { id: "actions", label: "Acciones", icon: Target }].
+          map(({ id, label, icon: Icon }) =>
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-all ${
+            activeTab === id ?
+            "text-violet-400 border-b-2 border-violet-400" :
+            "text-gray-400 hover:text-gray-300"}`
+            }>
+
                 <Icon className="w-4 h-4" />
                 {label}
               </button>
-            ))}
+          )}
           </div>
 
           {/* Tab Content */}
           <div>
-            {activeTab === "overview" && (
-              <div className="space-y-4">
+            {activeTab === "overview" &&
+          <div className="space-y-4">
                 <AIMetrics stats={analysis.stats} />
-                {analysis.analysis?.summary && (
-                  <div className="p-4 rounded-lg bg-gradient-to-br from-violet-500/10 to-pink-500/10 border border-violet-500/20">
+                {analysis.analysis?.summary &&
+            <div className="p-4 rounded-lg bg-gradient-to-br from-violet-500/10 to-pink-500/10 border border-violet-500/20">
                     <h3 className="font-semibold text-white mb-2">
                       Resumen Estratégico
                     </h3>
@@ -174,18 +174,18 @@ export default function AIDashboard() {
                       {analysis.analysis.summary}
                     </p>
                   </div>
-                )}
+            }
               </div>
-            )}
+          }
 
-            {activeTab === "opportunities" && (
-              <AIRecommendations analysis={analysis.analysis} />
-            )}
+            {activeTab === "opportunities" &&
+          <AIRecommendations analysis={analysis.analysis} />
+          }
 
-            {activeTab === "metrics" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {analysis.analysis?.pricingStrategy && (
-                  <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            {activeTab === "metrics" &&
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {analysis.analysis?.pricingStrategy &&
+            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
                     <h4 className="font-semibold text-white mb-2">
                       Estrategia de Precios
                     </h4>
@@ -204,10 +204,10 @@ export default function AIDashboard() {
                       </p>
                     </div>
                   </div>
-                )}
+            }
 
-                {analysis.analysis?.financialProjections && (
-                  <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                {analysis.analysis?.financialProjections &&
+            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
                     <h4 className="font-semibold text-white mb-2">
                       Proyecciones Financieras
                     </h4>
@@ -226,20 +226,20 @@ export default function AIDashboard() {
                       </p>
                     </div>
                   </div>
-                )}
+            }
               </div>
-            )}
+          }
 
-            {activeTab === "actions" && (
-              <div className="space-y-3">
-                {analysis.analysis?.actionItems?.map((item, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="p-4 rounded-lg bg-white/5 border border-white/10 hover:border-violet-500/30 transition-colors cursor-pointer"
-                  >
+            {activeTab === "actions" &&
+          <div className="space-y-3">
+                {analysis.analysis?.actionItems?.map((item, idx) =>
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="p-4 rounded-lg bg-white/5 border border-white/10 hover:border-violet-500/30 transition-colors cursor-pointer">
+
                     <div className="flex items-start justify-between">
                       <div>
                         <h4 className="font-semibold text-white">
@@ -257,12 +257,12 @@ export default function AIDashboard() {
                       <ChevronDown className="w-4 h-4 text-gray-500" />
                     </div>
                   </motion.div>
-                ))}
-              </div>
             )}
+              </div>
+          }
           </div>
         </motion.div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
