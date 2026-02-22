@@ -30,8 +30,8 @@ export default function CreateComic() {
   const [generationStatus, setGenerationStatus] = useState("");
 
   const canAdvance = () => {
-    if (step === 0) return characters.some(c => c.name);
-    if (step === 1) return title && story.length > 20;
+    if (step === 0) return characters.some(c => c.name && c.name.trim() !== "");
+    if (step === 1) return title && title.trim() !== "" && story.length > 20;
     if (step === 2) return true;
     return true;
   };
