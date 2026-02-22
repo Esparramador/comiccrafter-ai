@@ -114,7 +114,8 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
                   panel_descriptions: { type: "string" },
                   dialogues: { type: "string" },
                   visual_prompt: { type: "string" },
-                  page_summary: { type: "string" }
+                  page_summary: { type: "string" },
+                  act: { type: "number" }
                 }
               }
             }
