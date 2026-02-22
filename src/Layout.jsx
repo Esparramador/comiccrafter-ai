@@ -39,15 +39,15 @@ function LayoutInner({ children, currentPageName }) {
   const n = t.nav;
 
   const navItems = [
-    { name: "Home", label: n.home, icon: Sparkles },
-    { name: "CoverGenerator", label: n.covers, icon: Zap },
-    { name: "AnimatedShorts", label: n.shorts, icon: Film },
+    { name: "Home", label: n?.home || "Inicio", icon: Sparkles },
+    { name: "CoverGenerator", label: n?.covers || "Portadas", icon: Zap },
+    { name: "AnimatedShorts", label: n?.shorts || "Cortos", icon: Film },
     { name: "VideoProjects", label: "Crear Vídeo", icon: Baby },
     { name: "VoiceLibrary", label: "Voces", icon: Mic },
-    { name: "MyComics", label: n.myComics, icon: BookOpen },
-    { name: "MyCharacters", label: n.characters, icon: Users },
+    { name: "MyComics", label: n?.myComics || "Mis Cómics", icon: BookOpen },
+    { name: "MyCharacters", label: n?.characters || "Personajes", icon: Users },
     { name: "MyMedia", label: "Mis Vídeos", icon: BookOpen },
-    { name: "MyDrafts", label: n.drafts, icon: FileText },
+    { name: "MyDrafts", label: n?.drafts || "Borradores", icon: FileText },
   ];
 
   const isHome = currentPageName === "Home";
@@ -80,7 +80,7 @@ function LayoutInner({ children, currentPageName }) {
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-1">
-              {navItems.map(item => {
+              {Array.isArray(navItems) && navItems.map(item => {
                 const Icon = item.icon;
                 const isActive = currentPageName === item.name;
                 return (
@@ -169,7 +169,7 @@ function LayoutInner({ children, currentPageName }) {
         {mobileOpen && (
           <div className="md:hidden border-t border-white/5 bg-[#0a0a0f]/95 backdrop-blur-xl">
             <div className="px-4 py-3 space-y-1">
-              {navItems.map(item => {
+              {Array.isArray(navItems) && navItems.map(item => {
                 const Icon = item.icon;
                 const isActive = currentPageName === item.name;
                 return (
