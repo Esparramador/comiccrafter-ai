@@ -115,7 +115,7 @@ Be concise. Respond in the story's language except visual_prompt must be English
     // Step 2: Generate ALL page images in PARALLEL
     let completed = 0;
     const imagePromises = pages.map((page) => {
-      const prompt = `${styleMap[style]}, comic book page with ${page.panel_count || 3} panels, black panel borders. ${page.visual_prompt}. Characters: ${identityRef}. Professional comic layout, speech bubbles, masterpiece, 8k.`;
+      const prompt = `${activeStylePrompt}, comic book page with ${page.panel_count || 3} panels, black panel borders. ${page.visual_prompt}. Characters: ${identityRef}. Professional comic layout, speech bubbles, masterpiece, 8k.`;
       return base44.integrations.Core.GenerateImage({
         prompt,
         ...(characterRefPhotos.length > 0 ? { existing_image_urls: characterRefPhotos } : {})
