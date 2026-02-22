@@ -10,6 +10,7 @@ import ExportPanel from "../components/viewer/ExportPanel";
 export default function ComicViewer() {
   const [comic, setComic] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
   const comicId = urlParams.get("id");
@@ -23,6 +24,23 @@ export default function ComicViewer() {
     };
     loadComic();
   }, [comicId]);
+
+  const handlePageSave = async (updatedPage, pageIndex) => {
+    setSaving(true);
+    const isCover = pageIndex === 0 && !!comic.cover_image_url;
+    let updatedComic;
+    if (isCover) {
+      updatedComic = { ...comic, cover_image_url: updatedPage.image_url };
+    } else {
+      const newPages = (comic.generated_pages || []).map(p =>
+        p.page_number === updatedPage.page_number ? updatedPage : p
+      );
+      updatedComic = { ...comic, generated_pages: newPages };
+    }
+    await base44.entities.ComicProject.update(comic.id, updatedComic);
+    setComic(updatedComic);
+    setSaving(false);
+  };
 
   if (loading) {
     return (
