@@ -60,6 +60,7 @@ import MyMedia from './pages/MyMedia';
 import VideoProjects from './pages/VideoProjects';
 import VideoStudio from './pages/VideoStudio';
 import Create3DModel from './pages/Create3DModel';
+import VoiceLibrary from './pages/VoiceLibrary';
 import __Layout from './Layout.jsx';
 
 
@@ -77,6 +78,7 @@ export const PAGES = {
     "VideoProjects": VideoProjects,
     "VideoStudio": VideoStudio,
     "Create3DModel": Create3DModel,
+    "VoiceLibrary": VoiceLibrary,
 }
 
 export const pagesConfig = {
