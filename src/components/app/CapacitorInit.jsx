@@ -47,11 +47,3 @@ export function useCapacitorInit() {
     initCapacitor();
   }, []);
 }
-
-/**
- * Componente wrapper para inicializar Capacitor
- */
-export default function CapacitorInit({ children }) {
-  useCapacitorInit();
-  return children;
-}
