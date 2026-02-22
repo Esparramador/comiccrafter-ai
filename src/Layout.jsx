@@ -17,10 +17,11 @@ function LayoutInner({ children, currentPageName }) {
     { name: "Home", label: n.home, icon: Sparkles },
     { name: "CoverGenerator", label: n.covers, icon: Zap },
     { name: "AnimatedShorts", label: n.shorts, icon: Film },
+    { name: "VideoProjects", label: "Crear Vídeo", icon: Baby },
     { name: "VoiceLibrary", label: "Voces", icon: Mic },
     { name: "MyComics", label: n.myComics, icon: BookOpen },
     { name: "MyCharacters", label: n.characters, icon: Users },
-    { name: "MyMedia", label: "Mis Vídeos", icon: Baby },
+    { name: "MyMedia", label: "Mis Vídeos", icon: BookOpen },
     { name: "MyDrafts", label: n.drafts, icon: FileText },
   ];
 
