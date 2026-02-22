@@ -60,6 +60,7 @@ export default function CreateComic() {
       cyberpunk: "Cyberpunk style, neon colors, futuristic technology, dark urban environments",
       fantasy: "Epic fantasy illustration, magical lighting, detailed environments, rich colors"
     };
+    const activeStylePrompt = customPrompt || styleMap[style];
 
     // Step 1: Script + cover generated in PARALLEL
     setGenerationStatus("Generando guion y portada...");
