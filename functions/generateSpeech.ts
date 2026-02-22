@@ -16,15 +16,11 @@ Deno.serve(async (req) => {
       model: "tts-1",
       voice,
       input: text.slice(0, 4096),
-      speed: Math.min(Math.max(speed, 0.25), 4.0)
+      speed: Math.min(Math.max(parseFloat(speed), 0.25), 4.0)
     });
 
     const buffer = await mp3.arrayBuffer();
-
-    // Upload to base44 storage
-    const formData = new FormData();
     const blob = new Blob([buffer], { type: 'audio/mpeg' });
-    formData.append('file', blob, 'speech.mp3');
 
     const uploadRes = await base44.integrations.Core.UploadFile({ file: blob });
 
