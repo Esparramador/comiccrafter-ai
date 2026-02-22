@@ -79,7 +79,7 @@ export default function VideoProjects() {
     setStatus("Escribiendo el guion...");
 
     // Save draft when generation starts
-    const data = { projectType, targetAge, characters, title, story, moralLesson, language, style, sceneCount, musicMood, customPrompt, narratorVoiceId };
+    const data = { projectType, targetAge, characters, selectedGenre, selectedThemes, tone, title, story, moralLesson, language, style, sceneCount, musicMood, customPrompt, narratorVoiceId };
     const saveTitle = title || "Borrador vídeo";
     let activeDraftId = draftId;
     if (activeDraftId) {
