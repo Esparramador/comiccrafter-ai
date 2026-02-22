@@ -12,9 +12,7 @@ export default function HeroSection() {
   const h = t.hero;
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <HeroCarousel />
-      
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-900 to-black">
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
