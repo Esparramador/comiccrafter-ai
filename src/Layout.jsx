@@ -132,7 +132,9 @@ function LayoutInner({ children, currentPageName }) {
 export default function Layout({ children, currentPageName }) {
   return (
     <LangProvider>
-      <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
+      <LayoutInner currentPageName={currentPageName}>
+        {children}
+      </LayoutInner>
     </LangProvider>
   );
 }
