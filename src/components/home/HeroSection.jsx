@@ -5,6 +5,7 @@ import { Sparkles, ArrowRight, Zap, Pyramid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useLang } from "@/components/i18n/i18n";
+import HeroCarousel from "./HeroCarousel";
 
 export default function HeroSection() {
   const { t } = useLang();
@@ -73,11 +74,21 @@ export default function HeroSection() {
           </div>
         </motion.div>
 
+        {/* Carousel */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="max-w-4xl mx-auto mb-16"
+        >
+          <HeroCarousel />
+        </motion.div>
+
         {/* Feature Cards */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
 
           {[
