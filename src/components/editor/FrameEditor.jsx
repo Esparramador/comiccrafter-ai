@@ -106,12 +106,14 @@ export default function FrameEditor({ frame, onSave, onClose }) {
             <Textarea value={action} onChange={e => setAction(e.target.value)}
               className="bg-white/5 border-white/10 text-white text-xs placeholder:text-gray-600 h-20 resize-none rounded-xl"
               placeholder="¿Qué ocurre en este fotograma?" />
+            <TextAssistant text={action} onApply={setAction} accentColor="pink" />
           </div>
           <div>
             <label className="text-xs font-medium text-gray-400 mb-1.5 block">Diálogo</label>
             <Textarea value={dialogue} onChange={e => setDialogue(e.target.value)}
               className="bg-white/5 border-white/10 text-white text-xs placeholder:text-gray-600 h-16 resize-none rounded-xl"
               placeholder="Diálogos del fotograma..." />
+            <TextAssistant text={dialogue} onApply={setDialogue} accentColor="pink" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -119,6 +121,7 @@ export default function FrameEditor({ frame, onSave, onClose }) {
               <Textarea value={sceneDesc} onChange={e => setSceneDesc(e.target.value)}
                 className="bg-white/5 border-white/10 text-white text-xs placeholder:text-gray-600 h-16 resize-none rounded-xl"
                 placeholder="Ambiente, luz, ángulo..." />
+              <TextAssistant text={sceneDesc} onApply={setSceneDesc} accentColor="pink" />
             </div>
             <div>
               <label className="text-xs font-medium text-gray-400 mb-1.5 block">Efecto de sonido</label>
