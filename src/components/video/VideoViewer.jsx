@@ -111,10 +111,10 @@ export default function VideoViewer({ project, onBack }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => setView(view === "grid" ? "player" : "grid")} className="text-gray-400 hover:text-white">
+            <Button variant="ghost" size="icon" onClick={() => setView(view === "grid" ? "player" : "grid")} className="text-gray-400 hover:text-white" title="Vista de grilla">
               <Grid3X3 className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={downloadScript} className="text-gray-400 hover:text-white">
+            <Button variant="ghost" size="icon" onClick={downloadAsZip} className="text-gray-400 hover:text-white" title="Descargar ZIP">
               <Download className="w-4 h-4" />
             </Button>
             <Button variant="ghost" size="icon" onClick={onBack} className="text-gray-400 hover:text-white hover:bg-white/10">
