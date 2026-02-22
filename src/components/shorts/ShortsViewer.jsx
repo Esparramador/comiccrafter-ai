@@ -360,6 +360,17 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
       {/* Info panel */}
           {!fullscreen && frame && (
             <div className="lg:w-64 space-y-3 flex-shrink-0">
+              {/* Audio Preview Button */}
+              {!fullscreen && (
+                <Button
+                  onClick={() => setShowAudioPreview(!showAudioPreview)}
+                  className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white gap-2 rounded-xl"
+                >
+                  <Volume2 className="w-4 h-4" />
+                  {showAudioPreview ? "Ocultar" : "Ver"} Vista Previa
+                </Button>
+              )}
+
               {/* Current frame info */}
               <div className="p-4 rounded-2xl border border-white/5 bg-white/[0.02]">
                 <div className="flex items-center gap-2 mb-3">
