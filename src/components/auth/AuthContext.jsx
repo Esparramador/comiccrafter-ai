@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 
 const AuthContext = createContext();
@@ -7,15 +7,16 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Verificar sesión activa al montar
   useEffect(() => {
     checkSession();
   }, []);
 
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const authenticated = await base44.auth.isAuthenticated();
       
       if (authenticated) {
@@ -30,29 +31,34 @@ export function AuthProvider({ children }) {
       }
     } catch (error) {
       console.error("Session check error:", error);
+      setError(error?.message || "Session verification failed");
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("authUser");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
+      setError(null);
       await base44.auth.logout();
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("authUser");
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
+      setError(error?.message || "Logout failed");
     }
-  };
+  }, []);
 
   const value = {
     user,
     loading,
     isAuthenticated,
+    error,
     checkSession,
     logout
   };
