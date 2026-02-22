@@ -10,7 +10,7 @@ import ComicCard from "../components/comics/ComicCard";
 export default function MyComics() {
   const queryClient = useQueryClient();
 
-  const { data: comics, isLoading } = useQuery({
+  const { data: comics = [], isLoading } = useQuery({
     queryKey: ["comics"],
     queryFn: async () => {
       try {
