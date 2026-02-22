@@ -56,6 +56,7 @@ import MyCharacters from './pages/MyCharacters';
 import MyComics from './pages/MyComics';
 import MyDrafts from './pages/MyDrafts';
 import VideoProjects from './pages/VideoProjects';
+import MyMedia from './pages/MyMedia';
 import __Layout from './Layout.jsx';
 
 
@@ -69,6 +70,7 @@ export const PAGES = {
     "MyComics": MyComics,
     "MyDrafts": MyDrafts,
     "VideoProjects": VideoProjects,
+    "MyMedia": MyMedia,
 }
 
 export const pagesConfig = {

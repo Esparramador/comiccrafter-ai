@@ -20,9 +20,9 @@ function LayoutInner({ children, currentPageName }) {
     { name: "MyCharacters", label: n.characters, icon: Users },
     { name: "CoverGenerator", label: n.covers, icon: Zap },
     { name: "AnimatedShorts", label: n.shorts, icon: Film },
+    { name: "MyMedia", label: "Mis Vídeos", icon: Baby },
     { name: "MyDrafts", label: n.drafts, icon: FileText },
     { name: "VoiceLibrary", label: "Voces", icon: Mic },
-    { name: "VideoProjects", label: "Vídeos", icon: Baby },
   ];
 
   const isHome = currentPageName === "Home";
