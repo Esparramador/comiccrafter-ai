@@ -49,21 +49,22 @@ export default function VideoStyleStep({ style, setStyle, sceneCount, setSceneCo
       </div>
 
       <div>
-        <label className="text-xs text-gray-500 mb-3 block">
-          Número de escenas: <span className="text-white font-semibold">{sceneCount}</span>
-          {sceneCount === recommendedCount && <span className="text-yellow-400 ml-1">(Recomendado)</span>}
-        </label>
-        <Slider
-          value={[sceneCount]}
-          onValueChange={([v]) => setSceneCount(v)}
-          min={4} max={16} step={2}
-          className="w-full"
-        />
-        <div className="flex justify-between text-[10px] text-gray-600 mt-1">
-          <span>4 escenas (~2 min)</span>
-          <span>16 escenas (~8 min)</span>
-        </div>
-      </div>
+         <label className="text-xs text-gray-500 mb-3 block">
+           Duración del vídeo: <span className="text-white font-semibold">~{durationMinutes} min</span>
+           <span className="text-gray-600 ml-2">({sceneCount} escenas)</span>
+           {sceneCount === recommendedCount && <span className="text-yellow-400 ml-1">(Recomendado)</span>}
+         </label>
+         <Slider
+           value={[sceneCount]}
+           onValueChange={([v]) => setSceneCount(v)}
+           min={4} max={16} step={2}
+           className="w-full"
+         />
+         <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+           <span>4 escenas (~2 min)</span>
+           <span>16 escenas (~8 min)</span>
+         </div>
+       </div>
 
       <div>
         <p className="text-xs text-gray-500 mb-2">Música ambiente</p>
