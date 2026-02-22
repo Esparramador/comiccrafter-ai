@@ -75,16 +75,23 @@ export default function VideoProjects() {
 
   const handleGenerate = async () => {
     try {
+      setIsGenerating(true);
+      setProgress(0);
+      setStatus("Inicializando suscripción...");
+
+      // Initialize subscription if needed
+      await base44.functions.invoke('initializeUserSubscription', {});
+
       // Check limits before starting
+      setStatus("Verificando límites...");
       const limitCheck = await base44.functions.invoke('checkUserLimits', { type: 'video' });
+      
       if (!limitCheck.data?.can_use) {
         setStatus(`Error: Límite alcanzado (${limitCheck.data?.used}/${limitCheck.data?.limit})`);
         setIsGenerating(false);
         return;
       }
 
-      setIsGenerating(true);
-      setProgress(0);
       setStatus("Escribiendo el guion...");
 
       // Save draft when generation starts
@@ -328,7 +335,7 @@ ALL dialogue and narrator_text MUST be in ${langName}. visual_prompt MUST be in 
       setGeneratedProject(project);
     } catch (error) {
       console.error('Generation error:', error);
-      setStatus(`Error: ${error.message}`);
+      setStatus(`❌ Error: ${error.message || 'Error desconocido'}`);
       setIsGenerating(false);
     }
   };
