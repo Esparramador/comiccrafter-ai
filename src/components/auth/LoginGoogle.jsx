@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { base44 } from '@/api/base44Client';
 
 const LoginGoogle = () => {
   const [loading, setLoading] = useState(false);
@@ -11,30 +12,20 @@ const LoginGoogle = () => {
       setError(null);
 
       // Llamar a GoogleAuth.signIn() de Capacitor
-      const result = await GoogleAuth.signIn();
-      
-      const email = result.email;
+      const googleUser = await GoogleAuth.signIn();
 
-      // Hacer fetch a la Edge Function de Deno
-      const response = await fetch('/api/registerGoogleUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          full_name: result.name || '',
-          profile_image: result.photoUrl || ''
-        })
+      // Invocar función backend para registrar usuario
+      const result = await base44.functions.invoke('registerGoogleUser', {
+        email: googleUser.email,
+        user_name: googleUser.displayName || '',
+        profile_image: googleUser.photoUrl || ''
       });
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (result.data?.success) {
         // Redirigir a home
         window.location.href = '/';
       } else {
-        setError(data.error || 'Error al registrar usuario');
+        setError(result.data?.error || 'Error al registrar usuario');
       }
     } catch (err) {
       console.error('Error en Google Sign In:', err);
