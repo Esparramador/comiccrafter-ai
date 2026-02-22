@@ -47,6 +47,39 @@ export default function VideoViewer({ project, onBack }) {
   const prev = () => { setPlaying(false); setCurrentScene(Math.max(0, currentScene - 1)); };
   const next = () => { setPlaying(false); setCurrentScene(Math.min(scenes.length - 1, currentScene + 1)); };
 
+  const downloadAsZip = async () => {
+    try {
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+      const folder = zip.folder(project.title || "video");
+      
+      const images = [
+        ...(project.cover_image_url ? [{ url: project.cover_image_url, name: "00_Portada.png" }] : []),
+        ...(Array.isArray(scenes) ? scenes.map(s => ({ url: s.image_url, name: `Escena_${String(s.scene_number).padStart(2, "0")}.png` })) : [])
+      ];
+      
+      for (const img of images) {
+        if (img?.url) {
+          const res = await fetch(img.url);
+          const blob = await res.blob();
+          folder.file(img.name, blob);
+        }
+      }
+      
+      downloadScript();
+      
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const zipUrl = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = zipUrl;
+      a.download = `${project.title || "video"}.zip`;
+      a.click();
+      URL.revokeObjectURL(zipUrl);
+    } catch (e) {
+      console.error("Error downloading ZIP:", e);
+    }
+  };
+
   const downloadScript = () => {
     let text = `${project.title}\n${"=".repeat(project.title?.length || 10)}\n\n`;
     if (project.synopsis) text += `Sinopsis: ${project.synopsis}\n`;
