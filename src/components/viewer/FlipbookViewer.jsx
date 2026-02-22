@@ -193,6 +193,22 @@ export default function FlipbookViewer({ pages, coverUrl, onPageSave }) {
           />
         )}
       </AnimatePresence>
+
+      {/* Page Editor Modal */}
+      <AnimatePresence>
+        {showEditor && page && (
+          <PageEditor
+            page={page}
+            pageIndex={currentPage}
+            isCover={currentPage === 0 && !!coverUrl}
+            onSave={(updatedPage) => {
+              onPageSave && onPageSave(updatedPage, currentPage);
+              setShowEditor(false);
+            }}
+            onClose={() => setShowEditor(false)}
+          />
+        )}
+      </AnimatePresence>
     </Wrapper>
   );
 }
