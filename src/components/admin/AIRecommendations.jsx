@@ -43,7 +43,7 @@ export default function AIRecommendations({ analysis }) {
             <span className="text-xs text-gray-400">OPORTUNIDADES</span>
           </div>
           <div className="text-2xl font-bold text-white">
-            {analysis.opportunities.length}
+            {opportunities.length}
           </div>
         </div>
 
@@ -53,7 +53,7 @@ export default function AIRecommendations({ analysis }) {
             <span className="text-xs text-gray-400">CANALES ADQUISICIÓN</span>
           </div>
           <div className="text-2xl font-bold text-white">
-            {analysis.acquisitionChannels?.length || 0}
+            {acquisitionChannels.length}
           </div>
         </div>
 
@@ -63,7 +63,7 @@ export default function AIRecommendations({ analysis }) {
             <span className="text-xs text-gray-400">PARTNERSHIPS</span>
           </div>
           <div className="text-2xl font-bold text-white">
-            {analysis.partnerships?.length || 0}
+            {partnerships.length}
           </div>
         </div>
       </div>
