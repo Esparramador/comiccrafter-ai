@@ -15,7 +15,6 @@ function LayoutInner({ children, currentPageName }) {
 
   const navItems = [
     { name: "Home", label: n.home, icon: Sparkles },
-    { name: "CreateComic", label: n.create, icon: PlusCircle },
     { name: "MyComics", label: n.myComics, icon: BookOpen },
     { name: "MyCharacters", label: n.characters, icon: Users },
     { name: "CoverGenerator", label: n.covers, icon: Zap },
