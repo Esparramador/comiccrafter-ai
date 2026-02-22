@@ -13,6 +13,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 export default function Model3DViewer({ model, onClose }) {
   const mountRef = useRef(null);
