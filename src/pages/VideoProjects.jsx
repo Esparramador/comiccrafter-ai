@@ -295,6 +295,8 @@ ALL dialogue and narrator_text MUST be in ${langName}. visual_prompt MUST be in 
     });
 
     setIsGenerating(false);
+    // Delete draft on successful completion
+    if (activeDraftId) await base44.entities.Draft.delete(activeDraftId).catch(() => {});
     setGeneratedProject(project);
   };
 
