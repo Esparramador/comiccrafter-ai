@@ -62,6 +62,7 @@ import MyMedia from './pages/MyMedia';
 import VideoProjects from './pages/VideoProjects';
 import VideoStudio from './pages/VideoStudio';
 import VoiceLibrary from './pages/VoiceLibrary';
+import Optimizer from './pages/Optimizer';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +82,7 @@ export const PAGES = {
     "VideoProjects": VideoProjects,
     "VideoStudio": VideoStudio,
     "VoiceLibrary": VoiceLibrary,
+    "Optimizer": Optimizer,
 }
 
 export const pagesConfig = {
