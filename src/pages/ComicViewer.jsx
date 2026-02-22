@@ -3,14 +3,13 @@ import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, Share2, BookOpen, Loader2 } from "lucide-react";
-import ComicPageView from "../components/viewer/ComicPageView";
+import { ArrowLeft, BookOpen, Loader2 } from "lucide-react";
+import FlipbookViewer from "../components/viewer/FlipbookViewer";
+import ExportPanel from "../components/viewer/ExportPanel";
 
 export default function ComicViewer() {
   const [comic, setComic] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [downloading, setDownloading] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
   const comicId = urlParams.get("id");
@@ -19,51 +18,11 @@ export default function ComicViewer() {
     const loadComic = async () => {
       if (!comicId) { setLoading(false); return; }
       const comics = await base44.entities.ComicProject.list();
-      const found = comics.find(c => c.id === comicId);
-      setComic(found);
+      setComic(comics.find(c => c.id === comicId) || null);
       setLoading(false);
     };
     loadComic();
   }, [comicId]);
-
-  const handleDownload = async () => {
-    if (!comic) return;
-    setDownloading(true);
-
-    // Download all images and create a downloadable package
-    const pages = comic.generated_pages || [];
-    
-    // Download each image as a separate file
-    for (let i = 0; i < pages.length; i++) {
-      const page = pages[i];
-      const response = await fetch(page.image_url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${comic.title}_pagina_${page.page_number}.png`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
-    }
-
-    // Also download cover
-    if (comic.cover_image_url) {
-      const response = await fetch(comic.cover_image_url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${comic.title}_portada.png`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
-    }
-
-    setDownloading(false);
-  };
 
   if (loading) {
     return (
@@ -78,7 +37,6 @@ export default function ComicViewer() {
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
         <BookOpen className="w-16 h-16 text-gray-600 mb-4" />
         <h2 className="text-xl font-bold text-white mb-2">Cómic no encontrado</h2>
-        <p className="text-gray-400 mb-6">No se pudo encontrar el cómic solicitado.</p>
         <Link to={createPageUrl("MyComics")}>
           <Button variant="outline" className="border-white/10 text-gray-300 hover:text-white rounded-xl">
             Ver mis cómics
@@ -90,46 +48,64 @@ export default function ComicViewer() {
 
   return (
     <div className="min-h-screen pb-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Link to={createPageUrl("MyComics")}>
-              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white">{comic.title}</h1>
-              <p className="text-xs text-gray-500">
-                {comic.generated_pages?.length || 0} páginas · Estilo {comic.style}
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={handleDownload}
-              disabled={downloading}
-              className="border-white/10 text-gray-300 hover:text-white rounded-xl gap-2"
-            >
-              {downloading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4" />
-              )}
-              <span className="hidden sm:inline">Descargar</span>
+        <div className="flex items-center gap-3 mb-6">
+          <Link to={createPageUrl("MyComics")}>
+            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+              <ArrowLeft className="w-5 h-5" />
             </Button>
+          </Link>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-white">{comic.title}</h1>
+            <p className="text-xs text-gray-500">
+              {comic.generated_pages?.length || 0} páginas · {comic.style}
+            </p>
           </div>
         </div>
 
-        {/* Comic Pages */}
-        <ComicPageView
-          pages={comic.generated_pages || []}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          coverUrl={comic.cover_image_url}
-        />
+        {/* Layout: viewer + sidebar */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Flipbook */}
+          <div className="flex-1 min-w-0">
+            <FlipbookViewer
+              pages={comic.generated_pages || []}
+              coverUrl={comic.cover_image_url}
+            />
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:w-72 space-y-4 flex-shrink-0">
+            <ExportPanel comic={comic} />
+
+            {/* Story excerpt */}
+            <div className="p-5 rounded-2xl border border-white/5 bg-white/[0.02]">
+              <h3 className="text-sm font-semibold text-white mb-2">Historia</h3>
+              <p className="text-xs text-gray-500 leading-relaxed line-clamp-6">{comic.story}</p>
+            </div>
+
+            {/* Characters */}
+            {comic.character_descriptions?.length > 0 && (
+              <div className="p-5 rounded-2xl border border-white/5 bg-white/[0.02]">
+                <h3 className="text-sm font-semibold text-white mb-3">Personajes</h3>
+                <div className="space-y-3">
+                  {comic.character_descriptions.filter(c => c.name).map((c, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      {c.photo_url
+                        ? <img src={c.photo_url} className="w-9 h-9 rounded-full object-cover border border-white/10" alt={c.name} />
+                        : <div className="w-9 h-9 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-300 text-sm font-bold">{c.name[0]}</div>
+                      }
+                      <div>
+                        <p className="text-xs font-semibold text-white">{c.name}</p>
+                        <p className="text-[11px] text-gray-500 line-clamp-1">{c.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
