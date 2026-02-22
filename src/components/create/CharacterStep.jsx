@@ -54,12 +54,15 @@ export default function CharacterStep({ characters, setCharacters }) {
     const alreadyAdded = characters.some(c => c.name === saved.name);
     if (alreadyAdded) return;
     const photos = saved.photo_urls || [];
-    setCharacters([...characters, {
+    const newChar = {
       name: saved.name,
       description: saved.description || "",
       photo_urls: photos,
       photo_url: photos[0] || ""
-    }]);
+    };
+    // Remove empty placeholder characters when adding from library
+    const withoutEmpty = characters.filter(c => c.name.trim() !== "");
+    setCharacters([...withoutEmpty, newChar]);
   };
 
   const isInList = (saved) => characters.some(c => c.name === saved.name);
