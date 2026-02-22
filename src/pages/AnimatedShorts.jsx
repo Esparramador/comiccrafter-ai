@@ -3,8 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Film, ArrowLeft, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { saveShortDraft, loadShortDraft, clearShortDraft } from "@/components/drafts/drafts";
-import DraftBanner from "@/components/create/DraftBanner";
+
 
 import ShortsCharacterStep from "@/components/shorts/ShortsCharacterStep";
 import ShortsStoryStep from "@/components/shorts/ShortsStoryStep";

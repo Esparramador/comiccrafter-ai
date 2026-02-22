@@ -4,8 +4,6 @@ import { createPageUrl } from "../utils";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { saveComicDraft, loadComicDraft, clearComicDraft } from "@/components/drafts/drafts";
-import DraftBanner from "@/components/create/DraftBanner";
 import { AnimatePresence } from "framer-motion";
 
 import StepIndicator from "../components/create/StepIndicator";
