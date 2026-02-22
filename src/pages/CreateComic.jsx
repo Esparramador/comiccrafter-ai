@@ -37,116 +37,113 @@ export default function CreateComic() {
   const handleGenerate = async () => {
     setIsGenerating(true);
     setGenerationProgress(0);
-    setGenerationStatus("Creando el guion y estructura del cómic...");
+    setGenerationStatus("Creando el guion...");
 
     const validCharacters = characters.filter(c => c.name);
-    const characterDescriptions = validCharacters.map(c => 
-      `${c.name}: ${c.description}${c.photo_url ? " (tiene foto de referencia)" : ""}`
+    const characterDescriptions = validCharacters.map(c =>
+      `${c.name}: ${c.description}${c.photo_url ? " (has reference photo)" : ""}`
     ).join("\n");
 
-    // Step 1: Generate the script — full panel-level breakdown
-    const scriptResult = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are a master comic book writer and storyboard artist. Create a DETAILED, professional comic script.
+    const characterRefPhotos = validCharacters.filter(c => c.photo_url).map(c => c.photo_url);
+    const identityRef = validCharacters.map(c =>
+      `${c.name} (${c.description || "main character"}${c.photo_url ? ", match reference photo face" : ""})`
+    ).join("; ");
+
+    const styleMap = {
+      manga: "Japanese manga style, black and white ink, screentones, dynamic action lines",
+      anime: "High quality anime illustration, vibrant colors, detailed shading, beautiful lighting",
+      american_comic: "American comic book style, bold colors, strong ink lines, dramatic lighting",
+      noir: "Film noir, high contrast black and white, dramatic shadows, moody atmosphere",
+      watercolor: "Watercolor painting style, soft colors, flowing textures, artistic brushstrokes",
+      ligne_claire: "Ligne claire, clean precise lines, flat colors, European comic aesthetic",
+      cyberpunk: "Cyberpunk style, neon colors, futuristic technology, dark urban environments",
+      fantasy: "Epic fantasy illustration, magical lighting, detailed environments, rich colors"
+    };
+
+    // Step 1: Script + cover generated in PARALLEL
+    setGenerationStatus("Generando guion y portada...");
+    const [scriptResult, coverResult] = await Promise.all([
+      base44.integrations.Core.InvokeLLM({
+        prompt: `You are a comic book writer. Create a concise but vivid comic script.
 
 TITLE: ${title}
 STORY: ${story}
 CHARACTERS: ${characterDescriptions}
-VISUAL STYLE: ${style}
-TOTAL PAGES: ${pageCount}
+STYLE: ${style}
+PAGES: ${pageCount}
 
-For EACH page produce:
-1. panel_count: number of panels (2–6, vary for pacing)
-2. panel_descriptions: detailed visual description of ALL panels on that page (camera angles, character poses, expressions, backgrounds, lighting)
-3. dialogues: all speech/thought bubbles with character names and balloon positions (top-left, center, bottom-right, etc.)
-4. visual_prompt: a single cohesive image-generation prompt for the full page, written in English, that describes the page layout, all panels, characters referencing their descriptions, environment, mood, lighting. Always include: "comic book page, multiple panels with black borders, professional comic art, ${style} style, masterpiece, 8k, cinematic lighting, sharp detailed lines"
-5. page_summary: one sentence describing what happens on this page
+For each page provide:
+- panel_count (2-5)
+- panel_descriptions (brief visual description)
+- dialogues (speech bubbles text)
+- visual_prompt (English only, image generation prompt including: "${styleMap[style]}, comic page with panels, black panel borders, professional comic art, sharp lines")
+- page_summary (one sentence)
 
-Make the story dramatic, with great pacing and emotional impact. Write in the same language as the story (except visual_prompt which must be in English).`,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          pages: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                page_number: { type: "number" },
-                panel_count: { type: "number" },
-                panel_descriptions: { type: "string" },
-                dialogues: { type: "string" },
-                visual_prompt: { type: "string" },
-                page_summary: { type: "string" }
+Be concise. Respond in the story's language except visual_prompt must be English.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            pages: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  page_number: { type: "number" },
+                  panel_count: { type: "number" },
+                  panel_descriptions: { type: "string" },
+                  dialogues: { type: "string" },
+                  visual_prompt: { type: "string" },
+                  page_summary: { type: "string" }
+                }
               }
             }
           }
         }
-      }
-    });
-
-    setGenerationStatus("Generando ilustraciones...");
-    const pages = scriptResult.pages || [];
-    const generatedPages = [];
-
-    // Step 2: Generate images for each page
-    for (let i = 0; i < Math.min(pages.length, pageCount); i++) {
-      setGenerationProgress(i + 1);
-      setGenerationStatus(`Dibujando página ${i + 1} de ${pageCount}...`);
-
-      const page = pages[i];
-      const styleMap = {
-        manga: "Japanese manga style, black and white ink, screentones, dynamic action lines, expressive characters",
-        anime: "High quality anime illustration style, vibrant colors, detailed shading, beautiful lighting",
-        american_comic: "American comic book style, bold colors, strong ink lines, dynamic poses, dramatic lighting",
-        noir: "Film noir style, high contrast black and white, dramatic shadows, moody atmosphere",
-        watercolor: "Watercolor painting style, soft colors, flowing textures, artistic brushstrokes",
-        ligne_claire: "Ligne claire style, clean precise lines, flat colors, European comic aesthetic",
-        cyberpunk: "Cyberpunk style, neon colors, futuristic technology, dark urban environments, glowing effects",
-        fantasy: "Epic fantasy illustration, magical lighting, detailed environments, rich colors"
-      };
-
-      const characterRefPhotos = validCharacters
-        .filter(c => c.photo_url)
-        .map(c => c.photo_url);
-
-      // Build InstantID-style prompt: style descriptor + visual_prompt + character identity injection
-      const identityRef = validCharacters.map(c =>
-        `${c.name} (${c.description || "main character"}${c.photo_url ? ", use reference photo for face likeness" : ""})`
-      ).join("; ");
-
-      const imagePrompt = `${styleMap[style]}, comic book page with ${page.panel_count || 4} panels separated by black borders. ${page.visual_prompt}. Characters: ${identityRef}. Dialogues/text placement: ${page.dialogues || ""}. High detail, expressive faces with realistic likeness to reference photos, professional comic page layout, speech bubbles with text, masterpiece quality, 8k.`;
-
-      const imageResult = await base44.integrations.Core.GenerateImage({
-        prompt: imagePrompt,
+      }),
+      base44.integrations.Core.GenerateImage({
+        prompt: `Epic comic book cover for "${title}". ${styleMap[style]}. Characters: ${identityRef}. Dramatic composition, vibrant colors, cinematic quality, professional cover art.`,
         ...(characterRefPhotos.length > 0 ? { existing_image_urls: characterRefPhotos } : {})
-      });
+      })
+    ]);
 
-      generatedPages.push({
-        page_number: i + 1,
-        image_url: imageResult.url,
-        panel_descriptions: page.panel_descriptions,
-        dialogues: page.dialogues,
-        page_summary: page.page_summary,
-        panel_count: page.panel_count
-      });
-    }
+    const pages = (scriptResult.pages || []).slice(0, pageCount);
+    setGenerationStatus(`Dibujando ${pages.length} páginas en paralelo...`);
+    setGenerationProgress(0);
 
-    // Step 3: Generate cover
-    setGenerationStatus("Creando la portada...");
-    const coverResult = await base44.integrations.Core.GenerateImage({
-      prompt: `Epic comic book cover for "${title}". ${style} style. Featuring characters: ${characterDescriptions}. Professional comic book cover with title text, dramatic composition, vibrant colors. Cinematic quality.`,
-      ...(validCharacters.filter(c => c.photo_url).length > 0
-        ? { existing_image_urls: validCharacters.filter(c => c.photo_url).map(c => c.photo_url) }
-        : {})
+    // Step 2: Generate ALL page images in PARALLEL
+    let completed = 0;
+    const imagePromises = pages.map((page) => {
+      const prompt = `${styleMap[style]}, comic book page with ${page.panel_count || 3} panels, black panel borders. ${page.visual_prompt}. Characters: ${identityRef}. Professional comic layout, speech bubbles, masterpiece, 8k.`;
+      return base44.integrations.Core.GenerateImage({
+        prompt,
+        ...(characterRefPhotos.length > 0 ? { existing_image_urls: characterRefPhotos } : {})
+      }).then(result => {
+        completed++;
+        setGenerationProgress(completed);
+        setGenerationStatus(`Páginas completadas: ${completed} de ${pages.length}...`);
+        return { page, result };
+      });
     });
 
-    // Step 4: Save to database
+    const imageResults = await Promise.all(imagePromises);
+
+    const generatedPages = imageResults.map(({ page, result }) => ({
+      page_number: page.page_number,
+      image_url: result.url,
+      panel_descriptions: page.panel_descriptions,
+      dialogues: page.dialogues,
+      page_summary: page.page_summary,
+      panel_count: page.panel_count
+    }));
+
+    // Step 3: Save and navigate
     setGenerationStatus("Guardando tu cómic...");
     const comic = await base44.entities.ComicProject.create({
       title,
       story,
       style,
       page_count: pageCount,
-      character_photos: validCharacters.filter(c => c.photo_url).map(c => c.photo_url),
+      character_photos: characterRefPhotos,
       character_descriptions: validCharacters,
       generated_pages: generatedPages,
       cover_image_url: coverResult.url,
