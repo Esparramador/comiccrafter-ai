@@ -188,28 +188,41 @@ export default function VideoViewer({ project, onBack }) {
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex items-center justify-between px-2">
-            <Button variant="ghost" size="icon" onClick={prev} disabled={currentScene === 0} className="text-gray-400">
-              <SkipBack className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={prev} disabled={currentScene === 0} className="text-gray-400">
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <button
-              onClick={() => setPlaying(!playing)}
-              className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-pink-500 flex items-center justify-center shadow-lg hover:shadow-yellow-500/30 transition-all"
-            >
-              {playing ? <Pause className="w-5 h-5 text-white" /> : <Play className="w-5 h-5 text-white ml-0.5" />}
-            </button>
-            <Button variant="ghost" size="icon" onClick={next} disabled={currentScene >= scenes.length - 1} className="text-gray-400">
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={next} disabled={currentScene >= scenes.length - 1} className="text-gray-400">
-              <SkipForward className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => setMuted(!muted)} className="text-gray-400">
-              {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-            </Button>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-2">
+              <span className="text-xs text-gray-500">Velocidad:</span>
+              <div className="flex gap-1">
+                {[1, 2, 4, 8].map(f => (
+                  <button key={f} onClick={() => setFps(f)} className={`px-2 py-1 rounded text-xs transition ${fps === f ? "bg-yellow-500 text-white" : "bg-white/5 text-gray-400 hover:bg-white/10"}`}>
+                    {f}x
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between px-2">
+              <Button variant="ghost" size="icon" onClick={prev} disabled={currentScene === 0} className="text-gray-400">
+                <SkipBack className="w-5 h-5" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={prev} disabled={currentScene === 0} className="text-gray-400">
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <button
+                onClick={() => setPlaying(!playing)}
+                className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-pink-500 flex items-center justify-center shadow-lg hover:shadow-yellow-500/30 transition-all"
+              >
+                {playing ? <Pause className="w-5 h-5 text-white" /> : <Play className="w-5 h-5 text-white ml-0.5" />}
+              </button>
+              <Button variant="ghost" size="icon" onClick={next} disabled={currentScene >= scenes.length - 1} className="text-gray-400">
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={next} disabled={currentScene >= scenes.length - 1} className="text-gray-400">
+                <SkipForward className="w-5 h-5" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => setMuted(!muted)} className="text-gray-400">
+                {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+              </Button>
+            </div>
           </div>
 
           <div className="flex gap-1">
