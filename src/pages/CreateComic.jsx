@@ -161,6 +161,12 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
 
     // Step 3: Save and navigate
     setGenerationStatus("Guardando tu cómic...");
+
+    // Upload script as file to avoid field size limits
+    const scriptBlob = new Blob([JSON.stringify(scriptResult)], { type: "application/json" });
+    const scriptFile = new File([scriptBlob], "script.json", { type: "application/json" });
+    const { file_url: scriptUrl } = await base44.integrations.Core.UploadFile({ file: scriptFile });
+
     const comic = await base44.entities.ComicProject.create({
       title,
       story,
@@ -170,7 +176,7 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
       character_descriptions: validCharacters,
       generated_pages: generatedPages,
       cover_image_url: coverResult.url,
-      script: JSON.stringify(scriptResult),
+      script: scriptUrl,
       status: "completed"
     });
 
