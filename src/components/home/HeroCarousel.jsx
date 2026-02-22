@@ -12,6 +12,14 @@ export default function HeroCarousel() {
     loadImages();
   }, []);
 
+  useEffect(() => {
+    if (images.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrent(prev => (prev + 1) % images.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   const loadImages = async () => {
     try {
       const data = await base44.entities.GalleryImage.list();
@@ -78,7 +86,7 @@ export default function HeroCarousel() {
   const image = images[current];
 
   return (
-    <div className="relative w-full h-80 sm:h-96 rounded-2xl overflow-hidden group">
+    <div className="fixed inset-0 w-full h-screen overflow-hidden -z-10">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
@@ -93,32 +101,12 @@ export default function HeroCarousel() {
             alt={image.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-            <p className="text-lg font-semibold">{image.title}</p>
-            {image.is_ai_generated && (
-              <p className="text-xs text-violet-300">✨ AI Generated</p>
-            )}
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation */}
-      <button
-        onClick={prev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <ChevronLeft className="w-6 h-6 text-white" />
-      </button>
-      <button
-        onClick={next}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/60 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <ChevronRight className="w-6 h-6 text-white" />
-      </button>
-
-      {/* Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+      {/* Dots - Bottom center */}
+      <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 flex gap-2">
         {images.map((_, idx) => (
           <button
             key={idx}
