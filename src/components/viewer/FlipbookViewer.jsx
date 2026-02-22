@@ -9,6 +9,7 @@ export default function FlipbookViewer({ pages, coverUrl }) {
   const [fullscreen, setFullscreen] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [direction, setDirection] = useState(1);
+  const [showEnhancer, setShowEnhancer] = useState(false);
 
   const allPages = coverUrl
     ? [{ page_number: 0, image_url: coverUrl, panel_descriptions: "Portada", panels: [] }, ...pages]
