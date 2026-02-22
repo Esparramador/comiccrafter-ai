@@ -126,6 +126,11 @@ export default function FlipbookViewer({ pages, coverUrl, onPageSave }) {
             {pageLabel} / {pages.length}
           </span>
           <div className="flex gap-1.5">
+            <button onClick={() => setShowEditor(true)}
+              title="Editar página"
+              className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-gray-300 hover:text-pink-300 transition-colors">
+              <Pencil className="w-4 h-4" />
+            </button>
             <button onClick={() => setShowEnhancer(true)}
               title="Mejorar imagen"
               className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-gray-300 hover:text-violet-300 transition-colors">
