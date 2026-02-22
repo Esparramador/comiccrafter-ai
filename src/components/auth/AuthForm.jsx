@@ -2,14 +2,13 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import GoogleLogin from "./GoogleLogin";
 
 export default function AuthForm() {
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     checkAuth();
-    handleGoogleLogin();
   }, []);
 
   const checkAuth = async () => {
@@ -20,51 +19,6 @@ export default function AuthForm() {
       }
     } catch (err) {
       console.error("Auth check error:", err);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      setIsLoading(true);
-      setError("");
-      
-      const configResponse = await base44.functions.invoke('getGoogleAuthConfig', {});
-      const { clientId } = configResponse.data;
-
-      if (window.google?.accounts?.id) {
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: async (response) => {
-            if (response.credential) {
-              try {
-                const result = await base44.functions.invoke('verifyGoogleToken', {
-                  token: response.credential,
-                });
-                if (result.data.success) {
-                  window.location.href = '/';
-                } else {
-                  setError("Error al verificar autenticación");
-                }
-              } catch (err) {
-                setError("Error al procesar autenticación");
-              }
-            }
-            setIsLoading(false);
-          },
-        });
-        
-        window.google.accounts.id.renderButton(
-          document.getElementById('google-signin-button'),
-          {
-            theme: 'dark',
-            size: 'large',
-            width: '100%',
-          }
-        );
-      }
-    } catch (err) {
-      setError("Error al inicializar Google");
-      setIsLoading(false);
     }
   };
 
@@ -103,7 +57,9 @@ export default function AuthForm() {
         )}
 
         {/* Google Login Button */}
-        <div id="google-signin-button" className="w-full mb-6"></div>
+        <div className="w-full mb-6">
+          <GoogleLogin />
+        </div>
 
         {/* Info Text */}
         <p className="text-center text-gray-400 text-sm">

@@ -49,10 +49,10 @@ export default function HeroSection() {
 
         {/* Feature Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-          {[
+          {(h ? [
           { icon: "📸", title: h.f1title, desc: h.f1desc },
           { icon: "✍️", title: h.f2title, desc: h.f2desc },
-          { icon: "🎨", title: h.f3title, desc: h.f3desc }].
+          { icon: "🎨", title: h.f3title, desc: h.f3desc }] : []).
           map((f, i) =>
           <motion.div
             key={i}
