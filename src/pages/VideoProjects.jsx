@@ -142,6 +142,9 @@ export default function VideoProjects() {
 TITLE: ${title}
 STORY: ${story}
 CHARACTERS: ${charDescriptions}
+GENRE: ${selectedGenre}
+THEMES: ${themesText}
+TONE: ${tone}
 STYLE: ${style}
 TARGET AGE: ${targetAge} years (${ageGuide[targetAge]})
 MORAL/LESSON: ${moralLesson || "friendship, kindness, courage"}
@@ -155,7 +158,8 @@ MUSIC MOOD: ${musicMood}
 - Each scene must be visual and engaging
 - Include narrator text for scene transitions (warm, storytelling voice)
 - Dialogue must match the character's age and personality
-- Include a clear moral lesson woven naturally into the story
+- Include themes of ${themesText} naturally woven into the story
+- Tone should be ${tone}
 - Make it magical, fun, and emotionally resonant
 
 ## OUTPUT: For each scene:
