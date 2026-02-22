@@ -26,6 +26,8 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
   const [showGrid, setShowGrid] = useState(false);
   const [showScript, setShowScript] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [showAudioPreview, setShowAudioPreview] = useState(false);
   const [fps, setFps] = useState(2); // frames per second for autoplay
   const intervalRef = useRef(null);
 
