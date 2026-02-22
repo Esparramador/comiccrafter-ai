@@ -23,8 +23,11 @@ export default function HeroCarousel() {
   const loadImages = async () => {
     try {
       const data = await base44.entities.GalleryImage.list();
-      if (data && data.length > 0) {
-        const sorted = data.sort((a, b) => (a.order || 0) - (b.order || 0));
+      // Validación defensiva: asegurar que data sea un array
+      const imageList = Array.isArray(data) ? data : [];
+      
+      if (imageList.length > 0) {
+        const sorted = imageList.sort((a, b) => (a.order || 0) - (b.order || 0));
         // Duplicar imágenes para efecto infinito
         setImages([...sorted, ...sorted, ...sorted]);
       } else {
@@ -33,6 +36,7 @@ export default function HeroCarousel() {
       }
     } catch (err) {
       console.error('Error loading images:', err);
+      generateInitialImages();
     } finally {
       setIsLoading(false);
     }
