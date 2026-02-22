@@ -3,36 +3,40 @@ import { motion } from "framer-motion";
 import { Users, TrendingUp, Play, BookOpen } from "lucide-react";
 
 export default function AIMetrics({ stats }) {
+  if (!stats || typeof stats !== 'object') {
+    return <div className="text-gray-400">Sin datos disponibles</div>;
+  }
+
   const metrics = [
     {
       label: "Total Usuarios",
-      value: stats.totalUsers,
+      value: stats.totalUsers || 0,
       icon: Users,
       color: "from-blue-500 to-blue-600",
     },
     {
       label: "Suscripciones Activas",
-      value: stats.activeSubscriptions,
+      value: stats.activeSubscriptions || 0,
       icon: TrendingUp,
       color: "from-green-500 to-green-600",
     },
     {
       label: "Vídeos Completados",
-      value: stats.completedVideos,
+      value: stats.completedVideos || 0,
       icon: Play,
       color: "from-pink-500 to-pink-600",
     },
     {
       label: "Cómics Completados",
-      value: stats.completedComics,
+      value: stats.completedComics || 0,
       icon: BookOpen,
       color: "from-violet-500 to-violet-600",
     },
   ];
 
   const conversionRate =
-    stats.totalUsers > 0
-      ? ((stats.activeSubscriptions / stats.totalUsers) * 100).toFixed(1)
+    (stats.totalUsers || 0) > 0
+      ? (((stats.activeSubscriptions || 0) / (stats.totalUsers || 0)) * 100).toFixed(1)
       : 0;
 
   return (
