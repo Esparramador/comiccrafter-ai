@@ -75,15 +75,21 @@ function LayoutInner({ children, currentPageName }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to={createPageUrl("Home")} className="flex items-center gap-2.5 group">
-              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699a4ce7816376ddfb992652/c00fa5137_comic_app_cover.png" alt="ComicCrafter" className="w-9 h-9 rounded-lg object-cover shadow-lg group-hover:shadow-violet-500/40 transition-shadow" />
-              <span className="text-lg font-bold tracking-tight">
-                Comic<span className="text-violet-400">Crafter</span>
-              </span>
+            <Link to={createPageUrl("Home")} className="flex items-center gap-3 group">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-pink-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300 group-hover:duration-200" />
+                <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699a4ce7816376ddfb992652/c00fa5137_comic_app_cover.png" alt="ComicCrafter" className="relative w-10 h-10 rounded-xl object-cover" />
+              </div>
+              <div>
+                <span className="text-lg font-bold tracking-tight block">
+                  <span className="bg-gradient-to-r from-white via-violet-200 to-pink-200 bg-clip-text text-transparent">ComicCrafter</span>
+                </span>
+                <span className="text-xs text-violet-400/60 block">IA Stories</span>
+              </div>
             </Link>
 
             {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-1.5">
               {Array.isArray(navItems) && navItems.map(item => {
                 const Icon = item.icon;
                 const isActive = currentPageName === item.name;
@@ -91,33 +97,34 @@ function LayoutInner({ children, currentPageName }) {
                   <Link
                     key={item.name}
                     to={createPageUrl(item.name)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                       isActive
-                        ? "nav-link-active text-violet-300"
-                        : "text-gray-400 hover:text-white hover:bg-white/5"
+                        ? "bg-gradient-to-r from-violet-500/20 to-pink-500/20 text-violet-300 border border-violet-500/30 shadow-lg shadow-violet-500/10"
+                        : "text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
-                    {item.label}
+                    <span className="hidden xl:inline">{item.label}</span>
                   </Link>
                 );
               })}
             </div>
 
-            {/* User Menu + Lang + Mobile Toggle */}
-            <div className="flex items-center gap-2">
+            {/* Right Section */}
+            <div className="flex items-center gap-3">
               {user && (
-                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 relative group">
-                  <span className="text-xs text-gray-400 cursor-pointer">{user.full_name || user.email}</span>
+                <div className="hidden md:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-gradient-to-r from-violet-500/10 to-pink-500/10 border border-violet-500/20 hover:border-violet-500/40 transition-all relative group cursor-default">
+                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-xs font-medium text-gray-300">{user.full_name || user.email.split('@')[0]}</span>
                   
                   {/* Dropdown menu */}
-                  <div className="absolute top-full right-0 mt-1 w-48 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-gradient-to-b from-slate-800 to-slate-900 border border-violet-500/20 rounded-xl shadow-2xl shadow-violet-500/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
                     {user?.email === 'sadiagiljoan@gmail.com' && (
                       <Link
                         to={createPageUrl("AdminPanel")}
-                        className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 border-b border-white/5 flex items-center gap-2"
+                        className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-violet-500/20 border-b border-violet-500/10 flex items-center gap-2 transition-colors"
                       >
-                        <Settings className="w-3 h-3" />
+                        <Settings className="w-4 h-4" />
                         Admin Panel
                       </Link>
                     )}
@@ -127,40 +134,41 @@ function LayoutInner({ children, currentPageName }) {
                           await base44.auth.logout();
                           window.location.href = '/';
                         } catch (error) {
-                          console.error('Error changing account:', error);
+                          console.error('Error:', error);
                         }
                       }}
-                      className={`w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 ${user?.email === 'sadiagiljoan@gmail.com' ? 'border-b border-white/5' : ''} flex items-center gap-2`}
+                      className={`w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-violet-500/20 ${user?.email === 'sadiagiljoan@gmail.com' ? 'border-b border-violet-500/10' : ''} flex items-center gap-2 transition-colors`}
                     >
-                      <Users className="w-3 h-3" />
+                      <Users className="w-4 h-4" />
                       Cambiar cuenta
                     </button>
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 rounded-b-lg flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-red-500/20 flex items-center gap-2 transition-colors"
                     >
-                      <LogOut className="w-3 h-3" />
+                      <LogOut className="w-4 h-4" />
                       Cerrar sesión
                     </button>
                   </div>
                 </div>
               )}
+              
               <LangSwitcher />
-              {user && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-gray-400 hover:text-white"
-                  onClick={handleLogout}
-                  title="Cerrar sesión"
-                >
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              )}
+              
               <Button
                 variant="ghost"
                 size="icon"
-                className={`md:hidden transition-colors ${mobileOpen ? 'text-white' : 'text-gray-400'}`}
+                className="hidden md:flex text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                onClick={handleLogout}
+                title="Cerrar sesión"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`lg:hidden transition-colors ${mobileOpen ? 'text-violet-400 bg-white/5' : 'text-gray-400'}`}
                 onClick={() => setMobileOpen(!mobileOpen)}
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -171,8 +179,8 @@ function LayoutInner({ children, currentPageName }) {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-white/5 bg-[#0a0a0f]/95 backdrop-blur-xl">
-            <div className="px-4 py-3 space-y-1">
+          <div className="lg:hidden border-t border-violet-500/10 bg-gradient-to-b from-slate-900 via-[#0a0a0f] to-[#0a0a0f] backdrop-blur-xl">
+            <div className="px-4 py-4 space-y-2">
               {Array.isArray(navItems) && navItems.map(item => {
                 const Icon = item.icon;
                 const isActive = currentPageName === item.name;
@@ -183,8 +191,8 @@ function LayoutInner({ children, currentPageName }) {
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                       isActive
-                        ? "nav-link-active text-violet-300"
-                        : "text-gray-400 hover:text-white hover:bg-white/5"
+                        ? "bg-gradient-to-r from-violet-500/20 to-pink-500/20 text-violet-300 border border-violet-500/30"
+                        : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
