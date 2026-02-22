@@ -51,6 +51,7 @@ import AdminPanel from './pages/AdminPanel';
 import AnimatedShorts from './pages/AnimatedShorts';
 import ComicViewer from './pages/ComicViewer';
 import CoverGenerator from './pages/CoverGenerator';
+import Create3DModel from './pages/Create3DModel';
 import CreateComic from './pages/CreateComic';
 import Home from './pages/Home';
 import MyCharacters from './pages/MyCharacters';
@@ -59,7 +60,6 @@ import MyDrafts from './pages/MyDrafts';
 import MyMedia from './pages/MyMedia';
 import VideoProjects from './pages/VideoProjects';
 import VideoStudio from './pages/VideoStudio';
-import Create3DModel from './pages/Create3DModel';
 import VoiceLibrary from './pages/VoiceLibrary';
 import __Layout from './Layout.jsx';
 
@@ -69,6 +69,7 @@ export const PAGES = {
     "AnimatedShorts": AnimatedShorts,
     "ComicViewer": ComicViewer,
     "CoverGenerator": CoverGenerator,
+    "Create3DModel": Create3DModel,
     "CreateComic": CreateComic,
     "Home": Home,
     "MyCharacters": MyCharacters,
@@ -77,7 +78,6 @@ export const PAGES = {
     "MyMedia": MyMedia,
     "VideoProjects": VideoProjects,
     "VideoStudio": VideoStudio,
-    "Create3DModel": Create3DModel,
     "VoiceLibrary": VoiceLibrary,
 }
 

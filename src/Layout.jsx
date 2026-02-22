@@ -71,9 +71,7 @@ function LayoutInner({ children, currentPageName }) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to={createPageUrl("Home")} className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-shadow">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699a4ce7816376ddfb992652/c00fa5137_comic_app_cover.png" alt="ComicCrafter" className="w-9 h-9 rounded-lg object-cover shadow-lg group-hover:shadow-violet-500/40 transition-shadow" />
               <span className="text-lg font-bold tracking-tight">
                 Comic<span className="text-violet-400">Crafter</span>
               </span>
