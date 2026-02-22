@@ -251,7 +251,6 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
       URL.revokeObjectURL(zipUrl);
     } catch (e) { /* ZIP optional, don't block navigation */ }
 
-    if (draftId) await base44.entities.Draft.delete(draftId);
     navigate(createPageUrl("ComicViewer") + `?id=${comic.id}`);
   };
 
