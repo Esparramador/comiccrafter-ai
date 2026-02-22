@@ -6,7 +6,37 @@ import { Download, FileImage, FolderOpen, Loader2, CheckCircle2, FileText } from
 export default function ExportPanel({ comic }) {
   const [zipLoading, setZipLoading] = useState(false);
   const [indivLoading, setIndivLoading] = useState(false);
-  const [done, setDone] = useState(null); // "zip" | "indiv"
+  const [done, setDone] = useState(null); // "zip" | "indiv" | "script"
+
+  const buildScriptText = () => {
+    const pages = comic.generated_pages || [];
+    let text = `${comic.title}\n${"=".repeat((comic.title || "").length)}\n`;
+    text += `\nHistoria: ${comic.story || ""}\n`;
+    text += `\nEstilo: ${comic.style || ""} · Páginas: ${pages.length}\n`;
+    text += `\n${"─".repeat(50)}\n\n`;
+    pages.forEach(p => {
+      text += `PÁGINA ${p.page_number}${p.act ? ` (Acto ${p.act})` : ""}\n`;
+      text += `${"─".repeat(30)}\n`;
+      if (p.page_summary) text += `Resumen: ${p.page_summary}\n\n`;
+      if (p.panel_descriptions) text += `Descripción de paneles:\n${p.panel_descriptions}\n\n`;
+      if (p.dialogues) text += `Diálogos:\n${p.dialogues}\n`;
+      text += `\n`;
+    });
+    return text;
+  };
+
+  const downloadScript = () => {
+    const text = buildScriptText();
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${comic.title || "comic"}_guion.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setDone("script");
+    setTimeout(() => setDone(null), 3000);
+  };
 
   const allImages = [
     ...(comic.cover_image_url
