@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { base44 } from "@/api/base44Client";
 import { Pencil, RefreshCw, Upload, Check, X, Loader2, Wand2, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import TextAssistant from "./TextAssistant";
 
 export default function FrameEditor({ frame, onSave, onClose }) {
   const [action, setAction] = useState(frame.action || "");
