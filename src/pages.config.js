@@ -52,6 +52,7 @@ import CreateComic from './pages/CreateComic';
 import Home from './pages/Home';
 import MyComics from './pages/MyComics';
 import CoverGenerator from './pages/CoverGenerator';
+import MyCharacters from './pages/MyCharacters';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +62,7 @@ export const PAGES = {
     "Home": Home,
     "MyComics": MyComics,
     "CoverGenerator": CoverGenerator,
+    "MyCharacters": MyCharacters,
 }
 
 export const pagesConfig = {
