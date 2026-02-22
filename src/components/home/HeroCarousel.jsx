@@ -79,18 +79,23 @@ export default function HeroCarousel() {
   };
 
   const next = () => {
-    setCurrent((current + 1) % images.length);
+    if (Array.isArray(images) && images.length > 0) {
+      setCurrent((current + 1) % images.length);
+    }
   };
 
   const prev = () => {
-    setCurrent((current - 1 + images.length) % images.length);
+    if (Array.isArray(images) && images.length > 0) {
+      setCurrent((current - 1 + images.length) % images.length);
+    }
   };
 
-  if (isLoading || images.length === 0) {
+  // Validación defensiva
+  if (isLoading || !Array.isArray(images) || images.length === 0) {
     return null;
   }
 
-  const image = images[current];
+  const image = images[current] || images[0];
 
   return (
     <div className="fixed inset-0 w-full h-screen overflow-hidden -z-10">
