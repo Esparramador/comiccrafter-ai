@@ -320,7 +320,18 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
             </div>
           </div>
 
-          {/* Info panel */}
+          {/* Frame Editor Modal */}
+      <AnimatePresence>
+        {showEditor && frame && (
+          <FrameEditor
+            frame={frame}
+            onSave={handleFrameSave}
+            onClose={() => setShowEditor(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Info panel */}
           {!fullscreen && frame && (
             <div className="lg:w-64 space-y-3 flex-shrink-0">
               {/* Current frame info */}
