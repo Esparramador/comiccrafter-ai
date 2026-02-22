@@ -24,6 +24,13 @@ export default function AuthGuard({ children, requireAdmin = false, requireFound
       if (isAuth) {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
+        
+        // Initialize user profile and founder status
+        try {
+          await base44.functions.invoke('initializeFounder', {});
+        } catch (err) {
+          console.error('Profile initialization error:', err);
+        }
       }
 
       setHasChecked(true);
@@ -55,8 +62,9 @@ export default function AuthGuard({ children, requireAdmin = false, requireFound
     return <Navigate to="/login" replace />;
   }
 
-  // Check role restrictions
-  if (requireFounder && user?.email !== import.meta.env.VITE_FOUNDER_EMAIL) {
+  // Check role restrictions (founder check)
+  const founderEmail = Deno.env?.get?.('FOUNDER_EMAIL') || '';
+  if (requireFounder && user?.email !== founderEmail) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
         <div className="text-center">

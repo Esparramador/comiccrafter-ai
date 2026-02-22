@@ -64,6 +64,20 @@ Deno.serve(async (req) => {
     const { type } = await req.json();
     validateInput(type);
 
+    // Check if user is founder (unlimited access)
+    const founderEmail = Deno.env.get('FOUNDER_EMAIL') || '';
+    if (user.email === founderEmail) {
+      return Response.json({
+        can_use: true,
+        remaining: 999999,
+        limit: 999999,
+        used: 0,
+        plan_name: "Fundador (Ilimitado)",
+        percentage_used: 0,
+        is_founder: true
+      });
+    }
+
     // Check cache
     const cacheKey = `${user.email}:${type}`;
     const cached = cache.get(cacheKey);
