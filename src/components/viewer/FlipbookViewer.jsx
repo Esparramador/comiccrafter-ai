@@ -173,8 +173,19 @@ export default function FlipbookViewer({ pages, coverUrl }) {
 
       {/* Keyboard hint */}
       <p className="text-center text-[11px] text-gray-600 mt-1">
-        ← → para navinar · 🔲 ver todas · ⛶ pantalla completa
+        ← → para navegar · ✦ mejorar · 🔲 ver todas · ⛶ pantalla completa
       </p>
+
+      {/* Image Enhancer Modal */}
+      <AnimatePresence>
+        {showEnhancer && page?.image_url && (
+          <ImageEnhancer
+            imageUrl={page.image_url}
+            pageLabel={pageLabel}
+            onClose={() => setShowEnhancer(false)}
+          />
+        )}
+      </AnimatePresence>
     </Wrapper>
   );
 }
