@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Maximize2, X, Grid3X3 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, X, Grid3X3, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ImageEnhancer from "./ImageEnhancer";
 
 export default function FlipbookViewer({ pages, coverUrl }) {
   const [currentPage, setCurrentPage] = useState(0);
