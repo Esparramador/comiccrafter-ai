@@ -214,7 +214,7 @@ ALL dialogues MUST be in ${langName}. visual_prompt MUST be in English.`,
     });
 
     setIsGenerating(false);
-    clearShortDraft();
+    if (draftId) await base44.entities.Draft.delete(draftId);
     setGeneratedShort(short);
   };
 
