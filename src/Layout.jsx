@@ -33,9 +33,6 @@ function LayoutInner({ children, currentPageName }) {
           backdrop-filter: blur(20px);
           border-bottom: 1px solid rgba(139, 92, 246, 0.15);
         }
-        .glow-text {
-          text-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
-        }
         .nav-link-active {
           background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.1));
           border: 1px solid rgba(139, 92, 246, 0.3);
