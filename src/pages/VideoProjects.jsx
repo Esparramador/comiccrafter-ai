@@ -74,25 +74,35 @@ export default function VideoProjects() {
   };
 
   const handleGenerate = async () => {
-    setIsGenerating(true);
-    setProgress(0);
-    setStatus("Escribiendo el guion...");
+    try {
+      // Check limits before starting
+      const limitCheck = await base44.functions.invoke('checkUserLimits', { type: 'video' });
+      if (!limitCheck.data?.can_use) {
+        setStatus(`Error: Límite alcanzado (${limitCheck.data?.used}/${limitCheck.data?.limit})`);
+        setIsGenerating(false);
+        return;
+      }
 
-    // Save draft when generation starts
-    const data = { projectType, targetAge, characters, selectedGenre, selectedThemes, tone, title, story, moralLesson, language, style, sceneCount, musicMood, customPrompt, narratorVoiceId };
-    const saveTitle = title || "Borrador vídeo";
-    let activeDraftId = draftId;
-    if (activeDraftId) {
-      await base44.entities.Draft.update(activeDraftId, { title: saveTitle, data }).catch(async () => {
+      setIsGenerating(true);
+      setProgress(0);
+      setStatus("Escribiendo el guion...");
+
+      // Save draft when generation starts
+      const data = { projectType, targetAge, characters, selectedGenre, selectedThemes, tone, title, story, moralLesson, language, style, sceneCount, musicMood, customPrompt, narratorVoiceId };
+      const saveTitle = title || "Borrador vídeo";
+      let activeDraftId = draftId;
+      
+      if (activeDraftId) {
+        await base44.entities.Draft.update(activeDraftId, { title: saveTitle, data }).catch(async () => {
+          const d = await base44.entities.Draft.create({ title: saveTitle, type: "video", data });
+          activeDraftId = d.id;
+          setDraftId(d.id);
+        });
+      } else {
         const d = await base44.entities.Draft.create({ title: saveTitle, type: "video", data });
         activeDraftId = d.id;
         setDraftId(d.id);
-      });
-    } else {
-      const d = await base44.entities.Draft.create({ title: saveTitle, type: "video", data });
-      activeDraftId = d.id;
-      setDraftId(d.id);
-    }
+      }
 
     const validChars = characters.filter(c => c.name?.trim());
     const charDescriptions = validChars.map(c =>
@@ -309,10 +319,18 @@ ALL dialogue and narrator_text MUST be in ${langName}. visual_prompt MUST be in 
       status: "completed"
     });
 
-    setIsGenerating(false);
-    // Delete draft on successful completion
-    if (activeDraftId) await base44.entities.Draft.delete(activeDraftId).catch(() => {});
-    setGeneratedProject(project);
+      // Record successful generation
+      await base44.functions.invoke('recordGenerationUsage', { type: 'video' });
+
+      setIsGenerating(false);
+      // Delete draft on successful completion
+      if (activeDraftId) await base44.entities.Draft.delete(activeDraftId).catch(() => {});
+      setGeneratedProject(project);
+    } catch (error) {
+      console.error('Generation error:', error);
+      setStatus(`Error: ${error.message}`);
+      setIsGenerating(false);
+    }
   };
 
   if (generatedProject) {

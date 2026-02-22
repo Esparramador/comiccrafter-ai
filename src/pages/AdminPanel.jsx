@@ -60,11 +60,22 @@ export default function AdminPanel() {
   });
 
   // Check if user is admin
-  if (!user || user.role !== 'admin') {
+  if (!user) {
     return (
       <div className="min-h-screen pt-20 p-6 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 text-lg">Acceso denegado. Solo administradores pueden ver esto.</p>
+          <p className="text-gray-400 text-lg">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (user.role !== 'admin') {
+    return (
+      <div className="min-h-screen pt-20 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 text-lg font-semibold">Acceso denegado</p>
+          <p className="text-gray-400 text-sm mt-2">Solo administradores pueden acceder a este panel</p>
         </div>
       </div>
     );
