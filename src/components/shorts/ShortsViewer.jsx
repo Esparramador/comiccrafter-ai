@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Play, Pause, SkipBack, SkipForward, Maximize2, Minimize2,
   Film, Download, ArrowLeft, ChevronLeft, ChevronRight,
-  Volume2, Grid3X3, FileText, Zap
+  Grid3X3, FileText, Zap, Pencil
 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import FrameEditor from "@/components/editor/FrameEditor";
 
 const emotionColors = {
   tense: "text-red-400", excited: "text-yellow-400", sad: "text-blue-400",
