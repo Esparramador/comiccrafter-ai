@@ -16,6 +16,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "MyCharacters", label: "Mis Personajes", icon: Users },
     { name: "CoverGenerator", label: "Portadas IA", icon: Zap },
     { name: "AnimatedShorts", label: "Cortos IA", icon: Film },
+    { name: "MyDrafts", label: "Borradores", icon: FileText },
   ];
 
   const isHome = currentPageName === "Home";
