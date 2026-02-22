@@ -18,6 +18,7 @@ export default function MyCharacters() {
   const { data: characters = [], isLoading } = useQuery({
     queryKey: ["characters"],
     queryFn: () => base44.entities.Character.list("-created_date", 100),
+    initialData: [],
   });
 
   const deleteMutation = useMutation({
@@ -30,7 +31,7 @@ export default function MyCharacters() {
     setEditing(null);
   };
 
-  const filtered = characters.filter(c =>
+  const filtered = (Array.isArray(characters) ? characters : []).filter(c =>
     c.name?.toLowerCase().includes(search.toLowerCase()) ||
     c.description?.toLowerCase().includes(search.toLowerCase())
   );
