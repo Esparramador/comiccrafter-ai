@@ -13,21 +13,9 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-violet-950/40 via-[#0a0a0f] to-[#0a0a0f]" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-violet-600/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-pink-600/8 rounded-full blur-[100px]" />
-        <div className="absolute top-1/3 left-0 w-[300px] h-[300px] bg-cyan-600/5 rounded-full blur-[80px]" />
-        <div className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-          backgroundSize: "60px 60px"
-        }} />
-
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-24">
+      <HeroCarousel />
+      
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -72,16 +60,6 @@ export default function HeroSection() {
               </Button>
             </Link>
           </div>
-        </motion.div>
-
-        {/* Carousel */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="max-w-4xl mx-auto mb-16"
-        >
-          <HeroCarousel />
         </motion.div>
 
         {/* Feature Cards */}
