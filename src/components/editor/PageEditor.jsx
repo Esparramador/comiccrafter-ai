@@ -126,18 +126,21 @@ export default function PageEditor({ page, pageIndex, isCover, onSave, onClose }
                 <Textarea value={panelDesc} onChange={e => setPanelDesc(e.target.value)}
                   className="bg-white/5 border-white/10 text-white text-xs placeholder:text-gray-600 h-24 resize-none rounded-xl leading-relaxed"
                   placeholder="Describe lo que ocurre en cada panel..." />
+                <TextAssistant text={panelDesc} onApply={setPanelDesc} accentColor="violet" />
               </div>
               <div>
                 <label className="text-xs font-medium text-gray-400 mb-1.5 block">Diálogos</label>
                 <Textarea value={dialogues} onChange={e => setDialogues(e.target.value)}
                   className="bg-white/5 border-white/10 text-white text-xs placeholder:text-gray-600 h-24 resize-none rounded-xl leading-relaxed"
                   placeholder="Escribe los diálogos y bocadillos de texto..." />
+                <TextAssistant text={dialogues} onApply={setDialogues} accentColor="violet" />
               </div>
               <div>
                 <label className="text-xs font-medium text-gray-400 mb-1.5 block">Resumen de página</label>
                 <Input value={pageSummary} onChange={e => setPageSummary(e.target.value)}
                   className="bg-white/5 border-white/10 text-white text-xs placeholder:text-gray-600 rounded-xl"
                   placeholder="Una frase que resume esta página..." />
+                <TextAssistant text={pageSummary} onApply={setPageSummary} accentColor="violet" />
               </div>
             </>
           )}
