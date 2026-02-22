@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Maximize2, X, Grid3X3, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, X, Grid3X3, Sparkles, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ImageEnhancer from "./ImageEnhancer";
+import PageEditor from "@/components/editor/PageEditor";
 
-export default function FlipbookViewer({ pages, coverUrl }) {
+export default function FlipbookViewer({ pages, coverUrl, onPageSave }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
