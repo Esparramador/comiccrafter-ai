@@ -38,14 +38,19 @@ export default function CharacterForm({ character, onSave, onCancel }) {
     if (!name.trim()) return;
     setSaving(true);
     const data = { name: name.trim(), description, photo_urls: photoUrls, tags };
-    let saved;
-    if (character?.id) {
-      saved = await base44.entities.Character.update(character.id, data);
-    } else {
-      saved = await base44.entities.Character.create(data);
+    try {
+      let saved;
+      if (character?.id) {
+        saved = await base44.entities.Character.update(character.id, data);
+      } else {
+        saved = await base44.entities.Character.create(data);
+      }
+      setSaving(false);
+      onSave(saved);
+    } catch (error) {
+      console.error('Error saving character:', error);
+      setSaving(false);
     }
-    setSaving(false);
-    onSave(saved);
   };
 
   return (
