@@ -131,33 +131,33 @@ export default function AIDashboard() {
       )}
 
       {/* Content */}
-      {analysis && !loading &&
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="space-y-6">
-
+      {analysis && !loading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="space-y-6"
+        >
           {/* Tabs */}
           <div className="flex gap-2 border-b border-white/10">
             {[
-          { id: "overview", label: "Resumen", icon: BarChart3 },
-          { id: "opportunities", label: "Oportunidades", icon: Zap },
-          { id: "metrics", label: "Métricas", icon: TrendingUp },
-          { id: "actions", label: "Acciones", icon: Target }].
-          map(({ id, label, icon: Icon }) =>
-          <button
-            key={id}
-            onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-all ${
-            activeTab === id ?
-            "text-violet-400 border-b-2 border-violet-400" :
-            "text-gray-400 hover:text-gray-300"}`
-            }>
-
+              { id: "overview", label: "Resumen", icon: BarChart3 },
+              { id: "opportunities", label: "Oportunidades", icon: Zap },
+              { id: "metrics", label: "Métricas", icon: TrendingUp },
+              { id: "actions", label: "Acciones", icon: Target },
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-all ${
+                  activeTab === id
+                    ? "text-violet-400 border-b-2 border-violet-400"
+                    : "text-gray-400 hover:text-gray-300"
+                }`}
+              >
                 <Icon className="w-4 h-4" />
                 {label}
               </button>
-          )}
+            ))}
           </div>
 
           {/* Tab Content */}
