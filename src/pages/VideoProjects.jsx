@@ -50,6 +50,9 @@ export default function VideoProjects() {
       setProjectType(data.projectType || "children_film");
       setTargetAge(data.targetAge || "3-6");
       setCharacters(data.characters || [{ name: "", description: "", photo_url: "", voice_profile: null, elevenlabs_voice_id: "" }]);
+      setSelectedGenre(data.selectedGenre || "adventure");
+      setSelectedThemes(data.selectedThemes || ["friendship"]);
+      setTone(data.tone || "inspirador");
       setTitle(data.title || "");
       setStory(data.story || "");
       setMoralLesson(data.moralLesson || "");
