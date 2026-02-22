@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Globe, ChevronDown, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLang, LANGUAGES } from "@/lib/i18n";
+import { useLang, LANGUAGES } from "@/components/i18n/i18n";
 
 export default function LangSwitcher() {
   const { lang, setLang } = useLang();

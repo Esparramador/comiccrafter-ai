@@ -4,8 +4,12 @@ import { createPageUrl } from "../../utils";
 import { Sparkles, ArrowRight, Zap, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useLang } from "@/components/i18n/i18n";
 
 export default function HeroSection() {
+  const { t } = useLang();
+  const h = t.hero;
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated Background */}
@@ -14,7 +18,6 @@ export default function HeroSection() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-violet-600/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-pink-600/8 rounded-full blur-[100px]" />
         <div className="absolute top-1/3 left-0 w-[300px] h-[300px] bg-cyan-600/5 rounded-full blur-[80px]" />
-        {/* Grid pattern */}
         <div className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
@@ -32,25 +35,23 @@ export default function HeroSection() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-violet-500/20 bg-violet-500/10 text-violet-300 text-sm font-medium mb-8">
             <Sparkles className="w-4 h-4" />
-            Motor de IA Generativa para Cómics · Comic Crafter
+            {h.badge}
           </div>
 
           {/* Title */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-6">
-            <span className="text-white">Convierte tus</span>
+            <span className="text-white">{h.title1}</span>
             <br />
             <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
-              historias en cómics
+              {h.title2}
             </span>
             <br />
-            <span className="text-white">con IA</span>
+            <span className="text-white">{h.title3}</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Sube tus fotos, cuenta tu historia y deja que nuestra IA genere un cómic 
-            profesional con estilo anime, manga o el que prefieras. Páginas completas 
-            con paneles, diálogos y arte impresionante.
+            {h.subtitle}
           </p>
 
           {/* CTAs */}
@@ -58,14 +59,14 @@ export default function HeroSection() {
             <Link to={createPageUrl("CreateComic")}>
               <Button className="h-14 px-8 text-base font-semibold bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 shadow-xl shadow-violet-500/20 hover:shadow-violet-500/30 transition-all rounded-xl gap-2">
                 <Zap className="w-5 h-5" />
-                Crear mi Cómic
+                {h.cta1}
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
             <Link to={createPageUrl("MyComics")}>
               <Button variant="outline" className="h-14 px-8 text-base font-semibold border-white/10 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl gap-2">
                 <BookOpen className="w-5 h-5" />
-                Ver mis Cómics
+                {h.cta2}
               </Button>
             </Link>
           </div>
@@ -79,9 +80,9 @@ export default function HeroSection() {
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto"
         >
           {[
-            { icon: "📸", title: "Sube Fotos", desc: "Sube fotos reales y la IA creará personajes basados en ellas" },
-            { icon: "✍️", title: "Cuenta tu Historia", desc: "Escribe la trama y la IA genera guion, diálogos y paneles" },
-            { icon: "🎨", title: "Arte Profesional", desc: "Elige entre estilos manga, anime, noir, fantasía y más" },
+            { icon: "📸", title: h.f1title, desc: h.f1desc },
+            { icon: "✍️", title: h.f2title, desc: h.f2desc },
+            { icon: "🎨", title: h.f3title, desc: h.f3desc },
           ].map((f, i) => (
             <div
               key={i}
