@@ -71,7 +71,7 @@ export default function AIRecommendations({ analysis }) {
       {/* Oportunidades */}
       <div className="space-y-2">
         <h3 className="font-semibold text-white mb-4">Oportunidades de Monetización</h3>
-        {analysis.opportunities.map((opportunity, idx) => (
+        {opportunities.map((opportunity, idx) => (
           <motion.div key={idx} variants={item}>
             <button
               onClick={() =>
