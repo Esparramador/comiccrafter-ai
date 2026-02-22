@@ -164,7 +164,7 @@ Be concise. Respond in the story's language except visual_prompt must be English
         <StepIndicator currentStep={step} />
 
         {step === 0 && <CharacterStep characters={characters} setCharacters={setCharacters} />}
-        {step === 1 && <StoryStep title={title} setTitle={setTitle} story={story} setStory={setStory} />}
+        {step === 1 && <StoryStep title={title} setTitle={setTitle} story={story} setStory={setStory} language={language} setLanguage={setLanguage} />}
         {step === 2 && <StyleStep style={style} setStyle={setStyle} pageCount={pageCount} setPageCount={setPageCount} customPrompt={customPrompt} setCustomPrompt={setCustomPrompt} />}
         {step === 3 && (
           <GenerateStep
