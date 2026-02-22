@@ -19,7 +19,8 @@ export default function LoginForm() {
     try {
       setIsLoading(true);
       setError("");
-      await base44.auth.redirectToLogin('/');
+      // Redirect to home page after successful login
+      await base44.auth.redirectToLogin(window.location.origin + '/');
     } catch (err) {
       setError("Error al iniciar sesión con Google");
       setIsLoading(false);

@@ -61,8 +61,9 @@ export default function AuthGuard({ children, requireAdmin = false, requireFound
   }
 
   if (!isAuthenticated) {
-    // Redirect to login with callback to current page
-    base44.auth.redirectToLogin(window.location.href);
+    // Redirect to login with callback to current page (without protocol/host to avoid redirect issues)
+    const nextUrl = window.location.pathname + window.location.search + window.location.hash;
+    base44.auth.redirectToLogin(nextUrl || '/');
     return null;
   }
 
