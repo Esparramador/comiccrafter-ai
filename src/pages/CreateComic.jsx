@@ -21,6 +21,7 @@ export default function CreateComic() {
   const [story, setStory] = useState("");
   const [style, setStyle] = useState("anime");
   const [pageCount, setPageCount] = useState(6);
+  const [customPrompt, setCustomPrompt] = useState("");
 
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
