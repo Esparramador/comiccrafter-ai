@@ -5,6 +5,8 @@ import {
   Sparkles, BookOpen, PlusCircle, Menu, X, Zap, Users, Film, FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LangProvider, useLang } from "@/components/i18n/i18n";
+import LangSwitcher from "@/components/ui/LangSwitcher";
 
 export default function Layout({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
