@@ -19,19 +19,19 @@ export default function HeroSection() {
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-pink-600/8 rounded-full blur-[100px]" />
         <div className="absolute top-1/3 left-0 w-[300px] h-[300px] bg-cyan-600/5 rounded-full blur-[80px]" />
         <div className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-            backgroundSize: "60px 60px"
-          }}
-        />
+        style={{
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+          backgroundSize: "60px 60px"
+        }} />
+
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
+          transition={{ duration: 0.8 }}>
+
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-violet-500/20 bg-violet-500/10 text-violet-300 text-sm font-medium mb-8">
             <Sparkles className="w-4 h-4" />
@@ -64,10 +64,10 @@ export default function HeroSection() {
               </Button>
             </Link>
             <Link to={createPageUrl("MyComics")}>
-              <Button variant="outline" className="h-14 px-8 text-base font-semibold border-white/10 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl gap-2">
-                <BookOpen className="w-5 h-5" />
-                {h.cta2}
-              </Button>
+              
+
+
+
             </Link>
           </div>
         </motion.div>
@@ -77,24 +77,24 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto"
-        >
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+
           {[
-            { icon: "📸", title: h.f1title, desc: h.f1desc },
-            { icon: "✍️", title: h.f2title, desc: h.f2desc },
-            { icon: "🎨", title: h.f3title, desc: h.f3desc },
-          ].map((f, i) => (
-            <div
-              key={i}
-              className="group p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-violet-500/20 transition-all duration-300"
-            >
+          { icon: "📸", title: h.f1title, desc: h.f1desc },
+          { icon: "✍️", title: h.f2title, desc: h.f2desc },
+          { icon: "🎨", title: h.f3title, desc: h.f3desc }].
+          map((f, i) =>
+          <div
+            key={i}
+            className="group p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-violet-500/20 transition-all duration-300">
+
               <div className="text-3xl mb-3">{f.icon}</div>
               <h3 className="text-white font-semibold mb-1">{f.title}</h3>
               <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
             </div>
-          ))}
+          )}
         </motion.div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
