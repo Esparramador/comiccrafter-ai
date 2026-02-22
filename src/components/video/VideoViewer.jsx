@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Play, Pause, SkipBack, SkipForward, Volume2, VolumeX,
-  Download, ChevronLeft, ChevronRight, Grid3X3
+  Download, ChevronLeft, ChevronRight, Grid3X3, X
 } from "lucide-react";
 
 const emotionColors = {
@@ -78,11 +78,14 @@ export default function VideoViewer({ project, onBack }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => setView(view === "grid" ? "player" : "grid")} className="text-gray-400">
+            <Button variant="ghost" size="icon" onClick={() => setView(view === "grid" ? "player" : "grid")} className="text-gray-400 hover:text-white">
               <Grid3X3 className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={downloadScript} className="text-gray-400">
+            <Button variant="ghost" size="icon" onClick={downloadScript} className="text-gray-400 hover:text-white">
               <Download className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onBack} className="text-gray-400 hover:text-white hover:bg-white/10">
+              <X className="w-5 h-5" />
             </Button>
           </div>
         </div>
