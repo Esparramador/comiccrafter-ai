@@ -56,7 +56,13 @@ export default function AnimatedShorts() {
     const data = { characters, title, story, style, frameCount, customPrompt, language };
     const saveTitle = title || "Borrador corto";
     if (draftId) {
-      base44.entities.Draft.update(draftId, { title: saveTitle, data });
+      base44.entities.Draft.update(draftId, { title: saveTitle, data }).catch(() => {
+        // Draft was deleted, create a new one
+        setDraftId(null);
+        if (title || story || characters.some(c => c.name)) {
+          base44.entities.Draft.create({ title: saveTitle, type: "short", data }).then(d => setDraftId(d.id));
+        }
+      });
     } else if (title || story || characters.some(c => c.name)) {
       base44.entities.Draft.create({ title: saveTitle, type: "short", data }).then(d => setDraftId(d.id));
     }
