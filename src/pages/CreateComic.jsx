@@ -64,6 +64,22 @@ export default function CreateComic() {
     setGenerationProgress(0);
     setGenerationStatus("Creando el guion...");
 
+    // Save draft only when generation starts (to allow resume if app closes mid-generation)
+    const data = { characters, title, story, style, pageCount, customPrompt, language, step };
+    const saveTitle = title || "Borrador cómic";
+    let activeDraftId = draftId;
+    if (activeDraftId) {
+      await base44.entities.Draft.update(activeDraftId, { title: saveTitle, data }).catch(async () => {
+        const d = await base44.entities.Draft.create({ title: saveTitle, type: "comic", data });
+        activeDraftId = d.id;
+        setDraftId(d.id);
+      });
+    } else {
+      const d = await base44.entities.Draft.create({ title: saveTitle, type: "comic", data });
+      activeDraftId = d.id;
+      setDraftId(d.id);
+    }
+
     const validCharacters = characters.filter(c => c.name);
     const characterDescriptions = validCharacters.map(c =>
       `${c.name}: ${c.description}${c.photo_url ? " (has reference photo)" : ""}`
