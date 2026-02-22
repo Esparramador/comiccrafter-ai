@@ -1,18 +1,14 @@
 import React from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { BookOpen, Lightbulb } from "lucide-react";
+import { BookOpen, Lightbulb, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
+import StoryWizard from "./StoryWizard";
+import LanguageSelector from "./LanguageSelector";
 
-const storyPrompts = [
-  "Un guerrero samurái descubre que su espada puede abrir portales a otras dimensiones...",
-  "Dos amigos de la infancia se reencuentran en una academia de superhéroes...",
-  "Una detective del futuro investiga crímenes que aún no han ocurrido...",
-  "Un cocinero descubre que sus platos otorgan poderes especiales...",
-];
-
-export default function StoryStep({ title, setTitle, story, setStory }) {
+export default function StoryStep({ title, setTitle, story, setStory, language, setLanguage }) {
   const [showPrompt, setShowPrompt] = React.useState(false);
+  const [showWizard, setShowWizard] = React.useState(false);
 
   return (
     <motion.div
