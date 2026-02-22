@@ -28,6 +28,11 @@ export default function CreateComic() {
   const [language, setLanguage] = useState("es");
   const [draft, setDraft] = useState(() => loadComicDraft());
 
+  // Generation state
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generationStatus, setGenerationStatus] = useState("");
+
   // Auto-save draft on every change
   useEffect(() => {
     if (isGenerating) return;
@@ -46,11 +51,6 @@ export default function CreateComic() {
     setStep(draft.step || 0);
     setDraft(null);
   };
-
-  // Generation state
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationProgress, setGenerationProgress] = useState(0);
-  const [generationStatus, setGenerationStatus] = useState("");
 
   const canAdvance = () => {
     if (step === 0) return characters.some(c => c.name && c.name.trim() !== "");
