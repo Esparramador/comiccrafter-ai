@@ -200,6 +200,7 @@ ALL dialogues MUST be in ${langName}. visual_prompt MUST be in English.`,
     });
 
     setIsGenerating(false);
+    clearShortDraft();
     setGeneratedShort(short);
   };
 
