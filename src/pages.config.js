@@ -59,10 +59,11 @@ import MyCharacters from './pages/MyCharacters';
 import MyComics from './pages/MyComics';
 import MyDrafts from './pages/MyDrafts';
 import MyMedia from './pages/MyMedia';
+import Optimizer from './pages/Optimizer';
 import VideoProjects from './pages/VideoProjects';
 import VideoStudio from './pages/VideoStudio';
 import VoiceLibrary from './pages/VoiceLibrary';
-import Optimizer from './pages/Optimizer';
+import Welcome from './pages/Welcome';
 import __Layout from './Layout.jsx';
 
 
@@ -79,10 +80,11 @@ export const PAGES = {
     "MyComics": MyComics,
     "MyDrafts": MyDrafts,
     "MyMedia": MyMedia,
+    "Optimizer": Optimizer,
     "VideoProjects": VideoProjects,
     "VideoStudio": VideoStudio,
     "VoiceLibrary": VoiceLibrary,
-    "Optimizer": Optimizer,
+    "Welcome": Welcome,
 }
 
 export const pagesConfig = {
