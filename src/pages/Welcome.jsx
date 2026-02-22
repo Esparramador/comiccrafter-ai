@@ -98,8 +98,14 @@ export default function Welcome() {
     try {
       await loadGoogleScript();
       
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "783742843638-88j2f3nqkp6hvk4nvlqnvtoj08g7t6o1.apps.googleusercontent.com";
+      
+      if (!clientId) {
+        throw new Error("Google Client ID not configured");
+      }
+      
       window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        client_id: clientId,
         callback: handleCredentialResponse
       });
       window.google.accounts.id.prompt();

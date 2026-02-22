@@ -13,8 +13,9 @@ const GoogleLogin = () => {
     script.defer = true;
     script.onload = () => {
       if (window.google?.accounts?.id) {
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "783742843638-88j2f3nqkp6hvk4nvlqnvtoj08g7t6o1.apps.googleusercontent.com";
         window.google.accounts.id.initialize({
-          client_id: '783742843638-88j2f3nqkp6hvk4nvlqnvtoj08g7t6o1.apps.googleusercontent.com',
+          client_id: clientId,
           callback: handleCredentialResponse
         });
       }
