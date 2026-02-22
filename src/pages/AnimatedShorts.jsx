@@ -243,8 +243,8 @@ ALL dialogues MUST be in ${langName}. visual_prompt MUST be in English.`,
         </div>
 
         {/* Step indicator */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          {STEPS.map((s, i) => (
+         <div className="flex items-center justify-center gap-2 mb-8">
+           {(STEPS || []).map((s, i) => (
             <React.Fragment key={i}>
               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
                 i === step ? "bg-pink-500/20 text-pink-300 border border-pink-500/30"

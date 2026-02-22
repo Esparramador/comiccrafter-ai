@@ -51,7 +51,7 @@ export default function MyCharacters() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white">Mis Personajes</h1>
-            <p className="text-gray-400 text-sm mt-1">{characters.length} personaje{characters.length !== 1 ? "s" : ""} guardado{characters.length !== 1 ? "s" : ""}</p>
+            <p className="text-gray-400 text-sm mt-1">{(characters || []).length} personaje{(characters || []).length !== 1 ? "s" : ""} guardado{(characters || []).length !== 1 ? "s" : ""}</p>
           </div>
           <Button
             onClick={() => setEditing({})}
@@ -62,7 +62,7 @@ export default function MyCharacters() {
         </div>
 
         {/* Search */}
-        {characters.length > 0 && (
+        {(characters || []).length > 0 && (
           <div className="relative mb-6">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <Input
@@ -82,7 +82,7 @@ export default function MyCharacters() {
         )}
 
         {/* Empty state */}
-        {!isLoading && characters.length === 0 && (
+        {!isLoading && (characters || []).length === 0 && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-20">
             <div className="w-20 h-20 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center mx-auto mb-4">
               <Users className="w-10 h-10 text-gray-600" />
@@ -113,7 +113,7 @@ export default function MyCharacters() {
           </div>
         )}
 
-        {!isLoading && filtered.length === 0 && characters.length > 0 && (
+        {!isLoading && filtered.length === 0 && (characters || []).length > 0 && (
           <p className="text-center text-gray-500 py-12">No se encontraron personajes con ese nombre.</p>
         )}
       </div>
