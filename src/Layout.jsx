@@ -110,9 +110,9 @@ function LayoutInner({ children, currentPageName }) {
                     <button
                       onClick={() => {
                         try {
-                          base44.auth.redirectToLogin({ provider: 'google' });
+                          base44.auth.redirectToLogin();
                         } catch (error) {
-                          console.error('Error redirecting to Google login:', error);
+                          console.error('Error redirecting to login:', error);
                         }
                       }}
                       className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 border-b border-white/5 flex items-center gap-2"
