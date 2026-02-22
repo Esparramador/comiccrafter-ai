@@ -19,6 +19,7 @@ export default function AdminSubscriptions() {
   const { data: plans, isLoading } = useQuery({
     queryKey: ["subscriptionPlans"],
     queryFn: () => base44.entities.SubscriptionPlan.list(),
+    initialData: [],
   });
 
   const createPlanMutation = useMutation({
@@ -198,8 +199,8 @@ export default function AdminSubscriptions() {
         <h2 className="text-xl font-bold mb-6">Planes Activos</h2>
 
         <div className="space-y-4">
-          {plans && plans.length > 0 ? (
-            plans.map((plan) => (
+          {Array.isArray(plans) && plans.length > 0 ? (
+            (plans || []).map((plan) => (
               <div
                 key={plan.id}
                 className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/[0.07] transition-colors"
