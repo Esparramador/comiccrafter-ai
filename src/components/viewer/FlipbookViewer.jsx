@@ -124,6 +124,11 @@ export default function FlipbookViewer({ pages, coverUrl }) {
             {pageLabel} / {pages.length}
           </span>
           <div className="flex gap-1.5">
+            <button onClick={() => setShowEnhancer(true)}
+              title="Mejorar imagen"
+              className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-gray-300 hover:text-violet-300 transition-colors">
+              <Sparkles className="w-4 h-4" />
+            </button>
             <button onClick={() => setShowGrid(true)}
               className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-gray-300 hover:text-white transition-colors">
               <Grid3X3 className="w-4 h-4" />
