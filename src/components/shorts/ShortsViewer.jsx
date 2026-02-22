@@ -15,12 +15,14 @@ const emotionColors = {
   default: "text-gray-400"
 };
 
-export default function ShortsViewer({ short, onBack }) {
+export default function ShortsViewer({ short: initialShort, onBack }) {
+  const [short, setShort] = useState(initialShort);
   const [current, setCurrent] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showScript, setShowScript] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
   const [fps, setFps] = useState(2); // frames per second for autoplay
   const intervalRef = useRef(null);
 
