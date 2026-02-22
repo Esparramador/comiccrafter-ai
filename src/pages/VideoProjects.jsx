@@ -101,6 +101,11 @@ export default function VideoProjects() {
     const charPhotos = validChars.filter(c => c.photo_url).map(c => c.photo_url);
     const identityRef = validChars.map(c => `${c.name} (${c.description || "main character"})`).join("; ");
 
+    const themesText = selectedThemes.map(t => {
+      const themes = { friendship: "Amistad", courage: "Valentía", growth: "Crecimiento", love: "Amor", justice: "Justicia", family: "Familia" };
+      return themes[t];
+    }).join(", ");
+
     const styleMap = {
       cartoon_2d: "Vibrant 2D cartoon animation style, colorful, expressive characters, clean lines, Cartoon Network inspired",
       pixar_3d: "Pixar/Disney 3D animation style, warm lighting, detailed textures, emotionally expressive characters",
