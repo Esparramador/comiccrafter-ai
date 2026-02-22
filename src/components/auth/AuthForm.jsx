@@ -14,12 +14,6 @@ import {
 import { motion } from "framer-motion";
 
 export default function AuthForm() {
-  const [mode, setMode] = useState("login"); // "login" or "signup"
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,7 +38,6 @@ export default function AuthForm() {
       setIsLoading(true);
       setError("");
       
-      // Obtener config de Google del backend (API key encriptada)
       const configResponse = await base44.functions.invoke('getGoogleAuthConfig', {});
       const { clientId } = configResponse.data;
 
@@ -81,38 +74,6 @@ export default function AuthForm() {
       }
     } catch (err) {
       setError("Error al inicializar Google");
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (!email || !password) {
-      setError("Por favor completa todos los campos");
-      return;
-    }
-
-    if (mode === "signup") {
-      if (password !== confirmPassword) {
-        setError("Las contraseñas no coinciden");
-        return;
-      }
-      if (password.length < 6) {
-        setError("La contraseña debe tener al menos 6 caracteres");
-        return;
-      }
-    }
-
-    try {
-      setIsLoading(true);
-      // La autenticación se maneja a través de Google OAuth
-      // Este formulario es principalmente para UI, la app usa Google
-      setError("Por favor usa Google para iniciar sesión");
-    } catch (err) {
-      setError("Error al procesar la solicitud");
-    } finally {
       setIsLoading(false);
     }
   };
