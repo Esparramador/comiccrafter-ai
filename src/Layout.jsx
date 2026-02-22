@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { 
-  Sparkles, BookOpen, PlusCircle, Menu, X, Zap
+  Sparkles, BookOpen, PlusCircle, Menu, X, Zap, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
