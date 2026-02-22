@@ -300,16 +300,19 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
                 </div>
 
                 <div className="ml-auto flex gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => setShowEditor(true)} className="text-gray-400 hover:text-pink-300 w-8 h-8" title="Editar fotograma">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => setShowGrid(!showGrid)} className="text-gray-400 hover:text-white w-8 h-8">
-                    <Grid3X3 className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => setFullscreen(!fullscreen)} className="text-gray-400 hover:text-white w-8 h-8">
-                    {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                  </Button>
-                </div>
+                   <Button variant="ghost" size="icon" onClick={() => setShowTimeline(!showTimeline)} className="text-gray-400 hover:text-violet-300 w-8 h-8" title="Línea de tiempo de audio">
+                     <Music className="w-4 h-4" />
+                   </Button>
+                   <Button variant="ghost" size="icon" onClick={() => setShowEditor(true)} className="text-gray-400 hover:text-pink-300 w-8 h-8" title="Editar fotograma">
+                     <Pencil className="w-4 h-4" />
+                   </Button>
+                   <Button variant="ghost" size="icon" onClick={() => setShowGrid(!showGrid)} className="text-gray-400 hover:text-white w-8 h-8">
+                     <Grid3X3 className="w-4 h-4" />
+                   </Button>
+                   <Button variant="ghost" size="icon" onClick={() => setFullscreen(!fullscreen)} className="text-gray-400 hover:text-white w-8 h-8">
+                     {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                   </Button>
+                 </div>
               </div>
             </div>
 
