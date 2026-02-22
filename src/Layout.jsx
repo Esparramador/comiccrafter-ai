@@ -123,7 +123,7 @@ function LayoutInner({ children, currentPageName }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden text-gray-400"
+                className={`md:hidden transition-colors ${mobileOpen ? 'text-white' : 'text-gray-400'}`}
                 onClick={() => setMobileOpen(!mobileOpen)}
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
