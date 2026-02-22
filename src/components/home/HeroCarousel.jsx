@@ -119,7 +119,7 @@ export default function HeroCarousel() {
 
       {/* Dots - Bottom center */}
       <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {images.length > 0 && images.slice(0, Math.ceil(images.length / 3)).map((_, idx) => (
+        {Array.isArray(images) && images.length > 0 && images.slice(0, Math.ceil(images.length / 3)).map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrent(idx)}
