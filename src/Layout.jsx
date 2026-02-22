@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { 
-  Sparkles, BookOpen, PlusCircle, Menu, X, Zap, Users, Film, FileText, Mic, Baby, LogOut, Pyramid
+  Sparkles, BookOpen, PlusCircle, Menu, X, Zap, Users, Film, FileText, Mic, Baby, LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LangProvider, useLang } from "@/components/i18n/i18n";
@@ -42,7 +42,6 @@ function LayoutInner({ children, currentPageName }) {
     { name: "CoverGenerator", label: n.covers, icon: Zap },
     { name: "AnimatedShorts", label: n.shorts, icon: Film },
     { name: "VideoProjects", label: "Crear Vídeo", icon: Baby },
-    { name: "Create3DModel", label: "Modelo 3D", icon: Pyramid },
     { name: "VoiceLibrary", label: "Voces", icon: Mic },
     { name: "MyComics", label: n.myComics, icon: BookOpen },
     { name: "MyCharacters", label: n.characters, icon: Users },
