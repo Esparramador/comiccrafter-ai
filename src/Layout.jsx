@@ -108,11 +108,12 @@ function LayoutInner({ children, currentPageName }) {
                   {/* Dropdown menu */}
                   <div className="absolute top-full right-0 mt-1 w-48 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         try {
-                          base44.auth.redirectToLogin();
+                          await base44.auth.logout();
+                          window.location.href = '/';
                         } catch (error) {
-                          console.error('Error redirecting to login:', error);
+                          console.error('Error changing account:', error);
                         }
                       }}
                       className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 border-b border-white/5 flex items-center gap-2"
