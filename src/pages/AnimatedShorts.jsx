@@ -30,6 +30,38 @@ export default function AnimatedShorts() {
   const [status, setStatus] = useState("");
   const [generatedShort, setGeneratedShort] = useState(null);
 
+  // Load draft from URL param on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("draftId");
+    if (!id) return;
+    base44.entities.Draft.filter({ id }).then(results => {
+      const d = results[0];
+      if (!d) return;
+      const data = d.data || {};
+      setDraftId(d.id);
+      setCharacters(data.characters || [{ name: "", description: "", photo_url: "" }]);
+      setTitle(data.title || "");
+      setStory(data.story || "");
+      setStyle(data.style || "anime");
+      setFrameCount(data.frameCount || 8);
+      setCustomPrompt(data.customPrompt || "");
+      setLanguage(data.language || "es");
+    });
+  }, []);
+
+  // Auto-save draft on every change
+  useEffect(() => {
+    if (isGenerating) return;
+    const data = { characters, title, story, style, frameCount, customPrompt, language };
+    const saveTitle = title || "Borrador corto";
+    if (draftId) {
+      base44.entities.Draft.update(draftId, { title: saveTitle, data });
+    } else if (title || story || characters.some(c => c.name)) {
+      base44.entities.Draft.create({ title: saveTitle, type: "short", data }).then(d => setDraftId(d.id));
+    }
+  }, [characters, title, story, style, frameCount, customPrompt, language, isGenerating]);
+
   const canAdvance = () => {
     if (step === 0) return characters.some(c => c.name?.trim() !== "");
     if (step === 1) return title.trim() !== "" && story.length > 20;
