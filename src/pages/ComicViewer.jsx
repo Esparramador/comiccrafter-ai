@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, Loader2 } from "lucide-react";
+import { ArrowLeft, BookOpen, Loader2, Edit3 } from "lucide-react";
 import FlipbookViewer from "../components/viewer/FlipbookViewer";
 import ExportPanel from "../components/viewer/ExportPanel";
 
