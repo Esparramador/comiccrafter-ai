@@ -13,6 +13,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Home", label: "Inicio", icon: Sparkles },
     { name: "CreateComic", label: "Crear Cómic", icon: PlusCircle },
     { name: "MyComics", label: "Mis Cómics", icon: BookOpen },
+    { name: "MyCharacters", label: "Mis Personajes", icon: Users },
     { name: "CoverGenerator", label: "Portadas IA", icon: Zap },
   ];
 
