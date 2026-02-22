@@ -61,6 +61,7 @@ import MyMedia from './pages/MyMedia';
 import VideoProjects from './pages/VideoProjects';
 import VideoStudio from './pages/VideoStudio';
 import VoiceLibrary from './pages/VoiceLibrary';
+import AuthCallback from './pages/AuthCallback';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +80,7 @@ export const PAGES = {
     "VideoProjects": VideoProjects,
     "VideoStudio": VideoStudio,
     "VoiceLibrary": VoiceLibrary,
+    "AuthCallback": AuthCallback,
 }
 
 export const pagesConfig = {
