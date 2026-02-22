@@ -55,7 +55,7 @@ export default function Model3DViewer({ model, onClose }) {
     scene.add(light2);
 
     // Load GLTF model
-    const loader = new THREE.GLTFLoader();
+    const loader = new GLTFLoader();
     loader.load(
       model.gltf_url,
       (gltf) => {
