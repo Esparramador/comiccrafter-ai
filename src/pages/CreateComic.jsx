@@ -26,6 +26,26 @@ export default function CreateComic() {
   const [pageCount, setPageCount] = useState(6);
   const [customPrompt, setCustomPrompt] = useState("");
   const [language, setLanguage] = useState("es");
+  const [draft, setDraft] = useState(() => loadComicDraft());
+
+  // Auto-save draft on every change
+  useEffect(() => {
+    if (isGenerating) return;
+    saveComicDraft({ characters, title, story, style, pageCount, customPrompt, language, step });
+  }, [characters, title, story, style, pageCount, customPrompt, language, step, isGenerating]);
+
+  const restoreDraft = () => {
+    if (!draft) return;
+    setCharacters(draft.characters || [{ name: "", description: "", photo_url: "" }]);
+    setTitle(draft.title || "");
+    setStory(draft.story || "");
+    setStyle(draft.style || "anime");
+    setPageCount(draft.pageCount || 6);
+    setCustomPrompt(draft.customPrompt || "");
+    setLanguage(draft.language || "es");
+    setStep(draft.step || 0);
+    setDraft(null);
+  };
 
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
