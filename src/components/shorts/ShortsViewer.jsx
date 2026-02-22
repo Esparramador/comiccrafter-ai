@@ -317,16 +317,34 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
             </div>
 
             {/* Filmstrip */}
-            <div className="flex gap-1.5 mt-2 overflow-x-auto pb-1">
-              {frames.map((f, i) => (
-                <button key={i} onClick={() => setCurrent(i)}
-                  className={`flex-shrink-0 w-14 aspect-video rounded-lg overflow-hidden border-2 transition-all ${current === i ? "border-pink-500" : "border-white/5 hover:border-white/20"}`}
-                >
-                  <img src={f.image_url} alt="" className="w-full h-full object-cover" />
-                </button>
-              ))}
+              <div className="flex gap-1.5 mt-2 overflow-x-auto pb-1">
+                {frames.map((f, i) => (
+                  <button key={i} onClick={() => setCurrent(i)}
+                    className={`flex-shrink-0 w-14 aspect-video rounded-lg overflow-hidden border-2 transition-all ${current === i ? "border-pink-500" : "border-white/5 hover:border-white/20"}`}
+                  >
+                    <img src={f.image_url} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+
+              {/* Audio Timeline */}
+              <AnimatePresence>
+                {showTimeline && (
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="mt-4">
+                    <AudioTimeline frames={frames} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Audio Preview Panel */}
+              <AnimatePresence>
+                {showAudioPreview && (
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="mt-4">
+                    <AudioPreviewPanel short={short} frames={frames} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          </div>
 
           {/* Frame Editor Modal */}
       <AnimatePresence>
