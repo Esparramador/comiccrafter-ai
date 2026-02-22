@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "@/components/auth/AuthContext";
-import { Sparkles, Loader } from "lucide-react";
+import { Sparkles, Loader, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
@@ -8,6 +8,9 @@ import { base44 } from "@/api/base44Client";
 export default function Welcome() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const scriptRef = useRef(null);
 
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
@@ -15,69 +18,97 @@ export default function Welcome() {
     }
   }, [isAuthenticated, authLoading]);
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      // Cargar Google Sign-In script
+  const loadGoogleScript = useCallback(() => {
+    if (scriptLoaded || scriptRef.current) return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+      if (window.google?.accounts?.id) {
+        setScriptLoaded(true);
+        resolve();
+        return;
+      }
+
       const script = document.createElement("script");
       script.src = "https://accounts.google.com/gsi/client";
       script.async = true;
       script.defer = true;
+      scriptRef.current = script;
 
       script.onload = () => {
         if (window.google?.accounts?.id) {
-          window.google.accounts.id.initialize({
-            client_id: "783742843638-88j2f3nqkp6hvk4nvlqnvtoj08g7t6o1.apps.googleusercontent.com",
-            callback: handleCredentialResponse
-          });
-          window.google.accounts.id.prompt();
+          setScriptLoaded(true);
+          resolve();
+        } else {
+          reject(new Error("Google API initialization failed"));
         }
       };
 
-      document.head.appendChild(script);
-    } catch (error) {
-      console.error("Google login error:", error);
-      setLoading(false);
-    }
-  };
+      script.onerror = () => {
+        reject(new Error("Failed to load Google Sign-In script"));
+      };
 
-  const handleCredentialResponse = async (response) => {
+      document.head.appendChild(script);
+    });
+  }, [scriptLoaded]);
+
+  const handleCredentialResponse = useCallback(async (response) => {
     try {
-      // Validar token con backend
+      setError(null);
       const result = await base44.functions.invoke("verifyGoogleToken", {
         token: response.credential
       });
 
       if (result.data?.success) {
-        // Token válido - proceder al login
-        await processUserLogin(result.data.user);
+        await processUserLogin(result.data);
+      } else {
+        throw new Error("Token verification failed");
       }
     } catch (error) {
-      console.error("Error validating token:", error);
+      console.error("Token validation error:", error);
+      setError(error?.message || "Authentication failed");
       setLoading(false);
     }
-  };
+  }, []);
 
-  const processUserLogin = async (userData) => {
+  const processUserLogin = useCallback(async (userData) => {
     try {
-      // Llamar a función de upsert
       const loginResult = await base44.functions.invoke("handleUserLogin", {
         email: userData.email,
-        full_name: userData.full_name,
+        full_name: userData.name,
         profile_image: userData.picture
       });
 
       if (loginResult.data?.success) {
-        // Redirigir al Home
         setTimeout(() => {
           window.location.href = createPageUrl("Home");
-        }, 500);
+        }, 300);
+      } else {
+        throw new Error("Login failed");
       }
     } catch (error) {
-      console.error("Login processing error:", error);
+      console.error("Login error:", error);
+      setError(error?.message || "Login failed");
       setLoading(false);
     }
-  };
+  }, []);
+
+  const handleGoogleLogin = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await loadGoogleScript();
+      
+      window.google.accounts.id.initialize({
+        client_id: "783742843638-88j2f3nqkp6hvk4nvlqnvtoj08g7t6o1.apps.googleusercontent.com",
+        callback: handleCredentialResponse
+      });
+      window.google.accounts.id.prompt();
+    } catch (error) {
+      console.error("Google initialization error:", error);
+      setError(error?.message || "Failed to initialize Google Sign-In");
+      setLoading(false);
+    }
+  }, [loadGoogleScript, handleCredentialResponse]);
 
   if (authLoading) {
     return (
@@ -124,6 +155,17 @@ export default function Welcome() {
         className="w-full max-w-md"
       >
         <div className="glass-effect rounded-2xl p-8 sm:p-10">
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg flex items-center gap-2 text-red-300 text-sm"
+            >
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <span>{error}</span>
+            </motion.div>
+          )}
+
           {/* Logo y Header */}
           <div className="text-center mb-8">
             <motion.div
@@ -181,8 +223,9 @@ export default function Welcome() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             onClick={handleGoogleLogin}
-            disabled={loading}
+            disabled={loading || authLoading}
             className="button-glow w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-semibold py-3 px-6 rounded-lg hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Continue with Google"
           >
             {loading ? (
               <>
@@ -191,7 +234,12 @@ export default function Welcome() {
               </>
             ) : (
               <>
-                <img src="https://www.google.com/favicon.ico" alt="google" className="w-5 h-5" />
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
                 <span>Continuar con Google</span>
               </>
             )}
@@ -213,11 +261,13 @@ export default function Welcome() {
           animate={{ opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 3, repeat: Infinity }}
           className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"
+          aria-hidden="true"
         />
         <motion.div
           animate={{ opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 3, repeat: Infinity, delay: 1 }}
           className="absolute bottom-20 right-10 w-72 h-72 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"
+          aria-hidden="true"
         />
       </motion.div>
     </div>
