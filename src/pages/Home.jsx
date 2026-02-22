@@ -19,8 +19,19 @@ export default function Home() {
 
   const checkAuth = async () => {
     try {
-      const authenticated = await base44.auth.isAuthenticated();
+      const authenticated = await Promise.race([
+        base44.auth.isAuthenticated(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Auth timeout')), 5000)
+        )
+      ]);
       setIsAuth(authenticated);
+
+      if (authenticated) {
+        base44.functions.invoke('sendConfirmationEmail', {}).catch(err => 
+          console.error('Error sending confirmation email:', err)
+        );
+      }
     } catch (error) {
       console.error('Auth check error:', error);
       setIsAuth(false);
