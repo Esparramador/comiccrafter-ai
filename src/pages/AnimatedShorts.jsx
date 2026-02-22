@@ -30,7 +30,7 @@ export default function AnimatedShorts() {
   const [status, setStatus] = useState("");
   const [generatedShort, setGeneratedShort] = useState(null);
 
-  // Load draft from URL param on mount
+  // Load draft from URL param on mount (for resuming interrupted generations)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("draftId");
@@ -49,24 +49,6 @@ export default function AnimatedShorts() {
       setLanguage(data.language || "es");
     });
   }, []);
-
-  // Auto-save draft on every change
-  useEffect(() => {
-    if (isGenerating) return;
-    const data = { characters, title, story, style, frameCount, customPrompt, language };
-    const saveTitle = title || "Borrador corto";
-    if (draftId) {
-      base44.entities.Draft.update(draftId, { title: saveTitle, data }).catch(() => {
-        // Draft was deleted, create a new one
-        setDraftId(null);
-        if (title || story || characters.some(c => c.name)) {
-          base44.entities.Draft.create({ title: saveTitle, type: "short", data }).then(d => setDraftId(d.id));
-        }
-      });
-    } else if (title || story || characters.some(c => c.name)) {
-      base44.entities.Draft.create({ title: saveTitle, type: "short", data }).then(d => setDraftId(d.id));
-    }
-  }, [characters, title, story, style, frameCount, customPrompt, language, isGenerating]);
 
   const canAdvance = () => {
     if (step === 0) return characters.some(c => c.name?.trim() !== "");
