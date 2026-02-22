@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
-import { Sparkles, ArrowRight, Zap, BookOpen, Pyramid } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, Pyramid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useLang } from "@/components/i18n/i18n";
@@ -63,11 +63,12 @@ export default function HeroSection() {
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Link to={createPageUrl("MyComics")}>
-              
-
-
-
+            <Link to={createPageUrl("Create3DModel")}>
+              <Button className="h-14 px-8 text-base font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-xl shadow-purple-500/20 hover:shadow-purple-500/30 transition-all rounded-xl gap-2">
+                <Pyramid className="w-5 h-5" />
+                Crear Modelo 3D
+                <ArrowRight className="w-4 h-4" />
+              </Button>
             </Link>
           </div>
         </motion.div>
