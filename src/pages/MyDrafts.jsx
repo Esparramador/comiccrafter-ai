@@ -8,7 +8,6 @@ import { BookOpen, Film, Trash2, Edit, FileText, Sparkles, Box } from "lucide-re
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import DraftCard from "@/components/drafts/DraftCard";
 import AssetCard from "@/components/assets/AssetCard";
 import AssetPreview from "@/components/assets/AssetPreview";
 
