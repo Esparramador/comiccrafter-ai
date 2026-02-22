@@ -71,11 +71,11 @@ export default function MyComics() {
         )}
 
         {/* Grid */}
-        {!isLoading && Array.isArray(comics) && comics.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {comics
-              .filter(comic => comic?.id)
-              .map((comic, i) => (
+         {!isLoading && Array.isArray(comics) && comics.length > 0 && (
+           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+             {(Array.isArray(comics) ? comics : [])
+               .filter(comic => comic?.id)
+               .map((comic, i) => (
                 <ComicCard
                   key={comic.id}
                   comic={comic}
