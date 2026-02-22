@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Play, Pause, SkipBack, SkipForward, Volume2, VolumeX,
-  Download, ChevronLeft, ChevronRight, Film, Grid3X3
+  Download, ChevronLeft, ChevronRight, Grid3X3
 } from "lucide-react";
 
 const emotionColors = {
@@ -27,8 +27,8 @@ export default function VideoViewer({ project, onBack }) {
   const [currentScene, setCurrentScene] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [view, setView] = useState("player"); // player | grid | script
-  const [fps] = useState(4); // seconds per scene
+  const [view, setView] = useState("player");
+  const [fps] = useState(4);
 
   const scenes = project.generated_scenes || [];
   const scene = scenes[currentScene];
@@ -66,7 +66,6 @@ export default function VideoViewer({ project, onBack }) {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
-      {/* Header */}
       <div className="sticky top-0 z-40 bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-white/5 px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -89,7 +88,6 @@ export default function VideoViewer({ project, onBack }) {
         </div>
       </div>
 
-      {/* Audio for current scene */}
       {scene && !muted && (
         <>
           <SceneAudio audioUrl={scene.narrator_audio_url} play={playing} />
@@ -97,7 +95,6 @@ export default function VideoViewer({ project, onBack }) {
         </>
       )}
 
-      {/* Grid view */}
       {view === "grid" && (
         <div className="max-w-5xl mx-auto p-4 pt-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -107,7 +104,7 @@ export default function VideoViewer({ project, onBack }) {
                 onClick={() => { setCurrentScene(i); setView("player"); setPlaying(false); }}
                 className={`relative rounded-xl overflow-hidden border-2 transition-all ${i === currentScene ? "border-yellow-500" : "border-transparent hover:border-white/20"}`}
               >
-                <img src={s.image_url} className="w-full aspect-video object-cover" />
+                <img src={s.image_url} className="w-full aspect-video object-cover" alt={`Escena ${s.scene_number}`} />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 p-2">
                   <p className="text-xs text-white text-left">Escena {s.scene_number}</p>
                 </div>
@@ -122,10 +119,8 @@ export default function VideoViewer({ project, onBack }) {
         </div>
       )}
 
-      {/* Player view */}
       {view === "player" && scene && (
         <div className="max-w-3xl mx-auto px-4 pt-6 pb-8 space-y-4">
-          {/* Main image */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentScene}
@@ -134,12 +129,8 @@ export default function VideoViewer({ project, onBack }) {
               exit={{ opacity: 0 }}
               className="relative rounded-2xl overflow-hidden bg-black aspect-video"
             >
-              <img src={scene.image_url} className="w-full h-full object-cover" />
-
-              {/* Scene overlay */}
+              <img src={scene.image_url} className="w-full h-full object-cover" alt={`Escena ${currentScene + 1}`} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-
-              {/* Narrator text */}
               {scene.narrator_text && (
                 <div className="absolute bottom-0 left-0 right-0 px-4 py-4">
                   <div className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 flex items-start gap-2">
@@ -148,13 +139,9 @@ export default function VideoViewer({ project, onBack }) {
                   </div>
                 </div>
               )}
-
-              {/* Scene counter */}
               <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 rounded-lg text-xs text-white">
                 {currentScene + 1} / {scenes.length}
               </div>
-
-              {/* Emotional beat */}
               {scene.emotional_beat && (
                 <div className="absolute top-3 right-3">
                   <span className={`text-xs font-medium capitalize ${emotionColors[scene.emotional_beat] || "text-gray-400"}`}>
@@ -165,7 +152,6 @@ export default function VideoViewer({ project, onBack }) {
             </motion.div>
           </AnimatePresence>
 
-          {/* Controls */}
           <div className="flex items-center justify-between px-2">
             <Button variant="ghost" size="icon" onClick={prev} disabled={currentScene === 0} className="text-gray-400">
               <SkipBack className="w-5 h-5" />
@@ -190,7 +176,6 @@ export default function VideoViewer({ project, onBack }) {
             </Button>
           </div>
 
-          {/* Progress bar */}
           <div className="flex gap-1">
             {scenes.map((_, i) => (
               <button
@@ -201,8 +186,7 @@ export default function VideoViewer({ project, onBack }) {
             ))}
           </div>
 
-          {/* Scene info */}
-          <div className="p-4 rounded-xl bg-white/3 border border-white/5 space-y-2">
+          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
             {scene.dialogue && (
               <div>
                 <p className="text-[10px] text-gray-600 uppercase mb-1">Diálogo</p>
@@ -222,7 +206,6 @@ export default function VideoViewer({ project, onBack }) {
             )}
           </div>
 
-          {/* Synopsis / moral */}
           {(project.synopsis || project.moral_lesson) && (
             <div className="p-4 rounded-xl bg-gradient-to-r from-yellow-500/10 to-pink-500/10 border border-yellow-500/20">
               {project.synopsis && <p className="text-xs text-gray-400 mb-1">{project.synopsis}</p>}

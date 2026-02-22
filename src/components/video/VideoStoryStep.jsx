@@ -69,7 +69,6 @@ Responde de forma cálida, creativa y apropiada para la edad indicada.`,
         <p className="text-gray-500 text-sm mb-4">Escribe o genera automáticamente la historia de tu vídeo</p>
       </div>
 
-      {/* Quick theme generator */}
       <div>
         <p className="text-xs text-gray-500 mb-2">💡 Genera una historia automáticamente:</p>
         <div className="flex flex-wrap gap-2">
@@ -102,7 +101,7 @@ Responde de forma cálida, creativa y apropiada para la edad indicada.`,
         <Textarea
           value={story}
           onChange={e => setStory(e.target.value)}
-          placeholder="Escribe aquí la historia... cuéntanos qué pasa, quiénes son los personajes y cómo termina."
+          placeholder="Escribe aquí la historia..."
           className="bg-white/5 border-white/10 text-white placeholder-gray-600 h-32 resize-none text-sm"
         />
       </div>
@@ -127,7 +126,7 @@ Responde de forma cálida, creativa y apropiada para la edad indicada.`,
               key={l.code}
               onClick={() => setLanguage(l.code)}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-all ${
-                language === l.code ? "border-yellow-500/40 bg-yellow-500/10 text-yellow-300" : "border-white/5 bg-white/3 text-gray-400 hover:bg-white/5"
+                language === l.code ? "border-yellow-500/40 bg-yellow-500/10 text-yellow-300" : "border-white/5 bg-white/[0.03] text-gray-400 hover:bg-white/5"
               }`}
             >
               <span>{l.flag}</span> {l.label}

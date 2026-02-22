@@ -33,7 +33,7 @@ export default function VideoTypeStep({ projectType, setProjectType, targetAge, 
                 key={t.id}
                 onClick={() => setProjectType(t.id)}
                 className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${
-                  active ? "border-yellow-500/40 bg-yellow-500/10" : "border-white/5 bg-white/3 hover:bg-white/5"
+                  active ? "border-yellow-500/40 bg-yellow-500/10" : "border-white/5 bg-white/[0.03] hover:bg-white/5"
                 }`}
               >
                 <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${t.color} flex items-center justify-center flex-shrink-0`}>
@@ -60,7 +60,7 @@ export default function VideoTypeStep({ projectType, setProjectType, targetAge, 
                 key={a.id}
                 onClick={() => setTargetAge(a.id)}
                 className={`p-3 rounded-xl border text-left transition-all ${
-                  targetAge === a.id ? "border-orange-500/40 bg-orange-500/10 text-orange-300" : "border-white/5 bg-white/3 hover:bg-white/5 text-gray-400"
+                  targetAge === a.id ? "border-orange-500/40 bg-orange-500/10 text-orange-300" : "border-white/5 bg-white/[0.03] hover:bg-white/5 text-gray-400"
                 }`}
               >
                 <div className="text-2xl mb-1">{a.emoji}</div>
