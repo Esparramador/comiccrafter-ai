@@ -40,6 +40,7 @@ function LayoutInner({ children, currentPageName }) {
 
   const navItems = [
     { name: "Home", label: n?.home || "Inicio", icon: Sparkles },
+    { name: "Optimizer", label: "Optimizer", icon: Zap },
     { name: "CoverGenerator", label: n?.covers || "Portadas", icon: Zap },
     { name: "AnimatedShorts", label: n?.shorts || "Cortos", icon: Film },
     { name: "VideoProjects", label: "Crear Vídeo", icon: Baby },
