@@ -1,44 +1,42 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 
 const GoogleLogin = () => {
-  
+  const containerRef = useRef(null);
+
   useEffect(() => {
     initializeGoogle();
   }, []);
 
   const initializeGoogle = () => {
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.initialize({
-        client_id: document.querySelector('meta[name="google-client-id"]')?.content || 'your-client-id',
-        callback: handleCredentialResponse
-      });
-    } else {
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        if (window.google?.accounts?.id) {
-          window.google.accounts.id.initialize({
-            client_id: document.querySelector('meta[name="google-client-id"]')?.content || 'your-client-id',
-            callback: handleCredentialResponse
-          });
-        }
-      };
-      document.head.appendChild(script);
-    }
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (window.google?.accounts?.id && containerRef.current) {
+        window.google.accounts.id.initialize({
+          client_id: '783742843638-88j2f3nqkp6hvk4nvlqnvtoj08g7t6o1.apps.googleusercontent.com',
+          callback: handleCredentialResponse
+        });
+        window.google.accounts.id.renderButton(containerRef.current, {
+          theme: 'filled_blue',
+          size: 'large',
+          width: '100%',
+          text: 'signin'
+        });
+      }
+    };
+    document.head.appendChild(script);
   };
 
   const handleCredentialResponse = async (response) => {
     try {
-      // Enviar el token a tu backend para verificar y crear/actualizar el usuario
       const result = await base44.functions.invoke('verifyGoogleToken', {
         token: response.credential
       });
 
       if (result.data?.success) {
-        // Redirigir a la página principal
         window.location.href = '/';
       }
     } catch (error) {
@@ -46,21 +44,8 @@ const GoogleLogin = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.prompt();
-    }
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <button 
-        onClick={handleGoogleLogin}
-        className="flex items-center gap-2 bg-white text-black border border-gray-300 px-6 py-2 rounded-lg shadow-sm hover:bg-gray-50 transition-all"
-      >
-        <img src="https://www.google.com/favicon.ico" alt="google" className="w-5 h-5" />
-        <span>Continuar con Google</span>
-      </button>
+    <div ref={containerRef} className="flex justify-center">
     </div>
   );
 };
