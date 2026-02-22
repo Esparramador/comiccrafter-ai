@@ -155,7 +155,8 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
       panel_descriptions: page.panel_descriptions,
       dialogues: page.dialogues,
       page_summary: page.page_summary,
-      panel_count: page.panel_count
+      panel_count: page.panel_count,
+      act: page.act
     }));
 
     // Step 3: Save and navigate
