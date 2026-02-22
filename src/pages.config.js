@@ -47,6 +47,7 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AdminPanel from './pages/AdminPanel';
 import AnimatedShorts from './pages/AnimatedShorts';
 import ComicViewer from './pages/ComicViewer';
 import CoverGenerator from './pages/CoverGenerator';
@@ -58,11 +59,12 @@ import MyDrafts from './pages/MyDrafts';
 import MyMedia from './pages/MyMedia';
 import VideoProjects from './pages/VideoProjects';
 import VideoStudio from './pages/VideoStudio';
-import AdminPanel from './pages/AdminPanel';
+import Create3DModel from './pages/Create3DModel';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AdminPanel": AdminPanel,
     "AnimatedShorts": AnimatedShorts,
     "ComicViewer": ComicViewer,
     "CoverGenerator": CoverGenerator,
@@ -74,7 +76,7 @@ export const PAGES = {
     "MyMedia": MyMedia,
     "VideoProjects": VideoProjects,
     "VideoStudio": VideoStudio,
-    "AdminPanel": AdminPanel,
+    "Create3DModel": Create3DModel,
 }
 
 export const pagesConfig = {
