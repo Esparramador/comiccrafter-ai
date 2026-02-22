@@ -261,8 +261,8 @@ export default function AIDashboard() {
               </div>
             )}
           </div>
-          </motion.div>
-          )}
-          </div>
-          );
-          }
+        </motion.div>
+      )}
+    </div>
+  );
+}
