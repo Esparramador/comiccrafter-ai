@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import StoryWizard from "./StoryWizard";
 import LanguageSelector from "./LanguageSelector";
 
-export default function StoryStep({ title, setTitle, story, setStory, language, setLanguage }) {
+export default function StoryStep({ title, setTitle, story, setStory, language, setLanguage, characters }) {
   const [showPrompt, setShowPrompt] = React.useState(false);
   const [showWizard, setShowWizard] = React.useState(false);
 
@@ -39,7 +39,7 @@ export default function StoryStep({ title, setTitle, story, setStory, language, 
         </button>
         {showWizard && (
           <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mt-3">
-            <StoryWizard onStoryGenerated={(t, s) => { setTitle(t); setStory(s); setShowWizard(false); }} />
+            <StoryWizard characters={characters} onStoryGenerated={(t, s) => { setTitle(t); setStory(s); setShowWizard(false); }} />
           </motion.div>
         )}
       </div>

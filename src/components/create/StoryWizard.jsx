@@ -37,7 +37,7 @@ const QUESTIONS = [
   }
 ];
 
-export default function StoryWizard({ onStoryGenerated }) {
+export default function StoryWizard({ onStoryGenerated, characters = [] }) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [generating, setGenerating] = useState(false);
@@ -58,20 +58,29 @@ export default function StoryWizard({ onStoryGenerated }) {
 
   const generateStory = async (ans) => {
     setGenerating(true);
+    const validChars = characters.filter(c => c.name);
+    const charContext = validChars.length > 0
+      ? `\n\nPERSONAJES DEFINIDOS (¡DEBES usarlos por su nombre real en la historia!):
+${validChars.map(c => `- ${c.name}${c.description ? `: ${c.description}` : ""}`).join("\n")}
+
+IMPORTANTE: La historia DEBE estar protagonizada por estos personajes con sus nombres exactos y características. No inventes personajes nuevos como protagonistas, usa los listados.`
+      : "";
+
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `Generate a compelling comic book story based on these user preferences:
-- Genre: ${ans.genre}
-- Setting: ${ans.setting}
-- Protagonist: ${ans.protagonist}
-- Central conflict: ${ans.conflict}
-- Tone: ${ans.tone}
-- Twist: ${ans.twist}
+      prompt: `Genera una historia de cómic atractiva basada en estas preferencias del usuario:
+- Género: ${ans.genre}
+- Ambientación: ${ans.setting}
+- Tipo de protagonista: ${ans.protagonist}
+- Conflicto central: ${ans.conflict}
+- Tono: ${ans.tone}
+- Giro argumental: ${ans.twist}
+${charContext}
 
-Create:
-1. A catchy title (max 6 words)
-2. A rich, detailed story synopsis (300-500 words) that a comic artist could use to create panels. Include character names, specific scenes, emotional beats, and climactic moments. Write in an engaging, vivid style.
+Crea:
+1. Un título llamativo (máximo 6 palabras)
+2. Una sinopsis rica y detallada (300-500 palabras) que un artista de cómic pueda usar para crear paneles. Incluye los nombres reales de los personajes, escenas específicas, momentos emocionales y climáticos. Escribe en un estilo vívido y cinematográfico.
 
-Write everything in Spanish.`,
+Escribe todo en español.`,
       response_json_schema: {
         type: "object",
         properties: {
