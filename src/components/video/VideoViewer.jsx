@@ -1,0 +1,238 @@
+import React, { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowLeft, Play, Pause, SkipBack, SkipForward, Volume2, VolumeX,
+  Download, ChevronLeft, ChevronRight, Film, Grid3X3
+} from "lucide-react";
+
+const emotionColors = {
+  happy: "text-yellow-400", triumphant: "text-orange-400", magical: "text-violet-400",
+  calm: "text-blue-400", funny: "text-green-400", tense: "text-red-400",
+  sad: "text-blue-300", mysterious: "text-purple-400", educational: "text-cyan-400"
+};
+
+function SceneAudio({ audioUrl, play }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!audioUrl || !ref.current) return;
+    if (play) ref.current.play().catch(() => {});
+    else ref.current.pause();
+  }, [play, audioUrl]);
+  if (!audioUrl) return null;
+  return <audio ref={ref} src={audioUrl} className="hidden" />;
+}
+
+export default function VideoViewer({ project, onBack }) {
+  const [currentScene, setCurrentScene] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [view, setView] = useState("player"); // player | grid | script
+  const [fps] = useState(4); // seconds per scene
+
+  const scenes = project.generated_scenes || [];
+  const scene = scenes[currentScene];
+
+  useEffect(() => {
+    if (!playing) return;
+    const t = setInterval(() => {
+      setCurrentScene(prev => {
+        if (prev >= scenes.length - 1) { setPlaying(false); return prev; }
+        return prev + 1;
+      });
+    }, fps * 1000);
+    return () => clearInterval(t);
+  }, [playing, scenes.length, fps]);
+
+  const prev = () => { setPlaying(false); setCurrentScene(Math.max(0, currentScene - 1)); };
+  const next = () => { setPlaying(false); setCurrentScene(Math.min(scenes.length - 1, currentScene + 1)); };
+
+  const downloadScript = () => {
+    let text = `${project.title}\n${"=".repeat(project.title?.length || 10)}\n\n`;
+    if (project.synopsis) text += `Sinopsis: ${project.synopsis}\n`;
+    if (project.moral_lesson) text += `Moraleja: ${project.moral_lesson}\n\n`;
+    scenes.forEach(s => {
+      text += `--- Escena ${s.scene_number} ---\n`;
+      if (s.narrator_text) text += `NARRADOR: ${s.narrator_text}\n`;
+      if (s.dialogue) text += `DIÁLOGO: ${s.dialogue}\n`;
+      if (s.action) text += `ACCIÓN: ${s.action}\n`;
+      text += "\n";
+    });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+    a.download = `${project.title || "guion"}.txt`;
+    a.click();
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0f] text-white">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-white/5 px-4 py-3">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={onBack} className="text-gray-400">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-sm font-bold text-white">{project.title}</h1>
+              <p className="text-[10px] text-gray-500">{project.genre} · {project.target_age} años · ElevenLabs Audio</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => setView(view === "grid" ? "player" : "grid")} className="text-gray-400">
+              <Grid3X3 className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={downloadScript} className="text-gray-400">
+              <Download className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Audio for current scene */}
+      {scene && !muted && (
+        <>
+          <SceneAudio audioUrl={scene.narrator_audio_url} play={playing} />
+          <SceneAudio audioUrl={scene.audio_url} play={playing && !scene.narrator_audio_url} />
+        </>
+      )}
+
+      {/* Grid view */}
+      {view === "grid" && (
+        <div className="max-w-5xl mx-auto p-4 pt-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {scenes.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => { setCurrentScene(i); setView("player"); setPlaying(false); }}
+                className={`relative rounded-xl overflow-hidden border-2 transition-all ${i === currentScene ? "border-yellow-500" : "border-transparent hover:border-white/20"}`}
+              >
+                <img src={s.image_url} className="w-full aspect-video object-cover" />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 p-2">
+                  <p className="text-xs text-white text-left">Escena {s.scene_number}</p>
+                </div>
+                {(s.audio_url || s.narrator_audio_url) && (
+                  <div className="absolute top-2 right-2 w-5 h-5 bg-yellow-500/80 rounded-full flex items-center justify-center">
+                    <Volume2 className="w-3 h-3 text-white" />
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Player view */}
+      {view === "player" && scene && (
+        <div className="max-w-3xl mx-auto px-4 pt-6 pb-8 space-y-4">
+          {/* Main image */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentScene}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="relative rounded-2xl overflow-hidden bg-black aspect-video"
+            >
+              <img src={scene.image_url} className="w-full h-full object-cover" />
+
+              {/* Scene overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+              {/* Narrator text */}
+              {scene.narrator_text && (
+                <div className="absolute bottom-0 left-0 right-0 px-4 py-4">
+                  <div className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 flex items-start gap-2">
+                    <Volume2 className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-white italic leading-snug">{scene.narrator_text}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Scene counter */}
+              <div className="absolute top-3 left-3 px-2 py-1 bg-black/60 rounded-lg text-xs text-white">
+                {currentScene + 1} / {scenes.length}
+              </div>
+
+              {/* Emotional beat */}
+              {scene.emotional_beat && (
+                <div className="absolute top-3 right-3">
+                  <span className={`text-xs font-medium capitalize ${emotionColors[scene.emotional_beat] || "text-gray-400"}`}>
+                    ● {scene.emotional_beat}
+                  </span>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Controls */}
+          <div className="flex items-center justify-between px-2">
+            <Button variant="ghost" size="icon" onClick={prev} disabled={currentScene === 0} className="text-gray-400">
+              <SkipBack className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={prev} disabled={currentScene === 0} className="text-gray-400">
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <button
+              onClick={() => setPlaying(!playing)}
+              className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-500 to-pink-500 flex items-center justify-center shadow-lg hover:shadow-yellow-500/30 transition-all"
+            >
+              {playing ? <Pause className="w-5 h-5 text-white" /> : <Play className="w-5 h-5 text-white ml-0.5" />}
+            </button>
+            <Button variant="ghost" size="icon" onClick={next} disabled={currentScene >= scenes.length - 1} className="text-gray-400">
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={next} disabled={currentScene >= scenes.length - 1} className="text-gray-400">
+              <SkipForward className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setMuted(!muted)} className="text-gray-400">
+              {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            </Button>
+          </div>
+
+          {/* Progress bar */}
+          <div className="flex gap-1">
+            {scenes.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => { setCurrentScene(i); setPlaying(false); }}
+                className={`h-1 rounded-full transition-all flex-1 ${i === currentScene ? "bg-yellow-500" : i < currentScene ? "bg-white/30" : "bg-white/10"}`}
+              />
+            ))}
+          </div>
+
+          {/* Scene info */}
+          <div className="p-4 rounded-xl bg-white/3 border border-white/5 space-y-2">
+            {scene.dialogue && (
+              <div>
+                <p className="text-[10px] text-gray-600 uppercase mb-1">Diálogo</p>
+                <p className="text-sm text-white italic">"{scene.dialogue}"</p>
+                {scene.audio_url && (
+                  <button onClick={() => new Audio(scene.audio_url).play()} className="mt-1 flex items-center gap-1 text-xs text-yellow-400 hover:text-yellow-300">
+                    <Play className="w-3 h-3" /> Reproducir voz
+                  </button>
+                )}
+              </div>
+            )}
+            {scene.action && (
+              <div>
+                <p className="text-[10px] text-gray-600 uppercase mb-1">Acción</p>
+                <p className="text-xs text-gray-300">{scene.action}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Synopsis / moral */}
+          {(project.synopsis || project.moral_lesson) && (
+            <div className="p-4 rounded-xl bg-gradient-to-r from-yellow-500/10 to-pink-500/10 border border-yellow-500/20">
+              {project.synopsis && <p className="text-xs text-gray-400 mb-1">{project.synopsis}</p>}
+              {project.moral_lesson && (
+                <p className="text-sm text-yellow-300 font-medium">✨ {project.moral_lesson}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
