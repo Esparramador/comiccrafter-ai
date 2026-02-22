@@ -135,7 +135,7 @@ export default function AuthForm() {
           </motion.div>
           <h1 className="text-3xl font-bold text-white mb-1">ComicCrafter</h1>
           <p className="text-gray-400 text-sm">
-            Crea historias increíbles con IA
+            Crea cómics, videos y arte con IA
           </p>
         </div>
 
@@ -152,7 +152,7 @@ export default function AuthForm() {
                 : "text-gray-400 hover:text-white"
             }`}
           >
-            Iniciar sesión
+            Acceder
           </button>
           <button
             onClick={() => {
@@ -165,7 +165,7 @@ export default function AuthForm() {
                 : "text-gray-400 hover:text-white"
             }`}
           >
-            Crear cuenta
+            Registrarse
           </button>
         </div>
 
@@ -234,19 +234,19 @@ export default function AuthForm() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
               >
                 {showPassword ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-          </div>
+                       <EyeOff className="w-4 h-4" />
+                     ) : (
+                       <Eye className="w-4 h-4" />
+                     )}
+                   </button>
+                 </div>
+                </div>
 
-          {mode === "signup" && (
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Confirmar contraseña
-              </label>
+                {mode === "signup" && (
+                 <div>
+                   <label className="block text-sm font-medium text-gray-300 mb-2">
+                     Confirmar tu contraseña
+                   </label>
               <div className="relative">
                 <Input
                   type={showConfirm ? "text" : "password"}
@@ -279,7 +279,7 @@ export default function AuthForm() {
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
+                {mode === "login" ? "Acceder" : "Registrarse"}
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -288,7 +288,7 @@ export default function AuthForm() {
 
         {/* Footer */}
         <p className="text-center text-gray-600 text-xs">
-          Recomendamos usar Google para una experiencia más segura
+          Google es la forma más rápida y segura de acceder
         </p>
       </div>
     </motion.div>
