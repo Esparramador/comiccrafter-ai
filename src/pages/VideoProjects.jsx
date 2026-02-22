@@ -6,12 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import VideoTypeStep from "@/components/video/VideoTypeStep.jsx";
 import VideoCharacterStep from "@/components/video/VideoCharacterStep.jsx";
-import VideoStoryStep from "@/components/video/VideoStoryStep.jsx";
+import VideoSurveyStep from "@/components/video/VideoSurveyStep.jsx";
 import VideoStyleStep from "@/components/video/VideoStyleStep.jsx";
 import VideoGenerateStep from "@/components/video/VideoGenerateStep.jsx";
 import VideoViewer from "@/components/video/VideoViewer.jsx";
 
-const STEPS = ["Tipo", "Personajes", "Historia", "Estilo", "Generar"];
+const STEPS = ["Tipo", "Personajes", "Encuesta", "Estilo", "Generar"];
 
 export default function VideoProjects() {
   const [step, setStep] = useState(0);
