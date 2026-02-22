@@ -62,6 +62,8 @@ export default function CreateComic() {
       fantasy: "Epic fantasy illustration, magical lighting, detailed environments, rich colors"
     };
     const activeStylePrompt = customPrompt || styleMap[style];
+    const langNames = { es: "Spanish", en: "English", fr: "French", de: "German", it: "Italian", pt: "Portuguese", ja: "Japanese", ko: "Korean", zh: "Chinese", ar: "Arabic", ru: "Russian", hi: "Hindi" };
+    const languageName = langNames[language] || language;
 
     // Step 1: Script + cover generated in PARALLEL
     setGenerationStatus("Generando guion y portada...");
