@@ -368,12 +368,15 @@ ALL dialogue and narrator_text MUST be in ${langName}. visual_prompt MUST be in 
               />
             )}
             {step === 2 && (
-              <VideoStoryStep
+              <VideoSurveyStep
+                selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre}
+                selectedThemes={selectedThemes} setSelectedThemes={setSelectedThemes}
+                tone={tone} setTone={setTone}
                 title={title} setTitle={setTitle}
                 story={story} setStory={setStory}
-                moralLesson={moralLesson} setMoralLesson={setMoralLesson}
-                language={language} setLanguage={setLanguage}
-                projectType={projectType} targetAge={targetAge}
+                targetAge={targetAge}
+                characters={characters}
+                projectType={projectType}
               />
             )}
             {step === 3 && (
