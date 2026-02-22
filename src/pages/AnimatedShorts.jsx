@@ -62,6 +62,22 @@ export default function AnimatedShorts() {
     setProgress(0);
     setStatus("Escribiendo el guion animado...");
 
+    // Save draft only when generation starts (to allow resume if app closes mid-generation)
+    const data = { characters, title, story, style, frameCount, customPrompt, language };
+    const saveTitle = title || "Borrador corto";
+    let activeDraftId = draftId;
+    if (activeDraftId) {
+      await base44.entities.Draft.update(activeDraftId, { title: saveTitle, data }).catch(async () => {
+        const d = await base44.entities.Draft.create({ title: saveTitle, type: "short", data });
+        activeDraftId = d.id;
+        setDraftId(d.id);
+      });
+    } else {
+      const d = await base44.entities.Draft.create({ title: saveTitle, type: "short", data });
+      activeDraftId = d.id;
+      setDraftId(d.id);
+    }
+
     const validChars = characters.filter(c => c.name?.trim());
     const charDescriptions = validChars.map(c =>
       `${c.name}: ${c.description || "protagonist"}${c.photo_url ? " (has reference photo)" : ""}`
