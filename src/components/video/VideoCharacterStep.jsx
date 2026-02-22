@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Upload, X, Plus, Mic, Volume2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,7 +31,6 @@ export default function VideoCharacterStep({ characters, setCharacters, narrator
         <p className="text-gray-500 text-sm mb-4">Define quién aparece en tu vídeo y asígnales voces de ElevenLabs</p>
       </div>
 
-      {/* Narrator voice */}
       <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
         <div className="flex items-center gap-2 mb-3">
           <Volume2 className="w-4 h-4 text-blue-400" />
@@ -52,7 +50,7 @@ export default function VideoCharacterStep({ characters, setCharacters, narrator
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="p-4 rounded-2xl border border-white/10 bg-white/3 space-y-3"
+            className="p-4 rounded-2xl border border-white/10 bg-white/[0.03] space-y-3"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500 font-medium">Personaje {i + 1}</span>
@@ -76,7 +74,6 @@ export default function VideoCharacterStep({ characters, setCharacters, narrator
               className="bg-white/5 border-white/10 text-white placeholder-gray-600 h-20 resize-none text-sm"
             />
 
-            {/* ElevenLabs voice picker */}
             <div>
               <p className="text-xs text-gray-500 mb-1.5 flex items-center gap-1">
                 <Mic className="w-3 h-3" /> Voz del personaje (ElevenLabs)
@@ -88,12 +85,11 @@ export default function VideoCharacterStep({ characters, setCharacters, narrator
               />
             </div>
 
-            {/* Photo */}
             <div>
               <p className="text-xs text-gray-500 mb-2">Foto de referencia</p>
               {char.photo_url ? (
                 <div className="relative inline-block">
-                  <img src={char.photo_url} className="w-16 h-16 rounded-xl object-cover border border-white/10" />
+                  <img src={char.photo_url} className="w-16 h-16 rounded-xl object-cover border border-white/10" alt="ref" />
                   <button onClick={() => updateChar(i, "photo_url", "")} className="absolute -top-1.5 -right-1.5 bg-red-500 rounded-full w-4 h-4 flex items-center justify-center">
                     <X className="w-2.5 h-2.5 text-white" />
                   </button>

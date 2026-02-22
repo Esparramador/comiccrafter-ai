@@ -7,7 +7,7 @@ const STYLES = [
   { id: "pixar_3d", label: "Estilo Pixar 3D", emoji: "✨", desc: "Pixar, Disney, DreamWorks" },
   { id: "storybook", label: "Libro de Cuentos", emoji: "📖", desc: "Ilustración clásica de cuento" },
   { id: "watercolor", label: "Acuarela", emoji: "🌸", desc: "Suave, pastel, artístico" },
-  { id: "anime", label: "Anime Ghibli", emoji: "🌿", desc: "Studio Ghibli, Totoro, Spirited Away" },
+  { id: "anime", label: "Anime Ghibli", emoji: "🌿", desc: "Studio Ghibli, Totoro" },
   { id: "disney_classic", label: "Disney Clásico", emoji: "🏰", desc: "Animación clásica de Disney" },
 ];
 
@@ -34,7 +34,7 @@ export default function VideoStyleStep({ style, setStyle, sceneCount, setSceneCo
               key={s.id}
               onClick={() => setStyle(s.id)}
               className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
-                style === s.id ? "border-yellow-500/40 bg-yellow-500/10" : "border-white/5 bg-white/3 hover:bg-white/5"
+                style === s.id ? "border-yellow-500/40 bg-yellow-500/10" : "border-white/5 bg-white/[0.03] hover:bg-white/5"
               }`}
             >
               <span className="text-2xl">{s.emoji}</span>
@@ -72,7 +72,7 @@ export default function VideoStyleStep({ style, setStyle, sceneCount, setSceneCo
               key={m.id}
               onClick={() => setMusicMood(m.id)}
               className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border text-xs transition-all ${
-                musicMood === m.id ? "border-pink-500/40 bg-pink-500/10 text-pink-300" : "border-white/5 bg-white/3 text-gray-500 hover:bg-white/5"
+                musicMood === m.id ? "border-pink-500/40 bg-pink-500/10 text-pink-300" : "border-white/5 bg-white/[0.03] text-gray-500 hover:bg-white/5"
               }`}
             >
               <span className="text-xl">{m.emoji}</span>

@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Baby, Film, Sparkles, Loader2, Volume2 } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const TYPE_LABELS = {
   children_film: "Cortometraje Infantil",
@@ -40,7 +40,7 @@ export default function VideoGenerateStep({ title, story, style, sceneCount, cha
             { icon: "🎨", label: "Imágenes IA" },
             { icon: "🎙️", label: "Voces ElevenLabs" },
           ].map((f, i) => (
-            <div key={i} className="p-3 rounded-xl bg-white/3 border border-white/5">
+            <div key={i} className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
               <div className="text-2xl mb-1">{f.icon}</div>
               <p className="text-xs text-gray-500">{f.label}</p>
             </div>
@@ -58,33 +58,20 @@ export default function VideoGenerateStep({ title, story, style, sceneCount, cha
         <p className="text-gray-400 text-sm">Revisa el resumen y genera tu vídeo</p>
       </div>
 
-      <div className="p-4 rounded-2xl border border-white/10 bg-white/3 space-y-3">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Título</span>
-          <span className="text-white font-medium">{title || "Sin título"}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Tipo</span>
-          <span className="text-yellow-300">{TYPE_LABELS[projectType] || projectType}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Estilo</span>
-          <span className="text-white">{STYLE_LABELS[style] || style}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Escenas</span>
-          <span className="text-white">{sceneCount}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Personajes</span>
-          <span className="text-white">{characters.filter(c => c.name?.trim()).map(c => c.name).join(", ") || "—"}</span>
-        </div>
-        {targetAge && (
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-500">Edad objetivo</span>
-            <span className="text-white">{targetAge} años</span>
+      <div className="p-4 rounded-2xl border border-white/10 bg-white/[0.03] space-y-3">
+        {[
+          { label: "Título", value: title || "Sin título", color: "text-white" },
+          { label: "Tipo", value: TYPE_LABELS[projectType] || projectType, color: "text-yellow-300" },
+          { label: "Estilo", value: STYLE_LABELS[style] || style, color: "text-white" },
+          { label: "Escenas", value: sceneCount, color: "text-white" },
+          { label: "Personajes", value: characters.filter(c => c.name?.trim()).map(c => c.name).join(", ") || "—", color: "text-white" },
+          ...(targetAge ? [{ label: "Edad objetivo", value: `${targetAge} años`, color: "text-white" }] : []),
+        ].map(row => (
+          <div key={row.label} className="flex justify-between text-sm">
+            <span className="text-gray-500">{row.label}</span>
+            <span className={row.color}>{row.value}</span>
           </div>
-        )}
+        ))}
       </div>
 
       <div className="grid grid-cols-3 gap-3 text-center">
@@ -93,7 +80,7 @@ export default function VideoGenerateStep({ title, story, style, sceneCount, cha
           { icon: "🎨", label: "Imágenes IA", desc: "Escenas animadas" },
           { icon: "🎙️", label: "ElevenLabs", desc: "Voces profesionales" },
         ].map((f, i) => (
-          <div key={i} className="p-3 rounded-xl bg-gradient-to-b from-white/5 to-white/3 border border-white/10">
+          <div key={i} className="p-3 rounded-xl bg-gradient-to-b from-white/5 to-white/[0.03] border border-white/10">
             <div className="text-2xl mb-1">{f.icon}</div>
             <p className="text-xs text-white font-medium">{f.label}</p>
             <p className="text-[10px] text-gray-500 mt-0.5">{f.desc}</p>
