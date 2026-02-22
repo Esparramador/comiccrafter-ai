@@ -218,7 +218,8 @@ ALL dialogues MUST be in ${langName}. visual_prompt MUST be in English.`,
     });
 
     setIsGenerating(false);
-    if (draftId) await base44.entities.Draft.delete(draftId);
+    // Delete draft on successful completion
+    if (activeDraftId) await base44.entities.Draft.delete(activeDraftId).catch(() => {});
     setGeneratedShort(short);
   };
 
