@@ -235,7 +235,7 @@ export default function VideoViewer({ project, onBack }) {
             ))}
           </div>
 
-          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
+          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-3">
             {scene.dialogue && (
               <div>
                 <p className="text-[10px] text-gray-600 uppercase mb-1">Diálogo</p>
@@ -247,10 +247,27 @@ export default function VideoViewer({ project, onBack }) {
                 )}
               </div>
             )}
+            {scene.narrator_text && !scene.dialogue && (
+              <div>
+                <p className="text-[10px] text-gray-600 uppercase mb-1">Narrador</p>
+                <p className="text-sm text-white italic">"{scene.narrator_text}"</p>
+                {scene.narrator_audio_url && (
+                  <button onClick={() => new Audio(scene.narrator_audio_url).play()} className="mt-1 flex items-center gap-1 text-xs text-yellow-400 hover:text-yellow-300">
+                    <Play className="w-3 h-3" /> Reproducir narración
+                  </button>
+                )}
+              </div>
+            )}
             {scene.action && (
               <div>
                 <p className="text-[10px] text-gray-600 uppercase mb-1">Acción</p>
                 <p className="text-xs text-gray-300">{scene.action}</p>
+              </div>
+            )}
+            {scene.sound_effect && (
+              <div>
+                <p className="text-[10px] text-gray-600 uppercase mb-1">Efecto de Sonido</p>
+                <p className="text-xs text-gray-300 italic">{scene.sound_effect}</p>
               </div>
             )}
           </div>
