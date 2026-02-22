@@ -83,7 +83,8 @@
     "@capacitor/android": "^6.0.0",
     "@capacitor/app": "^6.0.0",
     "@react-three/fiber": "^8.14.0",
-    "@react-three/drei": "^9.88.0"
+    "@react-three/drei": "^9.88.0",
+    "@capacitor-community/text-to-speech": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
