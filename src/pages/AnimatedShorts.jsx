@@ -23,24 +23,7 @@ export default function AnimatedShorts() {
   const [frameCount, setFrameCount] = useState(8);
   const [customPrompt, setCustomPrompt] = useState("");
 
-  const [draft, setDraft] = useState(() => loadShortDraft());
-
-  useEffect(() => {
-    if (isGenerating) return;
-    saveShortDraft({ characters, title, story, style, frameCount, customPrompt, language });
-  }, [characters, title, story, style, frameCount, customPrompt, language, isGenerating]);
-
-  const restoreDraft = () => {
-    if (!draft) return;
-    setCharacters(draft.characters || [{ name: "", description: "", photo_url: "" }]);
-    setTitle(draft.title || "");
-    setStory(draft.story || "");
-    setStyle(draft.style || "anime");
-    setFrameCount(draft.frameCount || 8);
-    setCustomPrompt(draft.customPrompt || "");
-    setLanguage(draft.language || "es");
-    setDraft(null);
-  };
+  const [draftId, setDraftId] = useState(null);
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
