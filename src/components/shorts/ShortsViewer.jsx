@@ -145,7 +145,6 @@ export default function ShortsViewer({ short: initialShort, onBack }) {
               <X className="w-5 h-5" />
             </Button>
             </div>
-            </div>
             )}
 
         {/* Script overlay */}
