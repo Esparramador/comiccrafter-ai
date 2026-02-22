@@ -141,6 +141,20 @@ export default function ExportPanel({ comic }) {
         {done === "indiv" ? "¡Descargadas!" : "Descargar páginas sueltas"}
       </Button>
 
+      <Button
+        onClick={downloadScript}
+        disabled={zipLoading || indivLoading}
+        variant="outline"
+        className="w-full h-11 border-white/10 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl gap-2 text-sm"
+      >
+        {done === "script" ? (
+          <CheckCircle2 className="w-4 h-4 text-green-400" />
+        ) : (
+          <FileText className="w-4 h-4" />
+        )}
+        {done === "script" ? "¡Descargado!" : "Descargar guion (.txt)"}
+      </Button>
+
       <div className="flex items-center gap-2 pt-1">
         <FolderOpen className="w-3.5 h-3.5 text-gray-600" />
         <p className="text-[11px] text-gray-600">
