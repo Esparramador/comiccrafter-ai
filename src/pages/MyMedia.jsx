@@ -192,8 +192,9 @@ export default function MyMedia() {
               />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Array.isArray(shorts) && shorts
+                {(Array.isArray(shorts) ? shorts : [])
                   .filter(s => s?.id)
+                  .sort((a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0))
                   .map(s => (
                     <MediaCard key={s.id} item={s} type="short" onView={setViewingShort} onDelete={handleDelete} />
                   ))}
