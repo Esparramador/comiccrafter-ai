@@ -44,7 +44,7 @@ export default function Layout({ children, currentPageName }) {
                 <Zap className="w-5 h-5 text-white" />
               </div>
               <span className="text-lg font-bold tracking-tight">
-                Comic<span className="text-violet-400">Forge</span>
+                Comic<span className="text-violet-400">Crafter</span>
               </span>
             </Link>
 
