@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { 
-  Sparkles, BookOpen, PlusCircle, Menu, X, Zap, Users, Film, FileText, Mic, Baby, LogOut
+  Sparkles, BookOpen, PlusCircle, Menu, X, Zap, Users, Film, FileText, Mic, Baby, LogOut, Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LangProvider, useLang } from "@/components/i18n/i18n";
@@ -107,6 +107,15 @@ function LayoutInner({ children, currentPageName }) {
                   
                   {/* Dropdown menu */}
                   <div className="absolute top-full right-0 mt-1 w-48 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    {user?.email === 'sadiagiljoan@gmail.com' && (
+                      <Link
+                        to={createPageUrl("AdminPanel")}
+                        className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 border-b border-white/5 flex items-center gap-2"
+                      >
+                        <Settings className="w-3 h-3" />
+                        Admin Panel
+                      </Link>
+                    )}
                     <button
                       onClick={async () => {
                         try {
@@ -116,7 +125,7 @@ function LayoutInner({ children, currentPageName }) {
                           console.error('Error changing account:', error);
                         }
                       }}
-                      className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 border-b border-white/5 flex items-center gap-2"
+                      className={`w-full text-left px-4 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/5 ${user?.email === 'sadiagiljoan@gmail.com' ? 'border-b border-white/5' : ''} flex items-center gap-2`}
                     >
                       <Users className="w-3 h-3" />
                       Cambiar cuenta
