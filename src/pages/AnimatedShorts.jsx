@@ -223,6 +223,17 @@ ALL dialogues MUST be in ${langName}. visual_prompt MUST be in English.`,
           <p className="text-gray-400 text-sm">Genera un corto animado estilo anime con IA — inspirado en One Piece, Naruto, Inuyasha y más</p>
         </div>
 
+        <AnimatePresence>
+          {draft && (
+            <DraftBanner
+              draft={draft}
+              type="short"
+              onRestore={restoreDraft}
+              onDiscard={() => { clearShortDraft(); setDraft(null); }}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
           {STEPS.map((s, i) => (
