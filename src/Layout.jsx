@@ -1,17 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { 
-  Sparkles, BookOpen, PlusCircle, Menu, X, Zap, Users, Film, FileText, Mic, Baby
+  Sparkles, BookOpen, PlusCircle, Menu, X, Zap, Users, Film, FileText, Mic, Baby, LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LangProvider, useLang } from "@/components/i18n/i18n";
 import LangSwitcher from "@/components/ui/LangSwitcher";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import { base44 } from "@/api/base44Client";
 
 function LayoutInner({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const { t } = useLang();
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  const loadUser = async () => {
+    try {
+      const currentUser = await base44.auth.me();
+      setUser(currentUser);
+    } catch (error) {
+      console.error('Failed to load user:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await base44.auth.logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
   const n = t.nav;
 
   const navItems = [
@@ -78,9 +101,25 @@ function LayoutInner({ children, currentPageName }) {
               })}
             </div>
 
-            {/* Lang + Mobile Toggle */}
+            {/* User Menu + Lang + Mobile Toggle */}
             <div className="flex items-center gap-2">
+              {user && (
+                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                  <span className="text-xs text-gray-400">{user.full_name || user.email}</span>
+                </div>
+              )}
               <LangSwitcher />
+              {user && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-400 hover:text-white"
+                  onClick={handleLogout}
+                  title="Cerrar sesión"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
