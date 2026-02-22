@@ -3,7 +3,8 @@ import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, Loader2, Edit3 } from "lucide-react";
+import { ArrowLeft, BookOpen, Loader2, Edit3, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import FlipbookViewer from "../components/viewer/FlipbookViewer";
 import ExportPanel from "../components/viewer/ExportPanel";
 
@@ -11,6 +12,7 @@ export default function ComicViewer() {
   const [comic, setComic] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
 
   const urlParams = new URLSearchParams(window.location.search);
   const comicId = urlParams.get("id");
@@ -68,19 +70,29 @@ export default function ComicViewer() {
     <div className="min-h-screen pb-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <Link to={createPageUrl("MyComics")}>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-white truncate">{comic.title}</h1>
-            <p className="text-xs text-gray-500">
-              {comic.generated_pages?.length || 0} páginas · {comic.style}
-              {saving && <span className="ml-2 text-violet-400">Guardando...</span>}
-            </p>
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <div className="flex items-center gap-3">
+            <Link to={createPageUrl("MyComics")}>
+              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-white truncate">{comic.title}</h1>
+              <p className="text-xs text-gray-500">
+                {comic.generated_pages?.length || 0} páginas · {comic.style}
+                {saving && <span className="ml-2 text-violet-400">Guardando...</span>}
+              </p>
+            </div>
           </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => navigate(createPageUrl("MyComics"))}
+            className="text-gray-400 hover:text-white hover:bg-white/10"
+          >
+            <X className="w-5 h-5" />
+          </Button>
         </div>
 
         {/* Layout: viewer + sidebar */}
