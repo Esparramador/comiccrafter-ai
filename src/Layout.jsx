@@ -8,17 +8,19 @@ import { Button } from "@/components/ui/button";
 import { LangProvider, useLang } from "@/components/i18n/i18n";
 import LangSwitcher from "@/components/ui/LangSwitcher";
 
-export default function Layout({ children, currentPageName }) {
+function LayoutInner({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useLang();
+  const n = t.nav;
 
   const navItems = [
-    { name: "Home", label: "Inicio", icon: Sparkles },
-    { name: "CreateComic", label: "Crear Cómic", icon: PlusCircle },
-    { name: "MyComics", label: "Mis Cómics", icon: BookOpen },
-    { name: "MyCharacters", label: "Mis Personajes", icon: Users },
-    { name: "CoverGenerator", label: "Portadas IA", icon: Zap },
-    { name: "AnimatedShorts", label: "Cortos IA", icon: Film },
-    { name: "MyDrafts", label: "Borradores", icon: FileText },
+    { name: "Home", label: n.home, icon: Sparkles },
+    { name: "CreateComic", label: n.create, icon: PlusCircle },
+    { name: "MyComics", label: n.myComics, icon: BookOpen },
+    { name: "MyCharacters", label: n.characters, icon: Users },
+    { name: "CoverGenerator", label: n.covers, icon: Zap },
+    { name: "AnimatedShorts", label: n.shorts, icon: Film },
+    { name: "MyDrafts", label: n.drafts, icon: FileText },
   ];
 
   const isHome = currentPageName === "Home";
