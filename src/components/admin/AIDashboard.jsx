@@ -162,11 +162,11 @@ export default function AIDashboard() {
 
           {/* Tab Content */}
           <div>
-            {activeTab === "overview" &&
-          <div className="space-y-4">
+            {activeTab === "overview" && (
+              <div className="space-y-4">
                 <AIMetrics stats={analysis.stats} />
-                {analysis.analysis?.summary &&
-            <div className="p-4 rounded-lg bg-gradient-to-br from-violet-500/10 to-pink-500/10 border border-violet-500/20">
+                {analysis.analysis?.summary && (
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-violet-500/10 to-pink-500/10 border border-violet-500/20">
                     <h3 className="font-semibold text-white mb-2">
                       Resumen Estratégico
                     </h3>
@@ -174,18 +174,18 @@ export default function AIDashboard() {
                       {analysis.analysis.summary}
                     </p>
                   </div>
-            }
+                )}
               </div>
-          }
+            )}
 
-            {activeTab === "opportunities" &&
-          <AIRecommendations analysis={analysis.analysis} />
-          }
+            {activeTab === "opportunities" && (
+              <AIRecommendations analysis={analysis.analysis} />
+            )}
 
-            {activeTab === "metrics" &&
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {analysis.analysis?.pricingStrategy &&
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            {activeTab === "metrics" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {analysis.analysis?.pricingStrategy && (
+                  <div className="p-4 rounded-lg bg-white/5 border border-white/10">
                     <h4 className="font-semibold text-white mb-2">
                       Estrategia de Precios
                     </h4>
@@ -204,10 +204,10 @@ export default function AIDashboard() {
                       </p>
                     </div>
                   </div>
-            }
+                )}
 
-                {analysis.analysis?.financialProjections &&
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                {analysis.analysis?.financialProjections && (
+                  <div className="p-4 rounded-lg bg-white/5 border border-white/10">
                     <h4 className="font-semibold text-white mb-2">
                       Proyecciones Financieras
                     </h4>
@@ -226,20 +226,20 @@ export default function AIDashboard() {
                       </p>
                     </div>
                   </div>
-            }
+                )}
               </div>
-          }
+            )}
 
-            {activeTab === "actions" &&
-          <div className="space-y-3">
-                {analysis.analysis?.actionItems?.map((item, idx) =>
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className="p-4 rounded-lg bg-white/5 border border-white/10 hover:border-violet-500/30 transition-colors cursor-pointer">
-
+            {activeTab === "actions" && (
+              <div className="space-y-3">
+                {analysis.analysis?.actionItems?.map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="p-4 rounded-lg bg-white/5 border border-white/10 hover:border-violet-500/30 transition-colors cursor-pointer"
+                  >
                     <div className="flex items-start justify-between">
                       <div>
                         <h4 className="font-semibold text-white">
@@ -257,12 +257,12 @@ export default function AIDashboard() {
                       <ChevronDown className="w-4 h-4 text-gray-500" />
                     </div>
                   </motion.div>
-            )}
+                ))}
               </div>
-          }
+            )}
           </div>
-        </motion.div>
-      }
-    </div>);
-
-}
+          </motion.div>
+          )}
+          </div>
+          );
+          }
