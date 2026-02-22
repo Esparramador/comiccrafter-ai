@@ -25,6 +25,7 @@ export default function AuthForm() {
 
   useEffect(() => {
     checkAuth();
+    handleGoogleLogin();
   }, []);
 
   const checkAuth = async () => {
@@ -183,8 +184,7 @@ export default function AuthForm() {
         {/* Google Login */}
         <div
           id="google-signin-button"
-          className="w-full mb-4"
-          onClick={handleGoogleLogin}
+          className="w-full mb-4 flex justify-center"
         ></div>
 
         {/* Divider */}
