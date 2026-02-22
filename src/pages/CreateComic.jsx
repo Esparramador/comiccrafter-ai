@@ -31,7 +31,7 @@ export default function CreateComic() {
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generationStatus, setGenerationStatus] = useState("");
 
-  // Load draft from URL param on mount
+  // Load draft from URL param on mount (for resuming interrupted generations)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("draftId");
@@ -51,24 +51,6 @@ export default function CreateComic() {
       setStep(data.step || 0);
     });
   }, []);
-
-  // Auto-save draft on every change
-  useEffect(() => {
-    if (isGenerating) return;
-    const data = { characters, title, story, style, pageCount, customPrompt, language, step };
-    const saveTitle = title || "Borrador cómic";
-    if (draftId) {
-      base44.entities.Draft.update(draftId, { title: saveTitle, data }).catch(() => {
-        // Draft was deleted, create a new one
-        setDraftId(null);
-        if (title || story || characters.some(c => c.name)) {
-          base44.entities.Draft.create({ title: saveTitle, type: "comic", data }).then(d => setDraftId(d.id));
-        }
-      });
-    } else if (title || story || characters.some(c => c.name)) {
-      base44.entities.Draft.create({ title: saveTitle, type: "comic", data }).then(d => setDraftId(d.id));
-    }
-  }, [characters, title, story, style, pageCount, customPrompt, language, step, isGenerating]);
 
   const canAdvance = () => {
     if (step === 0) return characters.some(c => c.name && c.name.trim() !== "");
