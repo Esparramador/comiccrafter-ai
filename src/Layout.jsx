@@ -22,6 +22,7 @@ function LayoutInner({ children, currentPageName }) {
     { name: "AnimatedShorts", label: n.shorts, icon: Film },
     { name: "MyDrafts", label: n.drafts, icon: FileText },
     { name: "VoiceLibrary", label: "Voces", icon: Mic },
+    { name: "VideoProjects", label: "Vídeos", icon: Baby },
   ];
 
   const isHome = currentPageName === "Home";
