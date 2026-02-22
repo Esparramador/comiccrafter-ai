@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { Navigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 /**
  * AuthGuard - Protects routes and ensures user is authenticated
- * If not authenticated, redirects to login
  */
-export default function AuthGuard({ children }) {
+export default function AuthGuard({ children, requireAdmin = false, requireFounder = false }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [user, setUser] = useState(null);
   const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
@@ -19,11 +20,13 @@ export default function AuthGuard({ children }) {
     try {
       const isAuth = await base44.auth.isAuthenticated();
       setIsAuthenticated(isAuth);
-      setHasChecked(true);
 
-      if (!isAuth) {
-        base44.auth.redirectToLogin();
+      if (isAuth) {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
       }
+
+      setHasChecked(true);
     } catch (error) {
       console.error('Auth check failed:', error);
       setIsAuthenticated(false);
@@ -49,7 +52,30 @@ export default function AuthGuard({ children }) {
   }
 
   if (!isAuthenticated) {
-    return null; // Will redirect via base44.auth.redirectToLogin()
+    return <Navigate to="/login" replace />;
+  }
+
+  // Check role restrictions
+  if (requireFounder && user?.email !== import.meta.env.VITE_FOUNDER_EMAIL) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">Acceso Denegado</h2>
+          <p className="text-gray-400">Esta sección es solo para el fundador</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (requireAdmin && user?.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">Acceso Denegado</h2>
+          <p className="text-gray-400">Se requieren permisos de administrador</p>
+        </div>
+      </div>
+    );
   }
 
   return children;

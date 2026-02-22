@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Edit2, Trash2, Plus, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function AdminPanel() {
+function AdminPanelContent() {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState(null);
   const [editingData, setEditingData] = useState({});
@@ -249,5 +249,13 @@ export default function AdminPanel() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminPanel() {
+  return (
+    <AuthGuard requireFounder={true}>
+      <AdminPanelContent />
+    </AuthGuard>
   );
 }
