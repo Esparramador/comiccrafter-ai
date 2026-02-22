@@ -1,29 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/components/auth/AuthContext";
 import { Sparkles, Loader } from "lucide-react";
 import { motion } from "framer-motion";
 import { createPageUrl } from "@/utils";
+import { base44 } from "@/api/base44Client";
 
 export default function Welcome() {
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    checkExistingSession();
-  }, []);
-
-  const checkExistingSession = async () => {
-    try {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (isAuth) {
-        window.location.href = createPageUrl("Home");
-      }
-    } catch (error) {
-      console.error("Session check error:", error);
-    } finally {
-      setChecking(false);
+    if (isAuthenticated && !authLoading) {
+      window.location.href = createPageUrl("Home");
     }
-  };
+  }, [isAuthenticated, authLoading]);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -89,7 +79,7 @@ export default function Welcome() {
     }
   };
 
-  if (checking) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <Loader className="w-8 h-8 animate-spin text-purple-400" />
