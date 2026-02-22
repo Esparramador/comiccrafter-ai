@@ -49,9 +49,17 @@ export default function VideoCharacterStep({ characters, setCharacters, narrator
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold text-white mb-1">Personajes</h2>
-        <p className="text-gray-500 text-sm mb-4">Define quién aparece en tu vídeo y asígnales voces de ElevenLabs</p>
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h2 className="text-lg font-semibold text-white mb-1">Personajes</h2>
+          <p className="text-gray-500 text-sm">Define quién aparece en tu vídeo y asígnales voces de ElevenLabs</p>
+        </div>
+        <button
+          onClick={() => setShowLibrary(!showLibrary)}
+          className="flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-all"
+        >
+          <Library className="w-3.5 h-3.5" /> Biblioteca
+        </button>
       </div>
 
       <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
