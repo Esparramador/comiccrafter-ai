@@ -22,9 +22,12 @@ function LayoutInner({ children, currentPageName }) {
   const loadUser = async () => {
     try {
       const currentUser = await base44.auth.me();
-      setUser(currentUser);
+      if (currentUser) {
+        setUser(currentUser);
+      }
     } catch (error) {
       console.error('Failed to load user:', error);
+      // No redirigir - dejar que el usuario navegue
     }
   };
 

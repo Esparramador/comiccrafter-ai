@@ -8,7 +8,7 @@ import { useLang } from "@/components/i18n/i18n";
 
 export default function HeroSection() {
   const { t } = useLang();
-  const h = t.hero;
+  const h = t?.hero || {};
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-900 to-black">
@@ -49,11 +49,11 @@ export default function HeroSection() {
 
         {/* Feature Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-          {(h ? [
-          { icon: "📸", title: h.f1title, desc: h.f1desc },
-          { icon: "✍️", title: h.f2title, desc: h.f2desc },
-          { icon: "🎨", title: h.f3title, desc: h.f3desc }] : []).
-          map((f, i) =>
+          {[
+            { icon: "📸", title: h?.f1title || "Personajes", desc: h?.f1desc || "Crea personajes únicos" },
+            { icon: "✍️", title: h?.f2title || "Historia", desc: h?.f2desc || "Escribe tu narrativa" },
+            { icon: "🎨", title: h?.f3title || "Arte", desc: h?.f3desc || "Genera arte con IA" }
+          ].map((f, i) =>
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 40 }}
