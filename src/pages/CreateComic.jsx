@@ -221,6 +221,9 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
 
     setIsGenerating(false);
 
+    // Delete draft on successful completion
+    if (activeDraftId) await base44.entities.Draft.delete(activeDraftId).catch(() => {});
+
     // Auto-download ZIP
     setGenerationStatus("Generando ZIP para descarga...");
     try {
