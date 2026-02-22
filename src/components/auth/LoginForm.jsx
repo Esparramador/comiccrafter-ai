@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function LoginForm({ onSuccess }) {
+export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

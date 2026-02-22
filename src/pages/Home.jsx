@@ -45,7 +45,7 @@ export default function Home() {
   if (!isAuth) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center p-4">
-        <LoginForm onSuccess={() => checkAuth()} />
+        <LoginForm />
       </div>
     );
   }

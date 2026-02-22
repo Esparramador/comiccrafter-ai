@@ -61,7 +61,9 @@ export default function AuthGuard({ children, requireAdmin = false, requireFound
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // Redirect to login with callback to current page
+    base44.auth.redirectToLogin(window.location.href);
+    return null;
   }
 
   // Check role restrictions (founder check)
