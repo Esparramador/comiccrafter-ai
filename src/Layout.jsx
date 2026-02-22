@@ -21,6 +21,7 @@ function LayoutInner({ children, currentPageName }) {
     { name: "CoverGenerator", label: n.covers, icon: Zap },
     { name: "AnimatedShorts", label: n.shorts, icon: Film },
     { name: "MyDrafts", label: n.drafts, icon: FileText },
+    { name: "VoiceLibrary", label: "Voces", icon: Mic },
   ];
 
   const isHome = currentPageName === "Home";
