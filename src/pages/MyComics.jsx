@@ -71,16 +71,18 @@ export default function MyComics() {
         )}
 
         {/* Grid */}
-         {!isLoading && (comics || []).length > 0 && (
-           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-             {(comics || []).map((comic, i) => (
-              <ComicCard
-                key={comic.id}
-                comic={comic}
-                index={i}
-                onDelete={(id) => deleteMutation.mutate(id)}
-              />
-            ))}
+        {!isLoading && Array.isArray(comics) && comics.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {comics
+              .filter(comic => comic?.id)
+              .map((comic, i) => (
+                <ComicCard
+                  key={comic.id}
+                  comic={comic}
+                  index={i}
+                  onDelete={(id) => deleteMutation.mutate(id)}
+                />
+              ))}
           </div>
         )}
       </div>
