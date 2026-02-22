@@ -95,8 +95,8 @@ export default function MyDrafts() {
   const activeTabConfig = tabs.find(t => t.id === activeTab);
   const assetType = assetTypeMap[activeTab];
   const tabAssets = (Array.isArray(assets) ? assets : [])
-    .filter(a => a?.type === assetType)
-    .filter(a => a?.id);
+    .filter(a => a?.type === assetType && a?.id)
+    .sort((a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0));
 
   const isLoading = draftsLoading || assetsLoading;
 
