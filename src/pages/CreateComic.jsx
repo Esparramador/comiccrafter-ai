@@ -58,7 +58,13 @@ export default function CreateComic() {
     const data = { characters, title, story, style, pageCount, customPrompt, language, step };
     const saveTitle = title || "Borrador cómic";
     if (draftId) {
-      base44.entities.Draft.update(draftId, { title: saveTitle, data });
+      base44.entities.Draft.update(draftId, { title: saveTitle, data }).catch(() => {
+        // Draft was deleted, create a new one
+        setDraftId(null);
+        if (title || story || characters.some(c => c.name)) {
+          base44.entities.Draft.create({ title: saveTitle, type: "comic", data }).then(d => setDraftId(d.id));
+        }
+      });
     } else if (title || story || characters.some(c => c.name)) {
       base44.entities.Draft.create({ title: saveTitle, type: "comic", data }).then(d => setDraftId(d.id));
     }
