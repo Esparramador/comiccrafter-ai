@@ -42,8 +42,13 @@ export default function AuthForm() {
     try {
       setIsLoading(true);
       setError("");
-      // Redirect to Google OAuth login
-      base44.auth.redirectToLogin("/");
+      
+      // Usar el flujo de Base44 sin parámetros problemáticos
+      // El redirect a /login viene de Base44 internamente
+      await new Promise((resolve) => {
+        base44.auth.redirectToLogin();
+        setTimeout(resolve, 1000); // Dar tiempo para el redirect
+      });
     } catch (err) {
       setError("Error al conectar con Google");
       setIsLoading(false);
