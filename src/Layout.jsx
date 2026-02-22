@@ -78,15 +78,18 @@ function LayoutInner({ children, currentPageName }) {
               })}
             </div>
 
-            {/* Mobile Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden text-gray-400"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
+            {/* Lang + Mobile Toggle */}
+            <div className="flex items-center gap-2">
+              <LangSwitcher />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden text-gray-400"
+                onClick={() => setMobileOpen(!mobileOpen)}
+              >
+                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
+            </div>
           </div>
         </div>
 
