@@ -181,6 +181,34 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
     });
 
     setIsGenerating(false);
+
+    // Auto-download ZIP
+    setGenerationStatus("Generando ZIP para descarga...");
+    try {
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+      const folder = zip.folder(title || "comic");
+      const allImages = [
+        ...(coverResult.url ? [{ url: coverResult.url, name: "00_Portada.png" }] : []),
+        ...generatedPages.map(p => ({ url: p.image_url, name: `Pag_${String(p.page_number).padStart(2, "0")}.png` }))
+      ];
+      for (const img of allImages) {
+        const res = await fetch(img.url);
+        const blob = await res.blob();
+        folder.file(img.name, blob);
+      }
+      let scriptText = `${title}\n${"=".repeat(title.length)}\n\n`;
+      generatedPages.forEach(p => { scriptText += `--- Página ${p.page_number} ---\n${p.panel_descriptions || ""}\n\nDiálogos:\n${p.dialogues || ""}\n\n`; });
+      folder.file("guion.txt", scriptText);
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const zipUrl = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = zipUrl;
+      a.download = `${title || "comic"}.zip`;
+      a.click();
+      URL.revokeObjectURL(zipUrl);
+    } catch (e) { /* ZIP optional, don't block navigation */ }
+
     navigate(createPageUrl("ComicViewer") + `?id=${comic.id}`);
   };
 
@@ -190,7 +218,7 @@ ALL dialogues and text on panels MUST be in ${languageName}. visual_prompt must 
         <StepIndicator currentStep={step} />
 
         {step === 0 && <CharacterStep characters={characters} setCharacters={setCharacters} />}
-        {step === 1 && <StoryStep title={title} setTitle={setTitle} story={story} setStory={setStory} language={language} setLanguage={setLanguage} />}
+        {step === 1 && <StoryStep title={title} setTitle={setTitle} story={story} setStory={setStory} language={language} setLanguage={setLanguage} characters={characters} />}
         {step === 2 && <StyleStep style={style} setStyle={setStyle} pageCount={pageCount} setPageCount={setPageCount} customPrompt={customPrompt} setCustomPrompt={setCustomPrompt} />}
         {step === 3 && (
           <GenerateStep
