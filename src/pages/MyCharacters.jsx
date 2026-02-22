@@ -39,10 +39,9 @@ export default function MyCharacters() {
     setEditing(null);
   };
 
-  const filtered = (Array.isArray(characters) ? characters : []).filter(c =>
-    c.name?.toLowerCase().includes(search.toLowerCase()) ||
-    c.description?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = (Array.isArray(characters) ? characters : [])
+    .filter(c => c?.id && (c.name?.toLowerCase().includes(search.toLowerCase()) || c.description?.toLowerCase().includes(search.toLowerCase())))
+    .sort((a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0));
 
   return (
     <div className="min-h-screen pb-20 pt-4">
