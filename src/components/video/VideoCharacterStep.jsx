@@ -62,6 +62,33 @@ export default function VideoCharacterStep({ characters, setCharacters, narrator
         </button>
       </div>
 
+      {showLibrary && (
+        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="p-4 rounded-xl border border-violet-500/30 bg-violet-500/10 space-y-3 mb-4">
+          <p className="text-xs text-violet-300 font-medium">Tus personajes guardados</p>
+          {savedCharacters.length === 0 ? (
+            <p className="text-xs text-gray-500">No tienes personajes guardados aún</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {savedCharacters.map(char => (
+                <button
+                  key={char.id}
+                  onClick={() => addCharacterFromLibrary(char)}
+                  disabled={isCharacterAdded(char.name)}
+                  className={`p-3 rounded-lg border text-left text-xs transition-all ${
+                    isCharacterAdded(char.name)
+                      ? "border-white/10 bg-white/5 opacity-50 cursor-not-allowed text-gray-500"
+                      : "border-violet-500/30 bg-violet-500/5 hover:bg-violet-500/10 text-white"
+                  }`}
+                >
+                  <p className="font-medium">{char.name}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5">{char.description}</p>
+                </button>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      )}
+
       <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
         <div className="flex items-center gap-2 mb-3">
           <Volume2 className="w-4 h-4 text-blue-400" />
