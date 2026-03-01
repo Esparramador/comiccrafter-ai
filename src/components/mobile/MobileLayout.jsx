@@ -1,6 +1,7 @@
 import ThemeProvider from "./ThemeProvider";
 import BottomTabs from "./BottomTabs";
 import TopHeader from "./TopHeader";
+import PageTransition from "./PageTransition";
 
 const PRIMARY_PAGES = ["Home", "Comics", "Videos", "Profile", "Settings"];
 

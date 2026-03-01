@@ -12,6 +12,15 @@ const tabs = [
 ];
 
 export default function BottomTabs({ currentPage }) {
+  const navigate = useNavigate();
+
+  const handleTabClick = (e, page) => {
+    if (currentPage === page) {
+      e.preventDefault();
+      navigate(createPageUrl(page), { replace: true });
+    }
+  };
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 flex bg-background border-t border-border bottom-tabs-safe"
@@ -23,6 +32,7 @@ export default function BottomTabs({ currentPage }) {
           <Link
             key={page}
             to={createPageUrl(page)}
+            onClick={(e) => handleTabClick(e, page)}
             className={cn(
               "flex flex-col items-center justify-center flex-1 py-2 gap-0.5 text-xs transition-colors",
               active
