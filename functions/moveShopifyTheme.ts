@@ -59,15 +59,13 @@ Deno.serve(async (req) => {
     }
 
     // 4. Copy shopify-theme to target repo
-    const copyCmd = await Deno.run({
-      cmd: ['cp', '-r', themeDir, `${targetDir}/${themePath}`],
-      stdout: 'piped',
-      stderr: 'piped'
+    const copyCmdExec = new Deno.Command('cp', {
+      args: ['-r', themeDir, `${targetDir}/${themePath}`]
     });
 
-    const copyStatus = await copyCmd.status();
-    if (!copyStatus.success) {
-      const stderr = await new TextDecoder().decode(await Deno.readAll(copyCmd.stderr));
+    const copyResult = await copyCmdExec.output();
+    if (!copyResult.success) {
+      const stderr = new TextDecoder().decode(copyResult.stderr);
       throw new Error(`Copy failed: ${stderr}`);
     }
 
