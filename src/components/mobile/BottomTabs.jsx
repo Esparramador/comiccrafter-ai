@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Home, BookOpen, Film, User, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";

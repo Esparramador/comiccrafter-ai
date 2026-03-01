@@ -9,16 +9,20 @@ export default function TopHeader({ title, showBack = false }) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center h-14 px-4 bg-background border-b border-border"
+    <header className="fixed top-0 left-0 right-0 z-50 flex items-center px-4 bg-background border-b border-border"
       style={{ paddingTop: "env(safe-area-inset-top)", height: "calc(3.5rem + env(safe-area-inset-top))" }}>
-      <div className="flex items-center w-full">
+      {/* Left slot */}
+      <div className="w-10 shrink-0">
         {showBack && (
-          <Button variant="ghost" size="icon" onClick={handleBack} className="mr-2 shrink-0">
+          <Button variant="ghost" size="icon" onClick={handleBack}>
             <ChevronLeft className="w-5 h-5" />
           </Button>
         )}
-        <h1 className="text-base font-semibold truncate">{title}</h1>
       </div>
+      {/* Centered title */}
+      <h1 className="flex-1 text-base font-semibold text-center truncate px-2">{title}</h1>
+      {/* Right slot (balance) */}
+      <div className="w-10 shrink-0" />
     </header>
   );
 }
