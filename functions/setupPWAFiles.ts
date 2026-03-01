@@ -141,50 +141,59 @@ self.addEventListener('fetch', event => {
   );
 });`;
 
-    const headers = {
+    const headers = new Headers({
       'Authorization': \`token \${githubToken}\`,
       'Accept': 'application/vnd.github.v3+json',
       'Content-Type': 'application/json',
-    };
+    });
+
+    // Helper function to encode to base64
+    function base64Encode(str) {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
 
     // Upload manifest.json
     const manifestPath = 'public/manifest.json';
+    const manifestBody = JSON.stringify({
+      message: 'Add PWA manifest.json',
+      content: base64Encode(JSON.stringify(manifestContent, null, 2)),
+      branch
+    });
+
     const manifestResponse = await fetch(
       \`https://api.github.com/repos/\${owner}/\${repo}/contents/\${manifestPath}\`,
       {
         method: 'PUT',
         headers,
-        body: JSON.stringify({
-          message: 'Add PWA manifest.json',
-          content: btoa(JSON.stringify(manifestContent, null, 2)),
-          branch
-        })
+        body: manifestBody
       }
     );
 
     if (!manifestResponse.ok) {
       const error = await manifestResponse.json();
-      throw new Error(\`Failed to upload manifest.json: \${error.message}\`);
+      throw new Error(\`Manifest error: \${error.message || manifestResponse.statusText}\`);
     }
 
     // Upload service-worker.js
     const swPath = 'public/service-worker.js';
+    const swBody = JSON.stringify({
+      message: 'Add PWA service-worker.js',
+      content: base64Encode(swContent),
+      branch
+    });
+
     const swResponse = await fetch(
       \`https://api.github.com/repos/\${owner}/\${repo}/contents/\${swPath}\`,
       {
         method: 'PUT',
         headers,
-        body: JSON.stringify({
-          message: 'Add PWA service-worker.js',
-          content: btoa(swContent),
-          branch
-        })
+        body: swBody
       }
     );
 
     if (!swResponse.ok) {
       const error = await swResponse.json();
-      throw new Error(\`Failed to upload service-worker.js: \${error.message}\`);
+      throw new Error(\`Service Worker error: \${error.message || swResponse.statusText}\`);
     }
 
     return Response.json({
