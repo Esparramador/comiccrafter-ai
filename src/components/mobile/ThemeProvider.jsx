@@ -17,5 +17,6 @@ export default function ThemeProvider({ children }) {
     return () => mediaQuery.removeEventListener("change", applyTheme);
   }, []);
 
-  return children;
+  return <>{children}</>;
+
 }
