@@ -1,17 +1,27 @@
+import { useState, useCallback } from "react";
 import ThemeProvider from "./ThemeProvider";
 import BottomTabs from "./BottomTabs";
 import TopHeader from "./TopHeader";
 import PageTransition from "./PageTransition";
+import PullToRefresh from "./PullToRefresh";
 
 const PRIMARY_PAGES = ["Home", "Comics", "Videos", "Profile", "Settings"];
 
 export default function MobileLayout({ children, currentPageName }) {
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const isSubPage = !PRIMARY_PAGES.includes(currentPageName);
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   const pageTitle = currentPageName
     ? currentPageName.replace(/([A-Z])/g, " $1").trim()
     : "";
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    // Simulate refresh delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    setIsRefreshing(false);
+  }, []);
 
   return (
     <ThemeProvider>
@@ -26,9 +36,11 @@ export default function MobileLayout({ children, currentPageName }) {
           className="flex-1 md:pt-0"
           style={{ paddingTop: "calc(3.5rem + env(safe-area-inset-top))", paddingBottom: isMobile ? "calc(4rem + env(safe-area-inset-bottom))" : "0" }}
         >
-          <PageTransition>
-            {children}
-          </PageTransition>
+          <PullToRefresh onRefresh={handleRefresh}>
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </PullToRefresh>
         </main>
 
         {/* Bottom tabs: mobile only */}

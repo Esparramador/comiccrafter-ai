@@ -20,7 +20,7 @@ export default function TopHeader({ title, showBack = false }) {
         )}
       </div>
       {/* Centered title */}
-      <h1 className="flex-1 text-base font-semibold text-center truncate px-2">{title}</h1>
+      <h1 className="flex-1 text-center text-base font-semibold truncate px-2 whitespace-nowrap overflow-hidden text-ellipsis">{title}</h1>
       {/* Right slot (balance) */}
       <div className="w-10 shrink-0" />
     </header>

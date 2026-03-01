@@ -14,10 +14,9 @@ const tabs = [
 export default function BottomTabs({ currentPage }) {
   const navigate = useNavigate();
 
-  const handleTabClick = (e, page) => {
+  const handleTabClick = (page) => {
     if (currentPage === page) {
-      e.preventDefault();
-      navigate(createPageUrl(page), { replace: true });
+      navigate(createPageUrl(page), { replace: true, state: { reset: true } });
     }
   };
 
@@ -29,12 +28,16 @@ export default function BottomTabs({ currentPage }) {
       {tabs.map(({ label, icon: Icon, page }) => {
         const active = currentPage === page;
         return (
-          <Link
+          <button
             key={page}
-            to={createPageUrl(page)}
-            onClick={(e) => handleTabClick(e, page)}
+            onClick={() => handleTabClick(page)}
+            onTouchEnd={(e) => {
+              if (currentPage !== page) {
+                navigate(createPageUrl(page));
+              }
+            }}
             className={cn(
-              "flex flex-col items-center justify-center flex-1 py-2 gap-0.5 text-xs transition-colors",
+              "flex flex-col items-center justify-center flex-1 py-2 gap-0.5 text-xs transition-colors bg-background border-0 cursor-pointer",
               active
                 ? "text-primary"
                 : "text-muted-foreground hover:text-foreground"
@@ -42,7 +45,7 @@ export default function BottomTabs({ currentPage }) {
           >
             <Icon className={cn("w-5 h-5", active && "stroke-[2.5]")} />
             <span>{label}</span>
-          </Link>
+          </button>
         );
       })}
     </nav>
