@@ -1,0 +1,58 @@
+<section class="cc-section" style="background: linear-gradient(to bottom, var(--cc-bg-surface), var(--cc-bg));">
+  <div class="cc-container" style="text-align: center; max-width: 640px;">
+    <h2 class="cc-heading__title" style="margin-bottom: 1rem;">
+      {{ section.settings.title | default: 'Empieza a crear' }}
+      <span class="cc-heading__title-gradient">{{ section.settings.title_gradient | default: 'ahora mismo' }}</span>
+    </h2>
+    <p class="cc-heading__subtitle" style="margin: 0 auto 2rem;">
+      {{ section.settings.subtitle | default: 'No necesitas experiencia previa. La IA se encarga de lo técnico, tú pones la creatividad.' }}
+    </p>
+    {% if section.settings.cta_url != blank %}
+      <a href="{{ section.settings.cta_url }}" class="cc-btn cc-btn--primary cc-btn--lg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        {{ section.settings.cta_text | default: 'Comenzar Gratis' }}
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Banner CTA",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Empieza a crear"
+    },
+    {
+      "type": "text",
+      "id": "title_gradient",
+      "label": "Título (gradiente)",
+      "default": "ahora mismo"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Descripción"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "URL del botón"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Texto del botón",
+      "default": "Comenzar Gratis"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner CTA"
+    }
+  ]
+}
+{% endschema %}

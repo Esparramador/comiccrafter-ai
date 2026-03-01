@@ -1,0 +1,123 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Comic Crafter",
+    "theme_version": "1.0.0",
+    "theme_author": "Comic Crafter IA Stories",
+    "theme_documentation_url": "https://comiccrafter.es",
+    "theme_support_url": "mailto:sadiagiljoan@gmail.com"
+  },
+  {
+    "name": "Colores",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_bg_primary",
+        "label": "Fondo Principal",
+        "default": "#0B0D17"
+      },
+      {
+        "type": "color",
+        "id": "color_bg_card",
+        "label": "Fondo Tarjeta",
+        "default": "#111322"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_purple",
+        "label": "Acento Morado",
+        "default": "#9333ea"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_pink",
+        "label": "Acento Rosa",
+        "default": "#ec4899"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_blue",
+        "label": "Acento Azul",
+        "default": "#3b82f6"
+      },
+      {
+        "type": "color",
+        "id": "color_text_primary",
+        "label": "Texto Principal",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_text_muted",
+        "label": "Texto Secundario",
+        "default": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "name": "Galería Dinámica",
+    "settings": [
+      {
+        "type": "range",
+        "id": "gallery_speed",
+        "label": "Velocidad de rotación (segundos)",
+        "min": 2,
+        "max": 10,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "range",
+        "id": "gallery_opacity",
+        "label": "Opacidad del fondo",
+        "min": 5,
+        "max": 30,
+        "step": 1,
+        "default": 12
+      },
+      {
+        "type": "checkbox",
+        "id": "gallery_enabled",
+        "label": "Activar fondo de galería dinámica",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Tipografía",
+    "settings": [
+      {
+        "type": "font_picker",
+        "id": "font_heading",
+        "label": "Fuente Títulos",
+        "default": "inter_n7"
+      },
+      {
+        "type": "font_picker",
+        "id": "font_body",
+        "label": "Fuente Cuerpo",
+        "default": "inter_n4"
+      }
+    ]
+  },
+  {
+    "name": "Redes Sociales",
+    "settings": [
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter",
+        "label": "Twitter/X URL"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok URL"
+      }
+    ]
+  }
+]

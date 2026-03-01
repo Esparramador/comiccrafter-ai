@@ -1,0 +1,24 @@
+<div class="cc-section">
+  <div class="cc-container" style="max-width: 800px;">
+    <div style="margin-bottom: 2rem;">
+      <a href="{{ blog.url }}" style="font-size: 0.75rem; color: var(--cc-purple-light); font-weight: 600;">&larr; Volver al Blog</a>
+    </div>
+
+    {% if article.image %}
+      <div style="border-radius: var(--cc-radius-lg); overflow: hidden; margin-bottom: 2rem; border: 1px solid var(--cc-border);">
+        <img src="{{ article.image | image_url: width: 1200 }}" alt="{{ article.title | escape }}" style="width: 100%;" />
+      </div>
+    {% endif %}
+
+    <div class="cc-heading" style="text-align: left; margin-bottom: 1.5rem;">
+      <p style="font-size: 0.6875rem; color: var(--cc-purple-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.75rem;">
+        {{ article.published_at | date: "%d de %B, %Y" }} · {{ article.author }}
+      </p>
+      <h1 class="cc-heading__title" style="text-align: left;">{{ article.title }}</h1>
+    </div>
+
+    <div class="cc-product__description" style="font-size: 1rem;">
+      {{ article.content }}
+    </div>
+  </div>
+</div>

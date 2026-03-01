@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="theme-color" content="#0B0D17">
+
+  <title>
+    {{ page_title }}{% unless page_title contains shop.name %} — {{ shop.name }}{% endunless %}
+  </title>
+
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+
+  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  {{ 'comic-crafter.css' | asset_url | stylesheet_tag }}
+
+  {{ content_for_header }}
+
+  {% if template.name == 'index' %}
+    <style>
+      .cc-hero { min-height: 80vh; }
+    </style>
+  {% endif %}
+</head>
+<body>
+  <a href="#main-content" class="cc-sr-only">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+  {% render 'gallery-background' %}
+
+  {% section 'announcement-bar' %}
+  {% render 'header' %}
+
+  <main id="main-content" role="main" style="position: relative; z-index: 10;">
+    {{ content_for_layout }}
+  </main>
+
+  {% render 'footer' %}
+
+  <script src="{{ 'comic-crafter.js' | asset_url }}" defer></script>
+</body>
+</html>

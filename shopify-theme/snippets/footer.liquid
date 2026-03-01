@@ -1,0 +1,51 @@
+<footer class="cc-footer">
+  <div class="cc-footer__inner">
+    <div class="cc-footer__top">
+      <div>
+        <div class="cc-footer__brand">
+          {% if settings.logo %}
+            <img src="{{ settings.logo | image_url: width: 64 }}" alt="{{ shop.name }}" />
+          {% else %}
+            <img src="{{ 'logo-app.png' | asset_url }}" alt="{{ shop.name }}" />
+          {% endif %}
+          <span class="cc-footer__brand-name">Comic Crafter <span>Shop</span></span>
+        </div>
+        <p class="cc-footer__about">
+          Plataforma de creación con inteligencia artificial. Genera guiones, personajes, modelos 3D, voces profesionales y vídeos animados.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="cc-footer__heading">Tienda</h4>
+        <ul class="cc-footer__links">
+          {% for link in linklists.footer.links %}
+            <li><a href="{{ link.url }}" class="cc-footer__link">{{ link.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="cc-footer__heading">Empresa</h4>
+        <ul class="cc-footer__links">
+          <li><a href="/pages/about" class="cc-footer__link">Sobre Nosotros</a></li>
+          <li><a href="/pages/contact" class="cc-footer__link">Contacto</a></li>
+          <li><a href="https://comiccrafter.es" class="cc-footer__link" target="_blank">App Comic Crafter</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="cc-footer__heading">Legal</h4>
+        <ul class="cc-footer__links">
+          <li><a href="/policies/privacy-policy" class="cc-footer__link">Privacidad</a></li>
+          <li><a href="/policies/terms-of-service" class="cc-footer__link">Términos</a></li>
+          <li><a href="/policies/refund-policy" class="cc-footer__link">Devoluciones</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cc-footer__bottom">
+      <p class="cc-footer__copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. Todos los derechos reservados.</p>
+      <p class="cc-footer__powered">Powered by OpenAI, Gemini, Tripo3D, ElevenLabs</p>
+    </div>
+  </div>
+</footer>

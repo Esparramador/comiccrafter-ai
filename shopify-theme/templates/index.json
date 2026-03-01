@@ -1,0 +1,47 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "Comic Crafter IA Stories",
+        "title": "Tu Universo Creativo",
+        "title_gradient": "cobra vida con IA",
+        "subtitle": "Genera guiones, diseña personajes, crea modelos 3D, produce voces profesionales y monta vídeos animados. Todo con IA, todo en un solo lugar.",
+        "cta_text": "Ver Productos",
+        "cta2_text": "Explorar Colecciones"
+      }
+    },
+    "gallery": {
+      "type": "gallery-showcase",
+      "settings": {
+        "eyebrow": "Galería Dinámica",
+        "title": "Creado con Comic Crafter"
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Lo Más Popular",
+        "title": "Productos Destacados",
+        "limit": 8,
+        "show_view_all": true
+      }
+    },
+    "features": {
+      "type": "features-grid",
+      "settings": {}
+    },
+    "stats": {
+      "type": "stats-bar",
+      "settings": {}
+    },
+    "cta": {
+      "type": "cta-banner",
+      "settings": {
+        "title": "Empieza a crear",
+        "title_gradient": "ahora mismo"
+      }
+    }
+  },
+  "order": ["hero", "gallery", "featured", "features", "stats", "cta"]
+}

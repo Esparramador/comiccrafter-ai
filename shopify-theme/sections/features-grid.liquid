@@ -1,0 +1,140 @@
+<section class="cc-section" style="background: linear-gradient(to bottom, var(--cc-bg), var(--cc-bg-surface));">
+  <div class="cc-container">
+    <div class="cc-heading">
+      <div class="cc-badge cc-badge--purple" style="margin: 0 auto 1rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/></svg>
+        {{ section.settings.badge_text | default: 'Todas las herramientas que necesitas' }}
+      </div>
+      <h2 class="cc-heading__title">
+        {{ section.settings.title | default: 'Un Estudio Completo de' }}
+        <span class="cc-heading__title-gradient">{{ section.settings.title_gradient | default: 'Creación con IA' }}</span>
+      </h2>
+      <p class="cc-heading__subtitle">{{ section.settings.subtitle | default: 'Desde la idea inicial hasta la producción final.' }}</p>
+    </div>
+
+    <div class="cc-features">
+      {% for block in section.blocks %}
+        <a href="{{ block.settings.link | default: '#' }}" class="cc-feature-card cc-animate-on-scroll" {{ block.shopify_attributes }}>
+          <div class="cc-feature-card__image">
+            {% if block.settings.image %}
+              <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.title | escape }}" loading="lazy" />
+            {% endif %}
+            <div class="cc-feature-card__image-overlay"></div>
+            <div class="cc-feature-card__icon" style="background: linear-gradient(135deg, {{ block.settings.color_from | default: '#9333ea' }}, {{ block.settings.color_to | default: '#ec4899' }});">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/></svg>
+            </div>
+          </div>
+          <div class="cc-feature-card__body">
+            <h3 class="cc-feature-card__title">{{ block.settings.title }}</h3>
+            <p class="cc-feature-card__description">{{ block.settings.description }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Grid de Servicios",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Texto del badge",
+      "default": "Todas las herramientas que necesitas"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Un Estudio Completo de"
+    },
+    {
+      "type": "text",
+      "id": "title_gradient",
+      "label": "Título (gradiente)",
+      "default": "Creación con IA"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Descripción",
+      "default": "Desde la idea inicial hasta la producción final. Cada herramienta potenciada por inteligencia artificial de última generación."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Servicio",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Servicio IA"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Descripción"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        },
+        {
+          "type": "color",
+          "id": "color_from",
+          "label": "Color desde",
+          "default": "#9333ea"
+        },
+        {
+          "type": "color",
+          "id": "color_to",
+          "label": "Color hasta",
+          "default": "#ec4899"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Grid de Servicios",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": { "title": "Guiones Inteligentes", "description": "La IA genera guiones cinematográficos completos con estructura de 3 actos, diálogos naturales y direcciones de arte." }
+        },
+        {
+          "type": "feature",
+          "settings": { "title": "Personajes Persistentes", "description": "Crea personajes con apariencia consistente. Sube fotos reales o genera desde cero.", "color_from": "#ec4899", "color_to": "#f43f5e" }
+        },
+        {
+          "type": "feature",
+          "settings": { "title": "Modelos 3D desde Texto", "description": "Transforma descripciones en modelos 3D listos para usar. Exporta en GLB para animación o impresión.", "color_from": "#3b82f6", "color_to": "#06b6d4" }
+        },
+        {
+          "type": "feature",
+          "settings": { "title": "Voces IA Profesionales", "description": "Más de 100 voces en 29 idiomas con ElevenLabs. Calidad de estudio profesional.", "color_from": "#10b981", "color_to": "#14b8a6" }
+        },
+        {
+          "type": "feature",
+          "settings": { "title": "Vídeo & Animación", "description": "Un director IA te guía para crear cortos animados y vídeos cinematográficos.", "color_from": "#f97316", "color_to": "#f59e0b" }
+        },
+        {
+          "type": "feature",
+          "settings": { "title": "Múltiples Estilos", "description": "Manga, anime, noir, fantasía oscura, western, chibi y más. Cada estilo consistente.", "color_from": "#d946ef", "color_to": "#ec4899" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

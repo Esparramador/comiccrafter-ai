@@ -1,0 +1,47 @@
+<div class="cc-section">
+  <div class="cc-container" style="max-width: 960px;">
+    <div style="margin-bottom: 2rem;">
+      <a href="/account" style="font-size: 0.75rem; color: var(--cc-purple-light); font-weight: 600;">&larr; Volver a Mi Cuenta</a>
+    </div>
+
+    <h1 style="font-size: 2rem; font-weight: 900; margin-bottom: 0.5rem;">Pedido {{ order.name }}</h1>
+    <p style="color: var(--cc-text-dim); margin-bottom: 2rem;">{{ order.created_at | date: "%d de %B, %Y" }}</p>
+
+    <table class="cc-cart-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for line_item in order.line_items %}
+          <tr>
+            <td>
+              <div class="cc-cart-item">
+                {% if line_item.image %}
+                  <div class="cc-cart-item__image">
+                    <img src="{{ line_item.image | image_url: width: 200 }}" alt="{{ line_item.title | escape }}" />
+                  </div>
+                {% endif %}
+                <div>
+                  <p style="font-weight: 700; font-size: 0.875rem;">{{ line_item.title }}</p>
+                </div>
+              </div>
+            </td>
+            <td>{{ line_item.price | money }}</td>
+            <td>{{ line_item.quantity }}</td>
+            <td style="font-weight: 700;">{{ line_item.line_price | money }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="text-align: right; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--cc-border);">
+      <p style="font-size: 0.75rem; color: var(--cc-text-dim); text-transform: uppercase;">Total</p>
+      <p style="font-size: 2rem; font-weight: 900;">{{ order.total_price | money }}</p>
+    </div>
+  </div>
+</div>

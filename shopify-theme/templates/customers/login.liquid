@@ -1,0 +1,34 @@
+<div class="cc-section" style="min-height: 70vh; display: flex; align-items: center;">
+  <div class="cc-container" style="max-width: 440px;">
+    <div class="cc-heading" style="margin-bottom: 2rem;">
+      <h1 class="cc-heading__title">{{ 'customer.log_in' | t }}</h1>
+    </div>
+
+    <div class="cc-card" style="padding: 2rem;">
+      {% form 'customer_login' %}
+        {{ form.errors | default_errors }}
+
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div>
+            <label for="email" class="cc-label">Email</label>
+            <input type="email" id="email" name="customer[email]" class="cc-input" autocomplete="email" required />
+          </div>
+
+          <div>
+            <label for="password" class="cc-label">Contraseña</label>
+            <input type="password" id="password" name="customer[password]" class="cc-input" autocomplete="current-password" required />
+          </div>
+
+          <button type="submit" class="cc-btn cc-btn--primary cc-btn--full">
+            {{ 'customer.log_in' | t }}
+          </button>
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.8125rem;">
+            <a href="/account/register" style="color: var(--cc-purple-light); font-weight: 600;">{{ 'customer.register' | t }}</a>
+            <a href="/account/recover" style="color: var(--cc-text-dim);">¿Olvidaste tu contraseña?</a>
+          </div>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</div>
