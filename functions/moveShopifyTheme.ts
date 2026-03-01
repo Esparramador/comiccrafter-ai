@@ -44,20 +44,17 @@ Deno.serve(async (req) => {
 
     // 3. Clone target repo
     const targetDir = `/tmp/comiccrafter-design-${Date.now()}`;
-    const cloneTargetResult = await Deno.run({
-      cmd: [
-        'git',
+    const cloneTargetCmd = new Deno.Command('git', {
+      args: [
         'clone',
         `https://${githubToken}@github.com/${targetRepo}.git`,
         targetDir
-      ],
-      stdout: 'piped',
-      stderr: 'piped'
+      ]
     });
 
-    const cloneTargetStatus = await cloneTargetResult.status();
-    if (!cloneTargetStatus.success) {
-      const stderr = await new TextDecoder().decode(await Deno.readAll(cloneTargetResult.stderr));
+    const cloneTargetResult = await cloneTargetCmd.output();
+    if (!cloneTargetResult.success) {
+      const stderr = new TextDecoder().decode(cloneTargetResult.stderr);
       throw new Error(`Clone target failed: ${stderr}`);
     }
 
