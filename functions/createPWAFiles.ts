@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const githubToken = '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';
+    const githubToken = Deno.env.get('GITHUB_TOKEN');
     const owner = 'Esparramador';
     const repo = 'comiccrafter-ai';
     const branch = 'main';
