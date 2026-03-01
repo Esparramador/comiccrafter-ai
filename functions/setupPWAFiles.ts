@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
     const branch = 'main';
 
     const headers = new Headers({
-      'Authorization': \`token \${githubToken}\`,
+      'Authorization': `token ${githubToken}`,
       'Accept': 'application/vnd.github.v3+json',
       'Content-Type': 'application/json',
     });
@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
     });
 
     const manifestResponse = await fetch(
-      \`https://api.github.com/repos/\${owner}/\${repo}/contents/\${manifestPath}\`,
+      `https://api.github.com/repos/${owner}/${repo}/contents/${manifestPath}`,
       {
         method: 'PUT',
         headers,
@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
 
     if (!manifestResponse.ok) {
       const error = await manifestResponse.json();
-      throw new Error(\`Manifest error: \${error.message || manifestResponse.statusText}\`);
+      throw new Error(`Manifest error: ${error.message || manifestResponse.statusText}`);
     }
 
     // Upload service-worker.js
@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
     });
 
     const swResponse = await fetch(
-      \`https://api.github.com/repos/\${owner}/\${repo}/contents/\${swPath}\`,
+      `https://api.github.com/repos/${owner}/${repo}/contents/${swPath}`,
       {
         method: 'PUT',
         headers,
@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
 
     if (!swResponse.ok) {
       const error = await swResponse.json();
-      throw new Error(\`Service Worker error: \${error.message || swResponse.statusText}\`);
+      throw new Error(`Service Worker error: ${error.message || swResponse.statusText}`);
     }
 
     return Response.json({
