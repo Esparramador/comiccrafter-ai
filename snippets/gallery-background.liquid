@@ -1,0 +1,22 @@
+{% comment %} Dynamic Gallery Background — full-page wallpaper with cycling images {% endcomment %}
+{% if settings.gallery_enabled %}
+{% assign gallery_images = "comic-banner.png,comic-cover.png,comic-cover-dark.png,comiccrafter-showcase.png,comic-wallpaper.png,feature-graphic.png,expanded-services.png,screenshot-create.png,screenshot-3d.png,screenshot-video.png,services-portfolio.png,service_3d_printing.png,service_custom_comics.png,service_movies.png,service_videogames.png,feature-script.png,feature-characters.png,feature-3d.png,feature-voice.png,feature-video.png,feature-styles.png,hero-bg-1.png,hero-bg-2.png,hero-bg-3.png" | split: "," %}
+
+<div class="cc-gallery-bg" aria-hidden="true">
+  <div class="cc-gallery-bg__grid"
+    data-images='[{% for img in gallery_images %}"{{ img | asset_url }}"{% unless forloop.last %},{% endunless %}{% endfor %}]'
+    data-speed="{{ settings.gallery_speed | default: 4 }}"
+    data-opacity="{{ settings.gallery_opacity | default: 12 }}">
+    {% for i in (0..7) %}
+      {% assign img_index = i | modulo: gallery_images.size %}
+      <div class="cc-gallery-bg__item" style="animation-delay: {{ i | times: 150 }}ms">
+        <img src="{{ gallery_images[img_index] | asset_url }}" alt="" loading="lazy" />
+      </div>
+    {% endfor %}
+  </div>
+  <div class="cc-gallery-bg__overlay cc-gallery-bg__overlay--vertical"></div>
+  <div class="cc-gallery-bg__overlay cc-gallery-bg__overlay--horizontal"></div>
+</div>
+<div class="cc-glow cc-glow--purple"></div>
+<div class="cc-glow cc-glow--blue"></div>
+{% endif %}

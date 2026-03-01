@@ -1,0 +1,94 @@
+<section class="cc-hero">
+  <div class="cc-container">
+    <div class="cc-hero__content cc-animate-fade-in">
+      <div class="cc-hero__eyebrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/></svg>
+        {{ section.settings.eyebrow | default: 'Comic Crafter IA Stories' }}
+      </div>
+
+      <h1 class="cc-hero__title">
+        {{ section.settings.title | default: 'Tu Universo Creativo' }}
+        <span class="cc-hero__title-gradient">
+          {{ section.settings.title_gradient | default: 'cobra vida con IA' }}
+        </span>
+      </h1>
+
+      <p class="cc-hero__subtitle">
+        {{ section.settings.subtitle | default: 'Genera guiones, diseña personajes, crea modelos 3D, produce voces profesionales y monta vídeos animados. Todo con IA, todo en un solo lugar.' }}
+      </p>
+
+      <div class="cc-hero__actions">
+        {% if section.settings.cta_url != blank %}
+          <a href="{{ section.settings.cta_url }}" class="cc-btn cc-btn--primary cc-btn--lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            {{ section.settings.cta_text | default: 'Ver Productos' }}
+          </a>
+        {% endif %}
+        {% if section.settings.cta2_url != blank %}
+          <a href="{{ section.settings.cta2_url }}" class="cc-btn cc-btn--secondary cc-btn--lg">
+            {{ section.settings.cta2_text | default: 'Explorar' }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero Principal",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Subtítulo superior",
+      "default": "Comic Crafter IA Stories"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título (parte 1)",
+      "default": "Tu Universo Creativo"
+    },
+    {
+      "type": "text",
+      "id": "title_gradient",
+      "label": "Título (parte gradiente)",
+      "default": "cobra vida con IA"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Descripción",
+      "default": "Genera guiones, diseña personajes, crea modelos 3D, produce voces profesionales y monta vídeos animados. Todo con IA, todo en un solo lugar."
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "URL del botón principal"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Texto del botón principal",
+      "default": "Ver Productos"
+    },
+    {
+      "type": "url",
+      "id": "cta2_url",
+      "label": "URL del botón secundario"
+    },
+    {
+      "type": "text",
+      "id": "cta2_text",
+      "label": "Texto del botón secundario",
+      "default": "Explorar Colecciones"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Principal"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,30 @@
+<div class="cc-section">
+  <div class="cc-container">
+    <div class="cc-heading">
+      <p class="cc-heading__eyebrow">Explorar</p>
+      <h1 class="cc-heading__title">{{ 'collections.title' | t }}</h1>
+    </div>
+
+    <div class="cc-product-grid" style="grid-template-columns: repeat(3, 1fr);">
+      {% for collection in collections %}
+        {% unless collection.handle == 'frontpage' %}
+          <a href="{{ collection.url }}" class="cc-card cc-animate-on-scroll">
+            <div class="cc-card__image" style="aspect-ratio: 16/9;">
+              {% if collection.image %}
+                <img src="{{ collection.image | image_url: width: 800 }}" alt="{{ collection.title | escape }}" loading="lazy" />
+              {% endif %}
+              <div class="cc-card__image-overlay"></div>
+            </div>
+            <div class="cc-card__body">
+              <h3 class="cc-card__title">{{ collection.title }}</h3>
+              <p class="cc-card__description">{{ collection.description | strip_html | truncate: 100 }}</p>
+              <p style="font-size: 0.75rem; color: var(--cc-purple-light); font-weight: 600; margin-top: 0.75rem;">
+                {{ collection.products_count }} productos
+              </p>
+            </div>
+          </a>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

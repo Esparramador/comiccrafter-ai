@@ -1,0 +1,88 @@
+<section class="cc-section cc-animate-on-scroll">
+  <div class="cc-container">
+    <div class="cc-heading">
+      {% if section.settings.eyebrow != blank %}
+        <p class="cc-heading__eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      <h2 class="cc-heading__title">
+        {{ section.settings.title | default: 'Productos Destacados' }}
+        {% if section.settings.title_gradient != blank %}
+          <span class="cc-heading__title-gradient">{{ section.settings.title_gradient }}</span>
+        {% endif %}
+      </h2>
+      {% if section.settings.subtitle != blank %}
+        <p class="cc-heading__subtitle">{{ section.settings.subtitle }}</p>
+      {% endif %}
+    </div>
+
+    <div class="cc-product-grid">
+      {% assign collection = collections[section.settings.collection] %}
+      {% for product in collection.products limit: section.settings.limit %}
+        {% render 'product-card', product: product %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_view_all %}
+      <div style="text-align: center; margin-top: 3rem;">
+        <a href="{{ collection.url }}" class="cc-btn cc-btn--secondary">
+          Ver toda la colección
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Colección Destacada",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Subtítulo superior"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Productos Destacados"
+    },
+    {
+      "type": "text",
+      "id": "title_gradient",
+      "label": "Título (parte gradiente)"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Descripción"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Colección"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Productos a mostrar",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Mostrar botón 'Ver todo'",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Colección Destacada"
+    }
+  ]
+}
+{% endschema %}

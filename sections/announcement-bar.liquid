@@ -1,0 +1,25 @@
+{% if section.settings.show_announcement %}
+<div class="cc-announcement">
+  {{ section.settings.announcement_text }}
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Barra de Anuncio",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Mostrar barra de anuncio",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Texto del anuncio",
+      "default": "⚡ Envío gratis en pedidos superiores a 50€ — Crea con IA, materializa con nosotros"
+    }
+  ]
+}
+{% endschema %}

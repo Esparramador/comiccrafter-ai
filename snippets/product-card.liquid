@@ -1,0 +1,55 @@
+{% comment %}
+  Product card snippet
+  Usage: {% render 'product-card', product: product %}
+{% endcomment %}
+<div class="cc-card cc-animate-on-scroll">
+  <a href="{{ product.url }}">
+    <div class="cc-card__image">
+      {% if product.featured_image %}
+        <img
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          loading="lazy"
+          width="600"
+          height="750"
+        />
+      {% else %}
+        <img src="{{ 'product-placeholder.svg' | asset_url }}" alt="{{ product.title | escape }}" loading="lazy" />
+      {% endif %}
+      <div class="cc-card__image-overlay"></div>
+      {% if product.available == false %}
+        <span class="cc-card__badge">Agotado</span>
+      {% elsif product.compare_at_price > product.price %}
+        <span class="cc-card__badge" style="background: rgba(239,68,68,0.6);">
+          -{{ product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price }}%
+        </span>
+      {% elsif product.tags contains 'nuevo' %}
+        <span class="cc-card__badge">Nuevo</span>
+      {% endif %}
+    </div>
+  </a>
+  <div class="cc-card__body">
+    <a href="{{ product.url }}">
+      <h3 class="cc-card__title">{{ product.title }}</h3>
+    </a>
+    <div class="cc-card__price">
+      <span class="cc-card__price-current">{{ product.price | money }}</span>
+      {% if product.compare_at_price > product.price %}
+        <span class="cc-card__price-compare">{{ product.compare_at_price | money }}</span>
+      {% endif %}
+    </div>
+    {% if product.available %}
+      <form action="/cart/add" method="post">
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
+        <input type="hidden" name="quantity" value="1" />
+        <button type="submit" class="cc-btn cc-btn--purple-outline cc-btn--sm cc-btn--full">
+          Añadir al Carrito
+        </button>
+      </form>
+    {% else %}
+      <button disabled class="cc-btn cc-btn--ghost cc-btn--sm cc-btn--full" style="opacity: 0.4; cursor: not-allowed;">
+        Agotado
+      </button>
+    {% endif %}
+  </div>
+</div>

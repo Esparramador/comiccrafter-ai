@@ -1,0 +1,17 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "color_bg_primary": "#0B0D17",
+      "color_bg_card": "#111322",
+      "color_accent_purple": "#9333ea",
+      "color_accent_pink": "#ec4899",
+      "color_accent_blue": "#3b82f6",
+      "color_text_primary": "#ffffff",
+      "color_text_muted": "#94a3b8",
+      "gallery_speed": 4,
+      "gallery_opacity": 12,
+      "gallery_enabled": true
+    }
+  }
+}

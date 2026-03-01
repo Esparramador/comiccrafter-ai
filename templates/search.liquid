@@ -1,0 +1,44 @@
+<div class="cc-section">
+  <div class="cc-container" style="max-width: 960px;">
+    <div class="cc-heading">
+      <h1 class="cc-heading__title">Buscar</h1>
+    </div>
+
+    <form action="/search" method="get" style="margin-bottom: 3rem;">
+      <div style="display: flex; gap: 0.75rem;">
+        <input
+          type="text"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ 'general.search.placeholder' | t }}"
+          class="cc-input"
+          style="flex: 1;"
+        />
+        <button type="submit" class="cc-btn cc-btn--primary">Buscar</button>
+      </div>
+    </form>
+
+    {% if search.performed %}
+      {% if search.results_count > 0 %}
+        <div class="cc-product-grid">
+          {% for result in search.results %}
+            {% if result.object_type == 'product' %}
+              {% render 'product-card', product: result %}
+            {% else %}
+              <a href="{{ result.url }}" class="cc-card">
+                <div class="cc-card__body">
+                  <h3 class="cc-card__title">{{ result.title }}</h3>
+                  <p class="cc-card__description">{{ result.content | strip_html | truncate: 100 }}</p>
+                </div>
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="text-align: center; color: var(--cc-text-dim); padding: 3rem 0;">
+          {{ 'general.search.no_results' | t: terms: search.terms }}
+        </p>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
