@@ -70,55 +70,45 @@ Deno.serve(async (req) => {
     }
 
     // 5. Configure git and push to target repo
-    const gitConfig1 = await Deno.run({
-      cmd: ['git', 'config', 'user.email', 'automation@comiccrafter.ai'],
-      cwd: targetDir,
-      stdout: 'piped',
-      stderr: 'piped'
+    const gitConfig1Cmd = new Deno.Command('git', {
+      args: ['config', 'user.email', 'automation@comiccrafter.ai'],
+      cwd: targetDir
     });
-    await gitConfig1.status();
+    await gitConfig1Cmd.output();
 
-    const gitConfig2 = await Deno.run({
-      cmd: ['git', 'config', 'user.name', 'ComicCrafter Bot'],
-      cwd: targetDir,
-      stdout: 'piped',
-      stderr: 'piped'
+    const gitConfig2Cmd = new Deno.Command('git', {
+      args: ['config', 'user.name', 'ComicCrafter Bot'],
+      cwd: targetDir
     });
-    await gitConfig2.status();
+    await gitConfig2Cmd.output();
 
-    const gitAdd = await Deno.run({
-      cmd: ['git', 'add', themePath],
-      cwd: targetDir,
-      stdout: 'piped',
-      stderr: 'piped'
+    const gitAddCmd = new Deno.Command('git', {
+      args: ['add', themePath],
+      cwd: targetDir
     });
-    await gitAdd.status();
+    await gitAddCmd.output();
 
-    const gitCommit = await Deno.run({
-      cmd: ['git', 'commit', '-m', 'Add shopify-theme from comiccrafter-ai'],
-      cwd: targetDir,
-      stdout: 'piped',
-      stderr: 'piped'
+    const gitCommitCmd = new Deno.Command('git', {
+      args: ['commit', '-m', 'Add shopify-theme from comiccrafter-ai'],
+      cwd: targetDir
     });
-    const commitStatus = await gitCommit.status();
+    const commitResult = await gitCommitCmd.output();
 
-    if (!commitStatus.success) {
-      const stderr = await new TextDecoder().decode(await Deno.readAll(gitCommit.stderr));
+    if (!commitResult.success) {
+      const stderr = new TextDecoder().decode(commitResult.stderr);
       if (!stderr.includes('nothing to commit')) {
         throw new Error(`Commit failed: ${stderr}`);
       }
     }
 
-    const gitPush = await Deno.run({
-      cmd: ['git', 'push', 'origin', 'main'],
-      cwd: targetDir,
-      stdout: 'piped',
-      stderr: 'piped'
+    const gitPushCmd = new Deno.Command('git', {
+      args: ['push', 'origin', 'main'],
+      cwd: targetDir
     });
 
-    const pushStatus = await gitPush.status();
-    if (!pushStatus.success) {
-      const stderr = await new TextDecoder().decode(await Deno.readAll(gitPush.stderr));
+    const pushResult = await gitPushCmd.output();
+    if (!pushResult.success) {
+      const stderr = new TextDecoder().decode(pushResult.stderr);
       throw new Error(`Push failed: ${stderr}`);
     }
 
