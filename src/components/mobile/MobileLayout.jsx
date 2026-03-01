@@ -26,7 +26,9 @@ export default function MobileLayout({ children, currentPageName }) {
           className="flex-1 md:pt-0"
           style={{ paddingTop: "calc(3.5rem + env(safe-area-inset-top))", paddingBottom: isMobile ? "calc(4rem + env(safe-area-inset-bottom))" : "0" }}
         >
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </main>
 
         {/* Bottom tabs: mobile only */}
