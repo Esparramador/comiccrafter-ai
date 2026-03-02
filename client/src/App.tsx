@@ -19,6 +19,7 @@ import Login from "./pages/login";
 import CrearPersonaje from "./pages/crear-personaje";
 import Tienda from "./pages/tienda";
 import { PrivacyPolicy, TermsOfService, LegalNotice, DeleteAccount } from "./pages/legal";
+import PWAInstallPrompt from "./components/pwa-install-prompt";
 
 import { Home, Sparkles, BookOpen, Video, Users, LogOut, ChevronDown, Lock, ShieldAlert, Image as ImageIcon, FileVideo, Mic2, Hammer, Wand2, Menu, X, ShoppingBag, Loader2, Coins, Crown } from "lucide-react";
 import { Button } from "./components/ui/button";
@@ -368,6 +369,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Router />
+        <PWAInstallPrompt />
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>

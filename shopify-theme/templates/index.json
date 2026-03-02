@@ -4,11 +4,11 @@
       "type": "hero",
       "settings": {
         "eyebrow": "Comic Crafter IA Stories",
-        "title": "Tu Universo Creativo",
-        "title_gradient": "cobra vida con IA",
-        "subtitle": "Genera guiones, diseña personajes, crea modelos 3D, produce voces profesionales y monta vídeos animados. Todo con IA, todo en un solo lugar.",
-        "cta_text": "Ver Productos",
-        "cta2_text": "Explorar Colecciones"
+        "title": "Crea Universos Enteros",
+        "title_gradient": "con IA",
+        "subtitle": "Cómics, Manga, Animación y Personajes 3D en segundos. Tu imaginación, nuestra inteligencia.",
+        "cta_text": "Empieza Gratis",
+        "cta2_text": "Ver Planes"
       }
     },
     "gallery": {
@@ -16,6 +16,19 @@
       "settings": {
         "eyebrow": "Galería Dinámica",
         "title": "Creado con Comic Crafter"
+      }
+    },
+    "features": {
+      "type": "features-grid",
+      "settings": {}
+    },
+    "app_download": {
+      "type": "app-download",
+      "settings": {
+        "eyebrow": "Disponible en todas las plataformas",
+        "title": "Lleva Comic Crafter",
+        "title_gradient": "en tu bolsillo",
+        "description": "Instala la app directamente desde tu navegador. Sin tienda de apps, sin esperas. Crea cómics, modelos 3D y voces IA donde quieras."
       }
     },
     "featured": {
@@ -26,10 +39,6 @@
         "limit": 8,
         "show_view_all": true
       }
-    },
-    "features": {
-      "type": "features-grid",
-      "settings": {}
     },
     "stats": {
       "type": "stats-bar",
@@ -43,5 +52,5 @@
       }
     }
   },
-  "order": ["hero", "gallery", "featured", "features", "stats", "cta"]
+  "order": ["hero", "gallery", "features", "app_download", "featured", "stats", "cta"]
 }

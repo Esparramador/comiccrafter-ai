@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════
-   COMIC CRAFTER — Dynamic Gallery Background + UI
+   COMIC CRAFTER — Dynamic Gallery Background + UI + PWA Bridge
    ═══════════════════════════════════════════════════ */
 
 (function() {
@@ -13,6 +13,7 @@
       this.quantityButtons();
       this.smoothAnchors();
       this.observeAnimations();
+      this.pwaInstallBanner();
     },
 
     galleryBg() {
@@ -132,6 +133,74 @@
       document.querySelectorAll('.cc-animate-on-scroll').forEach(el => {
         observer.observe(el);
       });
+    },
+
+    pwaInstallBanner() {
+      var dismissed = localStorage.getItem('cc_pwa_banner_dismissed');
+      if (dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000) return;
+
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+        || navigator.standalone === true;
+      if (isStandalone) return;
+
+      var deferredPrompt = null;
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+
+      function showBanner() {
+        var banner = document.createElement('div');
+        banner.id = 'cc-pwa-banner';
+        banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;padding:16px;animation:cc-slide-up 0.5s ease-out;';
+        banner.innerHTML = '<div style="max-width:480px;margin:0 auto;background:linear-gradient(135deg,#111322,#1a1d35);border:1px solid rgba(147,51,234,0.2);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 30px rgba(0,0,0,0.5)">'
+          + '<div style="width:48px;height:48px;border-radius:12px;background:rgba(147,51,234,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+          + '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+          + '</div>'
+          + '<div style="flex:1;min-width:0">'
+          + '<div style="font-size:14px;font-weight:700;color:#fff">Instalar Comic Crafter</div>'
+          + '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">Accede más rápido desde tu pantalla de inicio</div>'
+          + '</div>'
+          + '<button id="cc-pwa-install" style="background:#9333ea;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Instalar</button>'
+          + '<button id="cc-pwa-close" style="background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;padding:4px;font-size:18px">&times;</button>'
+          + '</div>';
+
+        document.body.appendChild(banner);
+
+        document.getElementById('cc-pwa-install').addEventListener('click', function() {
+          if (isIOS) {
+            banner.querySelector('div > div:nth-child(2)').innerHTML = '<div style="font-size:12px;font-weight:700;color:#fff">Instalar en iOS</div>'
+              + '<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px;line-height:1.5">'
+              + '1. Pulsa ⬆️ <b>Compartir</b> en Safari<br>'
+              + '2. Pulsa <b>Añadir a pantalla de inicio</b><br>'
+              + '3. Pulsa <b>Añadir</b></div>';
+            return;
+          }
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function(r) {
+              if (r.outcome === 'accepted') banner.remove();
+              deferredPrompt = null;
+            });
+          }
+        });
+
+        document.getElementById('cc-pwa-close').addEventListener('click', function() {
+          banner.remove();
+          localStorage.setItem('cc_pwa_banner_dismissed', String(Date.now()));
+        });
+      }
+
+      if (isIOS) {
+        setTimeout(showBanner, 3000);
+      } else {
+        window.addEventListener('beforeinstallprompt', function(e) {
+          e.preventDefault();
+          deferredPrompt = e;
+          setTimeout(showBanner, 2000);
+        });
+      }
+
+      var style = document.createElement('style');
+      style.textContent = '@keyframes cc-slide-up{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}';
+      document.head.appendChild(style);
     }
   };
 
