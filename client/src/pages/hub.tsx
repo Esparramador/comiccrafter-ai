@@ -3,136 +3,166 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BookOpen, Hammer, Mic2, Video, Zap, PenTool, Sparkles, Box, ChevronLeft, ChevronRight, ArrowRight, Star, Users, Image as ImageIcon, Palette } from "lucide-react";
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 
-const heroSlides = [
-  { image: "/hero-bg-1.png", title: "Tu Universo Narrativo", subtitle: "cobra vida con IA" },
-  { image: "/hero-bg-2.png", title: "Del Guion al Cómic", subtitle: "en minutos" },
-  { image: "/hero-bg-3.png", title: "Estudio Creativo", subtitle: "del futuro" },
-];
-
-const features = [
-  {
-    icon: PenTool,
-    image: "/feature-script.png",
-    title: "Guiones Inteligentes",
-    description: "La IA genera guiones cinematográficos completos con estructura de 3 actos, diálogos naturales y direcciones de arte. Elige género, tono y personajes.",
-    color: "from-violet-500 to-purple-600",
-    href: "/story-weaver",
-  },
-  {
-    icon: ImageIcon,
-    image: "/feature-characters.png",
-    title: "Personajes Persistentes",
-    description: "Crea personajes con apariencia consistente que la IA recuerda en cada escena. Sube fotos reales o genera desde cero con estilos manga, anime o western.",
-    color: "from-pink-500 to-rose-600",
-    href: "/crear-personaje",
-  },
-  {
-    icon: Box,
-    image: "/feature-3d.png",
-    title: "Modelos 3D desde Texto",
-    description: "Transforma descripciones o imágenes en modelos 3D listos para usar. Exporta en GLB para animación, juegos o impresión 3D.",
-    color: "from-blue-500 to-cyan-600",
-    href: "/forge-3d",
-  },
-  {
-    icon: Mic2,
-    image: "/feature-voice.png",
-    title: "Voces IA Profesionales",
-    description: "Más de 100 voces en 29 idiomas con ElevenLabs. Asigna voces únicas a cada personaje y genera diálogos narrados con calidad de estudio.",
-    color: "from-emerald-500 to-teal-600",
-    href: "/voice",
-  },
-  {
-    icon: Video,
-    image: "/feature-video.png",
-    title: "Vídeo & Animación",
-    description: "Un director IA te guía para crear cortos animados y vídeos. Combina guiones, personajes y voces en producciones cinematográficas.",
-    color: "from-orange-500 to-amber-600",
-    href: "/video",
-  },
-  {
-    icon: Palette,
-    image: "/feature-styles.png",
-    title: "Múltiples Estilos",
-    description: "Manga, anime, noir, fantasía oscura, western, chibi y más. Cada estilo se aplica con consistencia milimétrica en todas las viñetas de tu cómic.",
-    color: "from-fuchsia-500 to-pink-600",
-    href: "/story-weaver",
-  },
+const galleryImages = [
+  "/gallery/comic-banner.png",
+  "/gallery/comic-cover.png",
+  "/gallery/comic-cover-dark.png",
+  "/gallery/comiccrafter-showcase.png",
+  "/gallery/comic-wallpaper.png",
+  "/gallery/feature-graphic.png",
+  "/gallery/expanded-services.png",
+  "/gallery/screenshot-create.png",
+  "/gallery/screenshot-3d.png",
+  "/gallery/screenshot-video.png",
+  "/gallery/services-portfolio.png",
+  "/gallery/service_3d_printing.png",
+  "/gallery/service_custom_comics.png",
+  "/gallery/service_movies.png",
+  "/gallery/service_videogames.png",
 ];
 
 export default function Hub() {
+  const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [galleryOffset, setGalleryOffset] = useState(0);
+
+  const features = [
+    {
+      icon: PenTool,
+      image: "/feature-script.png",
+      title: t("hub.featSmartScripts"),
+      description: t("hub.featSmartScriptsDesc"),
+      color: "from-violet-500 to-purple-600",
+      href: "/story-weaver",
+    },
+    {
+      icon: ImageIcon,
+      image: "/feature-characters.png",
+      title: t("hub.featPersistentChars"),
+      description: t("hub.featPersistentCharsDesc"),
+      color: "from-pink-500 to-rose-600",
+      href: "/crear-personaje",
+    },
+    {
+      icon: Box,
+      image: "/feature-3d.png",
+      title: t("hub.feat3DModels"),
+      description: t("hub.feat3DModelsDesc"),
+      color: "from-blue-500 to-cyan-600",
+      href: "/forge-3d",
+    },
+    {
+      icon: Mic2,
+      image: "/feature-voice.png",
+      title: t("hub.featVoices"),
+      description: t("hub.featVoicesDesc"),
+      color: "from-emerald-500 to-teal-600",
+      href: "/voice",
+    },
+    {
+      icon: Video,
+      image: "/feature-video.png",
+      title: t("hub.featVideo"),
+      description: t("hub.featVideoDesc"),
+      color: "from-orange-500 to-amber-600",
+      href: "/video",
+    },
+    {
+      icon: Palette,
+      image: "/feature-styles.png",
+      title: t("hub.featStyles"),
+      description: t("hub.featStylesDesc"),
+      color: "from-fuchsia-500 to-pink-600",
+      href: "/story-weaver",
+    },
+  ];
+
+  const heroTitles = [
+    { title: t("hub.heroTitle1"), subtitle: t("hub.heroSub1") },
+    { title: t("hub.heroTitle2"), subtitle: t("hub.heroSub2") },
+    { title: t("hub.heroTitle3"), subtitle: t("hub.heroSub3") },
+  ];
 
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-  }, []);
-
-  const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+    setCurrentSlide((prev) => (prev + 1) % 3);
   }, []);
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
     const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying, nextSlide]);
+  }, [nextSlide]);
+
+  useEffect(() => {
+    const galleryInterval = setInterval(() => {
+      setGalleryOffset((prev) => (prev + 1) % galleryImages.length);
+    }, 3000);
+    return () => clearInterval(galleryInterval);
+  }, []);
+
+  const visibleGallery = Array.from({ length: 8 }, (_, i) =>
+    galleryImages[(galleryOffset + i) % galleryImages.length]
+  );
 
   return (
     <div className="min-h-screen">
-      <section className="relative h-[85vh] overflow-hidden" data-testid="hero-carousel">
-        {heroSlides.map((slide, idx) => (
-          <div
-            key={idx}
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${idx === currentSlide ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
-          >
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D17] via-[#0B0D17]/60 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D17]/80 to-transparent" />
-          </div>
-        ))}
+      <section className="relative min-h-[90vh] overflow-hidden" data-testid="hero-carousel">
+        <div className="absolute inset-0 grid grid-cols-4 grid-rows-2 gap-1 opacity-[0.12]">
+          {visibleGallery.map((img, idx) => (
+            <div
+              key={`${galleryOffset}-${idx}`}
+              className="relative overflow-hidden animate-in fade-in duration-1000"
+              style={{ animationDelay: `${idx * 150}ms` }}
+            >
+              <img
+                src={img}
+                alt=""
+                className="w-full h-full object-cover scale-110 hover:scale-125 transition-transform duration-[3000ms]"
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0D17]/70 via-[#0B0D17]/85 to-[#0B0D17]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D17]/90 via-transparent to-[#0B0D17]/90" />
 
         <div className="absolute inset-0 flex items-center z-10">
           <div className="max-w-7xl mx-auto px-6 w-full">
             <div className="max-w-2xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
               <div className="flex items-center gap-3">
-                <img src="/logo-icon.png" alt="ComicCrafter" className="w-14 h-14 rounded-2xl shadow-2xl shadow-purple-500/30 border-2 border-white/10" />
+                <img src="/logo-app.png" alt="Comic Crafter" className="w-14 h-14 rounded-2xl shadow-2xl shadow-purple-500/30 border-2 border-white/10" />
                 <div>
-                  <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-purple-400">ComicCrafter IA Stories</h2>
-                  <p className="text-xs text-white/50">Plataforma de Creación con Inteligencia Artificial</p>
+                  <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-purple-400">Comic Crafter IA Stories</h2>
+                  <p className="text-xs text-white/50">{t("hub.subtitle")}</p>
                 </div>
               </div>
 
               <h1 className="text-5xl md:text-7xl font-black text-white leading-[1.1]">
-                {heroSlides[currentSlide].title}{" "}
+                {heroTitles[currentSlide].title}{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400">
-                  {heroSlides[currentSlide].subtitle}
+                  {heroTitles[currentSlide].subtitle}
                 </span>
               </h1>
 
               <p className="text-lg text-white/60 leading-relaxed max-w-xl">
-                Genera guiones, diseña personajes, crea modelos 3D, produce voces profesionales y monta vídeos animados. Todo con IA, todo en un solo lugar.
+                {t("hub.heroDescription")}
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">
                 <Link href="/story-weaver">
                   <Button className="h-14 px-8 text-base bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border-0 shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:shadow-[0_0_60px_rgba(168,85,247,0.6)] transition-all rounded-full font-bold gap-2" data-testid="button-create-comic">
-                    <Zap className="w-5 h-5" /> Crear mi Cómic
+                    <Zap className="w-5 h-5" /> {t("hub.createComic")}
                   </Button>
                 </Link>
                 <Link href="/forge-3d">
                   <Button className="h-14 px-8 text-base bg-white/10 hover:bg-white/20 backdrop-blur border border-white/20 text-white transition-all rounded-full font-bold gap-2" data-testid="button-create-3d">
-                    <Hammer className="w-5 h-5" /> Modelo 3D
+                    <Hammer className="w-5 h-5" /> {t("hub.create3D")}
                   </Button>
                 </Link>
                 <Link href="/voice">
                   <Button className="h-14 px-8 text-base bg-white/5 hover:bg-white/15 backdrop-blur border border-white/10 text-white/80 transition-all rounded-full font-bold gap-2" data-testid="button-voices">
-                    <Mic2 className="w-5 h-5" /> Voces IA
+                    <Mic2 className="w-5 h-5" /> {t("hub.voicesAI")}
                   </Button>
                 </Link>
               </div>
@@ -142,24 +172,24 @@ export default function Hub() {
 
         <div className="absolute bottom-8 left-0 right-0 z-10 flex items-center justify-center gap-4">
           <button
-            onClick={() => { prevSlide(); setIsAutoPlaying(false); }}
+            onClick={() => setCurrentSlide((prev) => (prev - 1 + 3) % 3)}
             className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur flex items-center justify-center text-white transition-all border border-white/10"
             data-testid="button-prev-slide"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex gap-2">
-            {heroSlides.map((_, idx) => (
+            {heroTitles.map((_, idx) => (
               <button
                 key={idx}
-                onClick={() => { setCurrentSlide(idx); setIsAutoPlaying(false); }}
+                onClick={() => setCurrentSlide(idx)}
                 className={`h-2 rounded-full transition-all duration-500 ${idx === currentSlide ? "w-8 bg-purple-500" : "w-2 bg-white/30 hover:bg-white/50"}`}
                 data-testid={`button-slide-${idx}`}
               />
             ))}
           </div>
           <button
-            onClick={() => { nextSlide(); setIsAutoPlaying(false); }}
+            onClick={() => setCurrentSlide((prev) => (prev + 1) % 3)}
             className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur flex items-center justify-center text-white transition-all border border-white/10"
             data-testid="button-next-slide"
           >
@@ -168,17 +198,46 @@ export default function Hub() {
         </div>
       </section>
 
+      <section className="relative py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-6">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-purple-400 mb-2">{t("hub.galleryTitle", "Galería Dinámica")}</p>
+            <h2 className="text-2xl font-black text-white">{t("hub.gallerySubtitle", "Creado con Comic Crafter")}</h2>
+          </div>
+          <div className="relative overflow-hidden rounded-2xl">
+            <div
+              className="flex transition-transform duration-[2000ms] ease-linear"
+              style={{ transform: `translateX(-${(galleryOffset % galleryImages.length) * (100 / 5)}%)` }}
+            >
+              {[...galleryImages, ...galleryImages].map((img, idx) => (
+                <div key={idx} className="w-1/5 shrink-0 px-1.5">
+                  <div className="aspect-[3/4] rounded-xl overflow-hidden border border-white/5 group">
+                    <img
+                      src={img}
+                      alt=""
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#0B0D17] to-transparent pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[#0B0D17] to-transparent pointer-events-none" />
+          </div>
+        </div>
+      </section>
+
       <section className="relative py-24 bg-gradient-to-b from-[#0B0D17] to-[#0f1225]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-medium">
-              <Sparkles className="w-4 h-4" /> Todas las herramientas que necesitas
+              <Sparkles className="w-4 h-4" /> {t("hub.featuresTitle")}
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white">
               Un Estudio Completo de <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Creación con IA</span>
             </h2>
             <p className="text-lg text-white/50 max-w-2xl mx-auto">
-              Desde la idea inicial hasta la producción final. Cada herramienta potenciada por inteligencia artificial de última generación.
+              {t("hub.featuresSubtitle")}
             </p>
           </div>
 
@@ -221,10 +280,10 @@ export default function Hub() {
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { icon: Star, value: "100+", label: "Voces IA Disponibles" },
-              { icon: Users, value: "29", label: "Idiomas Soportados" },
-              { icon: Palette, value: "8+", label: "Estilos de Arte" },
-              { icon: Sparkles, value: "6", label: "Herramientas IA" },
+              { icon: Star, value: "100+", label: t("hub.statVoices") },
+              { icon: Users, value: "29", label: t("hub.statLanguages") },
+              { icon: Palette, value: "8+", label: t("hub.statStyles") },
+              { icon: Sparkles, value: "6", label: t("hub.statTools") },
             ].map((stat, idx) => (
               <div key={idx} className="space-y-2" data-testid={`stat-${idx}`}>
                 <stat.icon className="w-8 h-8 mx-auto text-purple-400" />
@@ -239,28 +298,35 @@ export default function Hub() {
       <section className="py-20 bg-gradient-to-b from-[#0f1225] to-[#0B0D17]">
         <div className="max-w-4xl mx-auto px-6 text-center space-y-8">
           <h2 className="text-3xl md:text-4xl font-black text-white">
-            Empieza a crear <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">ahora mismo</span>
+            {t("hub.ctaTitle")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{t("hub.ctaSub")}</span>
           </h2>
           <p className="text-lg text-white/50">
-            No necesitas experiencia previa. La IA se encarga de lo técnico, tú pones la creatividad.
+            {t("hub.ctaDescription")}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/story-weaver">
               <Button className="h-14 px-10 text-base bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-full font-bold shadow-[0_0_40px_rgba(168,85,247,0.3)] gap-2" data-testid="button-cta-start">
-                <BookOpen className="w-5 h-5" /> Comenzar Gratis
+                <BookOpen className="w-5 h-5" /> {t("hub.ctaButton")}
               </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      <footer className="bg-[#060812] border-t border-white/5 py-8">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <footer className="bg-[#060812] border-t border-white/5 py-10">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-6">
           <div className="flex items-center gap-3">
-            <img src="/logo-icon.png" alt="ComicCrafter" className="w-8 h-8 rounded-lg" />
-            <span className="font-bold text-white/80">ComicCrafter IA Stories</span>
+            <img src="/logo-app.png" alt="Comic Crafter" className="w-8 h-8 rounded-lg" />
+            <span className="font-bold text-white/80">Comic Crafter</span>
           </div>
-          <p className="text-xs text-white/30">&copy; 2025-2026 ComicCrafter IA Stories. Powered by OpenAI, Gemini, Tripo3D, ElevenLabs.</p>
+          <div className="flex flex-wrap justify-center gap-6 text-sm">
+            <Link href="/privacidad"><span className="text-white/50 hover:text-purple-400 transition-colors cursor-pointer" data-testid="link-hub-privacy">{t("hub.footerPrivacy")}</span></Link>
+            <Link href="/terminos"><span className="text-white/50 hover:text-purple-400 transition-colors cursor-pointer" data-testid="link-hub-terms">{t("hub.footerTerms")}</span></Link>
+            <Link href="/aviso-legal"><span className="text-white/50 hover:text-purple-400 transition-colors cursor-pointer" data-testid="link-hub-legal">{t("hub.footerLegal")}</span></Link>
+            <Link href="/eliminar-cuenta"><span className="text-white/50 hover:text-red-400 transition-colors cursor-pointer" data-testid="link-hub-delete">{t("hub.footerDelete")}</span></Link>
+            <a href="mailto:sadiagiljoan@gmail.com" className="text-white/50 hover:text-purple-400 transition-colors" data-testid="link-hub-contact">{t("hub.footerContact")}</a>
+          </div>
+          <p className="text-xs text-white/30">{t("hub.footerCopyright")}</p>
         </div>
       </footer>
     </div>

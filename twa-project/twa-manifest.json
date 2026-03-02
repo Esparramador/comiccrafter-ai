@@ -1,0 +1,66 @@
+{
+  "packageId": "es.comiccrafter.app",
+  "host": "app.comiccrafter.es",
+  "name": "Comic Crafter",
+  "launcherName": "Comic Crafter",
+  "display": "standalone",
+  "themeColor": "#0B0D17",
+  "themeColorDark": "#0B0D17",
+  "navigationColor": "#0B0D17",
+  "navigationColorDark": "#0B0D17",
+  "navigationDividerColor": "#0B0D17",
+  "navigationDividerColorDark": "#0B0D17",
+  "backgroundColor": "#0B0D17",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "/icons/icon-512.png",
+  "maskableIconUrl": "/icons/maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "comic-crafter-key.keystore",
+    "alias": "comiccrafter"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [
+    {
+      "name": "Crear Comic",
+      "short_name": "Comic",
+      "url": "/story-weaver",
+      "chosenIconUrl": "/icons/icon-96.png"
+    },
+    {
+      "name": "Modelo 3D",
+      "short_name": "3D",
+      "url": "/forge-3d",
+      "chosenIconUrl": "/icons/icon-96.png"
+    },
+    {
+      "name": "Voces IA",
+      "short_name": "Voces",
+      "url": "/voice-studio",
+      "chosenIconUrl": "/icons/icon-96.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://app.comiccrafter.es/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": false
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependency": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://app.comiccrafter.es/",
+  "minSdkVersion": 19,
+  "orientation": "default",
+  "fingerprints": []
+}

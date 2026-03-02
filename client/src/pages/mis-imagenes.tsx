@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Image as ImageIcon, Download, Eye, Trash2, Loader2, Sparkles, RefreshCw, X } from "lucide-react";
+import { Image as ImageIcon, Download, Eye, Trash2, Loader2, Sparkles, RefreshCw, X, Archive } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -10,12 +10,17 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AIProgress from "@/components/ai-progress";
 import type { GeneratedImage } from "@shared/schema";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "@/lib/auth";
 
 export default function MisImagenes() {
+  const { t } = useTranslation();
   const { toast } = useToast();
+  const { user, isSuperUser } = useAuth();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("todos");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [viewImage, setViewImage] = useState<GeneratedImage | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -39,7 +44,7 @@ export default function MisImagenes() {
           if (!data.running) {
             setIsGenerating(false);
             queryClient.invalidateQueries({ queryKey: ["/api/images"] });
-            toast({ title: "Galería completa", description: "Todas las imágenes han sido generadas con DALL-E 3 HD." });
+            toast({ title: t("gallery.completeTitle"), description: t("gallery.completeDesc") });
           }
         } catch {}
       }, 10000);
@@ -53,7 +58,7 @@ export default function MisImagenes() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/images"] });
-      toast({ title: "Imagen eliminada" });
+      toast({ title: t("gallery.deleted") });
     },
   });
 
@@ -63,11 +68,11 @@ export default function MisImagenes() {
       const res = await apiRequest("POST", "/api/ai/generate-gallery-batch", {});
       const data = await res.json();
       toast({
-        title: data.started ? "Generación iniciada" : "En proceso",
+        title: data.started ? t("gallery.started") : t("gallery.inProgress"),
         description: data.message,
       });
     } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: e.message, variant: "destructive" });
       setIsGenerating(false);
     }
   };
@@ -85,9 +90,44 @@ export default function MisImagenes() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast({ title: "Descargando imagen..." });
+      toast({ title: t("gallery.downloading") });
     } catch {
       window.open(img.imageUrl, "_blank");
+    }
+  };
+
+  const handleExportZip = async () => {
+    const canExport = isSuperUser || user?.plan === "pro" || user?.plan === "vip";
+    if (!canExport) {
+      toast({ title: t("gallery.exportRequiresPro"), description: t("gallery.upgradeToExport"), variant: "destructive" });
+      return;
+    }
+    setIsExporting(true);
+    try {
+      const token = localStorage.getItem("cc_token");
+      const res = await fetch("/api/export/zip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ type: "images" }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Export failed");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `comiccrafter-images-${Date.now()}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast({ title: t("gallery.exportSuccess") });
+    } catch (e: any) {
+      toast({ title: t("gallery.exportError"), description: e.message, variant: "destructive" });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -111,10 +151,10 @@ export default function MisImagenes() {
 
   const getCategoryLabel = (cat: string) => {
     const labels: Record<string, string> = {
-      cover: "Portada",
-      illustration: "Ilustración",
-      character: "Personaje",
-      general: "General",
+      cover: t("gallery.catCover"),
+      illustration: t("gallery.catIllustration"),
+      character: t("gallery.catCharacter"),
+      general: t("gallery.catGeneral"),
     };
     return labels[cat] || cat;
   };
@@ -134,11 +174,25 @@ export default function MisImagenes() {
       <header className="mb-8 flex items-start justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2 text-white flex items-center gap-3" data-testid="text-page-title">
-            <ImageIcon className="w-8 h-8 text-purple-500" /> Mis Imágenes
+            <ImageIcon className="w-8 h-8 text-purple-500" /> {t("gallery.title")}
           </h1>
-          <p className="text-white/50">Tu galería de portadas, ilustraciones, personajes y concept art generados con IA.</p>
-          <p className="text-xs text-white/30 mt-1">{images.length} imágenes en total</p>
+          <p className="text-white/50">{t("gallery.subtitle")}</p>
+          <p className="text-xs text-white/30 mt-1">{t("gallery.totalCount", { count: images.length })}</p>
         </div>
+        <div className="flex gap-3">
+        <Button
+          onClick={handleExportZip}
+          disabled={isExporting || images.length === 0}
+          variant="outline"
+          className="border-white/10 text-white/70 hover:text-white hover:bg-white/10 h-12 px-5 font-bold"
+          data-testid="button-export-zip"
+        >
+          {isExporting ? (
+            <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> {t("gallery.exportingZip")}</span>
+          ) : (
+            <span className="flex items-center gap-2"><Archive className="w-4 h-4" /> {t("gallery.exportZip")}</span>
+          )}
+        </Button>
         <Button
           onClick={handleGenerateGallery}
           disabled={isGenerating}
@@ -146,11 +200,12 @@ export default function MisImagenes() {
           data-testid="button-generate-gallery"
         >
           {isGenerating ? (
-            <span className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Generando Galería...</span>
+            <span className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> {t("gallery.generatingGallery")}...</span>
           ) : (
-            <span className="flex items-center gap-2"><Sparkles className="w-5 h-5" /> Generar Galería IA (20 imágenes)</span>
+            <span className="flex items-center gap-2"><Sparkles className="w-5 h-5" /> {t("gallery.generateGalleryIA")}</span>
           )}
         </Button>
+        </div>
       </header>
 
       <AIProgress isActive={isGenerating} type="gallery" estimatedSeconds={300} />
@@ -158,20 +213,20 @@ export default function MisImagenes() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1 flex flex-col">
         <TabsList className="bg-black/50 border border-white/10 mb-6 h-12 w-fit">
           <TabsTrigger value="todos" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4" data-testid="tab-all">
-            Todas ({counts.todos})
+            {t("gallery.tabAll")} ({counts.todos})
           </TabsTrigger>
           <TabsTrigger value="portadas" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4" data-testid="tab-covers">
-            Portadas ({counts.portadas})
+            {t("gallery.tabCovers")} ({counts.portadas})
           </TabsTrigger>
           <TabsTrigger value="ilustraciones" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white px-4" data-testid="tab-illustrations">
-            Ilustraciones ({counts.ilustraciones})
+            {t("gallery.tabIllustrations")} ({counts.ilustraciones})
           </TabsTrigger>
           <TabsTrigger value="personajes" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-4" data-testid="tab-characters">
-            Personajes ({counts.personajes})
+            {t("gallery.tabCharacters")} ({counts.personajes})
           </TabsTrigger>
           {counts.otros > 0 && (
             <TabsTrigger value="otros" className="data-[state=active]:bg-gray-600 data-[state=active]:text-white px-4" data-testid="tab-other">
-              Otros ({counts.otros})
+              {t("gallery.tabOther")} ({counts.otros})
             </TabsTrigger>
           )}
         </TabsList>
@@ -183,8 +238,8 @@ export default function MisImagenes() {
         ) : filteredImages.length === 0 ? (
           <div className="flex-1 flex items-center justify-center flex-col gap-4 text-white/30">
             <ImageIcon className="w-16 h-16" />
-            <p className="text-lg">No hay imágenes en esta categoría</p>
-            <p className="text-sm">Genera portadas e ilustraciones con el botón de arriba</p>
+            <p className="text-lg">{t("gallery.emptyCategory")}</p>
+            <p className="text-sm">{t("gallery.emptyCategoryHelp")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-y-auto flex-1 pb-8">
@@ -235,7 +290,7 @@ export default function MisImagenes() {
                       {getCategoryLabel(img.category)}
                     </Badge>
                     <span className="text-[10px] text-white/30">
-                      {new Date(img.createdAt).toLocaleDateString("es-ES")}
+                      {new Date(img.createdAt).toLocaleDateString(t("common.locale"))}
                     </span>
                   </div>
                 </div>
@@ -268,7 +323,7 @@ export default function MisImagenes() {
                     {getCategoryLabel(viewImage.category)}
                   </Badge>
                   <span className="text-xs text-white/40">
-                    {new Date(viewImage.createdAt).toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" })}
+                    {new Date(viewImage.createdAt).toLocaleDateString(t("common.locale"), { year: "numeric", month: "long", day: "numeric" })}
                   </span>
                 </div>
                 <p className="text-sm text-white/70 leading-relaxed">{viewImage.prompt}</p>
@@ -278,14 +333,14 @@ export default function MisImagenes() {
                     className="bg-blue-600 hover:bg-blue-500 text-white gap-2"
                     data-testid="button-download-full"
                   >
-                    <Download className="w-4 h-4" /> Descargar Imagen
+                    <Download className="w-4 h-4" /> {t("gallery.download")}
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => window.open(viewImage.imageUrl, "_blank")}
                     className="border-white/10 text-white/70 hover:text-white gap-2"
                   >
-                    <Eye className="w-4 h-4" /> Abrir en Nueva Pestaña
+                    <Eye className="w-4 h-4" /> {t("gallery.openNewTab")}
                   </Button>
                 </div>
               </div>

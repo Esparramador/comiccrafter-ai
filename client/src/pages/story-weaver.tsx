@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Character } from "@shared/schema";
 import AIProgress from "@/components/ai-progress";
+import { CreditBadge, useCredits } from "@/lib/credits";
 
 type StoryStep = {
   question: string;
@@ -15,6 +17,7 @@ type StoryStep = {
 };
 
 export default function StoryWeaver() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'guion' | 'portada' | 'comic'>('comic');
   const [mode, setMode] = useState<'wizard' | 'manual'>('wizard');
   const [storyIdea, setStoryIdea] = useState("");
@@ -22,6 +25,7 @@ export default function StoryWeaver() {
   const [output, setOutput] = useState<string | null>(null);
   const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
   const { toast } = useToast();
+  const { checkCredits, PaywallModal, refreshUser } = useCredits();
 
   const [generatedScript, setGeneratedScript] = useState("");
   const [generatedCoverUrl, setGeneratedCoverUrl] = useState("");
@@ -44,29 +48,29 @@ export default function StoryWeaver() {
   };
 
   const [coverStep, setCoverStep] = useState(0);
-  const coverSteps: StoryStep[] = [
-    { question: "¿Qué atmósfera o tono visual buscas para la portada?", options: ["Acción Épica / Explosiva", "Misterio / Oscura (Noir)", "Magia y Fantasía", "Ciencia Ficción Cyberpunk", "Romance / Drama Emocional"] },
-    { question: "¿Quién o qué será el foco principal en la ilustración?", options: ["El Protagonista Principal (Pose heroica)", "Un combate entre Protagonista y Villano", "Un paisaje o ciudad imponente", "Un objeto mágico/tecnológico clave", "Todo el reparto (Ensemble cast)"] },
-    { question: "¿Qué estilo artístico prefieres para la portada?", options: ["Estilo Cómic Americano (Marvel/DC)", "Manga Shonen (Dragon Ball/One Piece)", "Manga Seinen (Oscuro/Maduro)", "Acuarela / Cuento Infantil", "Arte Conceptual 3D Renderizado"] },
-    { question: "¿Para qué formato de publicación es esta portada?", options: ["Capítulo Semanal (Manga/Webtoon)", "Tomo Recopilatorio / Volumen", "Novela Gráfica Única", "Póster Promocional"] }
-  ];
-
   const [scriptStep, setScriptStep] = useState(0);
-  const scriptSteps: StoryStep[] = [
-    { question: "Empecemos a tejer la historia. ¿Qué género principal quieres explorar hoy?", options: ["Cyberpunk / Scifi", "Fantasía Oscura", "Noir / Detectives", "Educativo / Infantil", "Shonen (Lucha y Superación)"] },
-    { question: "¿Cuál será el conflicto central?", options: ["Venganza personal", "Salvar al mundo / ciudad", "Descubrir la verdad oculta", "Un viaje de aprendizaje", "Torneo de Artes Marciales / Poderes"] },
-    { question: "¿Qué ritmo (pacing) debe tener la narrativa?", options: ["Frenético, pura acción", "Lento, construcción de mundo", "Equilibrado, con pausas reflexivas", "Misterioso, tensión constante"] },
-    { question: "¿Qué longitud tendrá esta historia?", options: ["Corto (One-shot / 1 Capítulo)", "Medio (Arco de 5-10 Capítulos)", "Largo (Saga Completa)", "Épico (Libro completo / Sin Límite)"] },
-    { question: "Idioma de Generación del Guion:", options: ["Español", "English", "日本語 (Japonés)", "Français"] }
+  const [comicStep, setComicStep] = useState(0);
+  const coverSteps: StoryStep[] = [
+    { question: t("storyWeaver.wizard.cover.q1"), options: [t("storyWeaver.wizard.cover.q1_o1"), t("storyWeaver.wizard.cover.q1_o2"), t("storyWeaver.wizard.cover.q1_o3"), t("storyWeaver.wizard.cover.q1_o4"), t("storyWeaver.wizard.cover.q1_o5")] },
+    { question: t("storyWeaver.wizard.cover.q2"), options: [t("storyWeaver.wizard.cover.q2_o1"), t("storyWeaver.wizard.cover.q2_o2"), t("storyWeaver.wizard.cover.q2_o3"), t("storyWeaver.wizard.cover.q2_o4"), t("storyWeaver.wizard.cover.q2_o5")] },
+    { question: t("storyWeaver.wizard.cover.q3"), options: [t("storyWeaver.wizard.cover.q3_o1"), t("storyWeaver.wizard.cover.q3_o2"), t("storyWeaver.wizard.cover.q3_o3"), t("storyWeaver.wizard.cover.q3_o4"), t("storyWeaver.wizard.cover.q3_o5")] },
+    { question: t("storyWeaver.wizard.cover.q4"), options: [t("storyWeaver.wizard.cover.q4_o1"), t("storyWeaver.wizard.cover.q4_o2"), t("storyWeaver.wizard.cover.q4_o3"), t("storyWeaver.wizard.cover.q4_o4")] }
   ];
 
-  const [comicStep, setComicStep] = useState(0);
+  const scriptSteps: StoryStep[] = [
+    { question: t("storyWeaver.wizard.script.q1"), options: [t("storyWeaver.wizard.script.q1_o1"), t("storyWeaver.wizard.script.q1_o2"), t("storyWeaver.wizard.script.q1_o3"), t("storyWeaver.wizard.script.q1_o4"), t("storyWeaver.wizard.script.q1_o5")] },
+    { question: t("storyWeaver.wizard.script.q2"), options: [t("storyWeaver.wizard.script.q2_o1"), t("storyWeaver.wizard.script.q2_o2"), t("storyWeaver.wizard.script.q2_o3"), t("storyWeaver.wizard.script.q2_o4"), t("storyWeaver.wizard.script.q2_o5")] },
+    { question: t("storyWeaver.wizard.script.q3"), options: [t("storyWeaver.wizard.script.q3_o1"), t("storyWeaver.wizard.script.q3_o2"), t("storyWeaver.wizard.script.q3_o3"), t("storyWeaver.wizard.script.q3_o4")] },
+    { question: t("storyWeaver.wizard.script.q4"), options: [t("storyWeaver.wizard.script.q4_o1"), t("storyWeaver.wizard.script.q4_o2"), t("storyWeaver.wizard.script.q4_o3"), t("storyWeaver.wizard.script.q4_o4")] },
+    { question: t("storyWeaver.wizard.script.q5"), options: ["Español", "English", "日本語", "Français"] }
+  ];
+
   const comicSteps: StoryStep[] = [
-    { question: "¿Qué estructura visual tendrá la página del cómic?", options: ["Clásica (6-9 viñetas simétricas)", "Dinámica Manga (Viñetas diagonales, acción)", "Splash Page (1 gran ilustración principal)", "Webtoon (Lectura vertical continua)"] },
-    { question: "¿Qué nivel de diálogo o narración habrá?", options: ["Mucha acción, sin diálogos", "Equilibrio entre diálogo y arte", "Narración en off (Cajas de texto)", "Diálogos intensos tipo novela gráfica"] },
-    { question: "Estilo e Inspiración Visual:", options: ["Shonen Clásico (Dragon Ball, Naruto, One Piece)", "Seinen Oscuro (Berserk, Tokyo Ghoul)", "Cómic Americano Moderno (Marvel/DC)", "Blanco y Negro Entintado Clásico", "Color Completo Vibrante"] },
-    { question: "¿Cuántas páginas tendrá tu proyecto?", options: ["1 Página (Ilustración Suelta)", "5-10 Páginas (Escena/Corto)", "20-30 Páginas (Capítulo Estándar)", "100+ Páginas (Libro completo / Sin límite)"] },
-    { question: "Idioma de Generación (Textos/Bocadillos):", options: ["Español", "English", "日本語 (Japonés)", "Français"] }
+    { question: t("storyWeaver.wizard.comic.q1"), options: [t("storyWeaver.wizard.comic.q1_o1"), t("storyWeaver.wizard.comic.q1_o2"), t("storyWeaver.wizard.comic.q1_o3"), t("storyWeaver.wizard.comic.q1_o4")] },
+    { question: t("storyWeaver.wizard.comic.q2"), options: [t("storyWeaver.wizard.comic.q2_o1"), t("storyWeaver.wizard.comic.q2_o2"), t("storyWeaver.wizard.comic.q2_o3"), t("storyWeaver.wizard.comic.q2_o4")] },
+    { question: t("storyWeaver.wizard.comic.q3"), options: [t("storyWeaver.wizard.comic.q3_o1"), t("storyWeaver.wizard.comic.q3_o2"), t("storyWeaver.wizard.comic.q3_o3"), t("storyWeaver.wizard.comic.q3_o4"), t("storyWeaver.wizard.comic.q3_o5")] },
+    { question: t("storyWeaver.wizard.comic.q4"), options: [t("storyWeaver.wizard.comic.q4_o1"), t("storyWeaver.wizard.comic.q4_o2"), t("storyWeaver.wizard.comic.q4_o3"), t("storyWeaver.wizard.comic.q4_o4")] },
+    { question: t("storyWeaver.wizard.comic.q5"), options: ["Español", "English", "日本語", "Français"] }
   ];
 
   const handleAutoGenerateScript = async () => {
@@ -95,7 +99,14 @@ export default function StoryWeaver() {
     }
   };
 
+  const getServiceForTab = () => {
+    if (activeTab === 'guion') return 'generate-script';
+    if (activeTab === 'portada') return 'generate-cover';
+    return 'generate-comic-page';
+  };
+
   const handleGenerate = async () => {
+    if (!checkCredits(getServiceForTab())) return;
     setIsGenerating(true);
     try {
       if (activeTab === 'guion') {
@@ -136,6 +147,7 @@ export default function StoryWeaver() {
         );
         setOutput('comic_generated');
       }
+      refreshUser();
       toast({ title: "Generación completa", description: `Tu ${activeTab === 'portada' ? 'portada' : activeTab === 'guion' ? 'guion' : 'página de cómic'} ha sido generada por IA.` });
     } catch (e: any) {
       toast({ title: "Error en la generación", description: e.message, variant: "destructive" });
@@ -170,21 +182,21 @@ export default function StoryWeaver() {
             onClick={() => { setActiveTab('comic'); setOutput(null); setComicStep(0); setWizardChoices([]); }}
             data-testid="tab-comic"
           >
-            <BookOpen className="w-4 h-4" /> Páginas de Cómic
+            <BookOpen className="w-4 h-4" /> {t("storyWeaver.tabPages")}
           </button>
           <button 
             className={`flex-1 py-3 text-xs font-bold rounded-lg transition-all flex flex-col items-center justify-center gap-1 z-10 ${activeTab === 'portada' ? 'text-white shadow-lg' : 'text-white/40 hover:text-white/80'}`}
             onClick={() => { setActiveTab('portada'); setOutput(null); setCoverStep(0); setWizardChoices([]); }}
             data-testid="tab-cover"
           >
-            <ImageIcon className="w-4 h-4" /> Portadas IA
+            <ImageIcon className="w-4 h-4" /> {t("storyWeaver.tabCover")}
           </button>
           <button 
             className={`flex-1 py-3 text-xs font-bold rounded-lg transition-all flex flex-col items-center justify-center gap-1 z-10 ${activeTab === 'guion' ? 'text-white shadow-lg' : 'text-white/40 hover:text-white/80'}`}
             onClick={() => { setActiveTab('guion'); setOutput(null); setScriptStep(0); setWizardChoices([]); }}
             data-testid="tab-script"
           >
-            <PenTool className="w-4 h-4" /> Guiones IA
+            <PenTool className="w-4 h-4" /> {t("storyWeaver.tabScript")}
           </button>
           <div className={`absolute top-1.5 bottom-1.5 w-[calc(33.33%-0.375rem)] bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg transition-all duration-300 ease-out ${activeTab === 'comic' ? 'left-1.5' : activeTab === 'portada' ? 'left-[calc(33.33%+0.1875rem)]' : 'left-[calc(66.66%)]'}`} />
         </div>
@@ -216,7 +228,7 @@ export default function StoryWeaver() {
                        <Sparkles className="w-4 h-4 text-purple-400" />
                      </div>
                      <div>
-                        <h3 className="text-sm font-medium text-purple-300 mb-1">Paso {activeStep + 1} de {activeWizard.length}</h3>
+                        <h3 className="text-sm font-medium text-purple-300 mb-1">{t("common.step")} {activeStep + 1} {t("common.of")} {activeWizard.length}</h3>
                         <p className="text-sm text-white/90 leading-relaxed font-medium">{activeWizard[activeStep].question}</p>
                      </div>
                    </div>
@@ -243,13 +255,13 @@ export default function StoryWeaver() {
                     <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <CheckCircle2 className="w-8 h-8 text-green-400" />
                     </div>
-                    <h3 className="text-lg font-bold text-white">Parámetros Completados</h3>
-                    <p className="text-sm text-white/60">La IA está lista para procesar tu {activeTab}.</p>
+                    <h3 className="text-lg font-bold text-white">{t("storyWeaver.wizardComplete")}</h3>
+                    <p className="text-sm text-white/60">{t("storyWeaver.wizardCompleteDesc", { type: activeTab })}</p>
                     
                     <div className="text-left mt-6 bg-black/40 p-4 rounded-xl border border-white/5">
                       <div className="flex items-center justify-between mb-3">
                         <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest flex items-center gap-2">
-                          <PenTool className="w-3 h-3" /> Guion / Contexto Narrativo
+                          <PenTool className="w-3 h-3" /> {t("storyWeaver.scriptContext")}
                         </label>
                         <Button 
                           size="sm" 
@@ -259,11 +271,11 @@ export default function StoryWeaver() {
                           className="h-7 text-[10px] bg-purple-500/20 border-purple-500/50 text-purple-300 hover:bg-purple-500/30 hover:text-white"
                           data-testid="button-auto-script"
                         >
-                          {isGenerating ? <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />} Auto-Generar Historia
+                          {isGenerating ? <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />} {t("storyWeaver.autoGenerateScript")}
                         </Button>
                       </div>
                       <Textarea 
-                        placeholder="Pega aquí tu guion, la idea base, o presiona 'Auto-Generar Historia' para que la IA la invente basándose en tus personajes..."
+                        placeholder={t("storyWeaver.scriptPlaceholder")}
                         className="h-24 resize-none bg-black/50 border-white/10 text-white placeholder:text-white/20 text-sm focus-visible:ring-purple-500"
                         value={storyIdea}
                         onChange={(e) => setStoryIdea(e.target.value)}
@@ -271,17 +283,17 @@ export default function StoryWeaver() {
                       />
                     </div>
 
-                    <Button variant="outline" size="sm" onClick={() => { setActiveStep(0); setWizardChoices([]); }} className="text-xs bg-transparent border-white/10 text-white/60 hover:text-white mt-2">Reiniciar Mago</Button>
+                    <Button variant="outline" size="sm" onClick={() => { setActiveStep(0); setWizardChoices([]); }} className="text-xs bg-transparent border-white/10 text-white/60 hover:text-white mt-2">{t("storyWeaver.restartWizard")}</Button>
                  </div>
                )}
             </div>
 
             <div>
               <label className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3 flex items-center gap-2">
-                <Users className="w-3 h-3" /> Añadir Reparto de Personajes
+                <Users className="w-3 h-3" /> {t("storyWeaver.addCast")}
               </label>
               <div className="flex flex-wrap gap-2">
-                {myCharacters.length === 0 && <p className="text-xs text-white/30">Crea personajes primero en "Crear Personaje"</p>}
+                {myCharacters.length === 0 && <p className="text-xs text-white/30">{t("storyWeaver.noCharacters")}</p>}
                 {myCharacters.map(char => (
                   <button 
                     key={char.id}
@@ -302,14 +314,17 @@ export default function StoryWeaver() {
               data-testid="button-generate"
             >
               {isGenerating ? (
-                <span className="flex items-center gap-2"><RefreshCw className="w-5 h-5 animate-spin" /> Generando...</span>
+                <span className="flex items-center gap-2"><RefreshCw className="w-5 h-5 animate-spin" /> {t("common.generating")}...</span>
               ) : (
                 <>
                   <Wand2 className="w-5 h-5 mr-2" />
-                  GENERAR {activeTab === 'portada' ? 'PORTADA 4K' : activeTab === 'guion' ? 'SCRIPT IA' : 'PÁGINA DE CÓMIC'}
+                  {t("common.generate")} {activeTab === 'portada' ? t("storyWeaver.tabCover") : activeTab === 'guion' ? t("storyWeaver.tabScript") : t("storyWeaver.tabPages")}
                 </>
               )}
             </Button>
+            <div className="flex justify-center mt-2">
+              <CreditBadge service={getServiceForTab()} />
+            </div>
             <AIProgress
               isActive={isGenerating}
               type={activeTab === 'portada' ? 'cover' : activeTab === 'guion' ? 'script' : 'comic'}
@@ -420,7 +435,7 @@ export default function StoryWeaver() {
               <div className="bg-white p-2 md:p-6 rounded-lg relative z-10 shadow-2xl">
                 <div className="flex justify-between items-center mb-4 text-black border-b-2 border-black pb-2">
                    <h4 className="font-black text-xl tracking-tighter uppercase">Página Generada por IA</h4>
-                   <span className="font-bold text-sm tracking-widest">COMICCRAFTER AI</span>
+                   <span className="font-bold text-sm tracking-widest">COMIC CRAFTER AI</span>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-2 auto-rows-[150px] md:auto-rows-[220px] bg-white">
@@ -468,7 +483,7 @@ export default function StoryWeaver() {
                  
                  <div className="prose prose-invert prose-purple max-w-none relative z-10">
                    <h1 className="text-3xl font-black mb-2 text-white bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200" data-testid="text-script-title">Guion Generado por IA</h1>
-                   <p className="text-purple-400 font-mono text-sm mb-8 uppercase tracking-widest border-b border-white/10 pb-4">ComicCrafter AI - Narrative Engine</p>
+                   <p className="text-purple-400 font-mono text-sm mb-8 uppercase tracking-widest border-b border-white/10 pb-4">Comic Crafter AI - Narrative Engine</p>
 
                    <div className="space-y-4 text-slate-300 whitespace-pre-wrap font-mono text-sm leading-relaxed" data-testid="text-script-content">
                      {generatedScript}
@@ -479,6 +494,7 @@ export default function StoryWeaver() {
           )}
         </div>
       </div>
+    <PaywallModal />
     </div>
   );
 }

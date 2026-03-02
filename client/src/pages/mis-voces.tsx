@@ -2,13 +2,15 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Mic2, PlayCircle, Settings, Share2, Upload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslation } from "react-i18next";
 
 export default function MisVoces() {
+  const { t } = useTranslation();
   const voces = [
-    { id: 1, name: "Jax (Clonada)", type: "personalizada", tags: ["Grave", "Masculino"], date: "Hace 1 mes" },
-    { id: 2, name: "Mi Voz (Sadiagiljoan)", type: "personalizada", tags: ["Real", "Propia"], date: "Hace 2 meses" },
-    { id: 3, name: "Narrador Épico AI", type: "ia", tags: ["Profundo", "Fantasía"], date: "ElevenLabs Core" },
-    { id: 4, name: "Profesora Amable AI", type: "ia", tags: ["Dulce", "Educativo"], date: "ElevenLabs Core" },
+    { id: 1, name: "Jax (Clonada)", type: "personalizada", tags: [t("voices.tagDeep"), t("voices.tagMale")], date: t("voices.date1Month") },
+    { id: 2, name: "Mi Voz (Sadiagiljoan)", type: "personalizada", tags: [t("voices.tagReal"), t("voices.tagOwn")], date: t("voices.date2Months") },
+    { id: 3, name: "Narrador Épico AI", type: "ia", tags: [t("voices.tagDeep"), t("voices.tagFantasy")], date: "ElevenLabs Core" },
+    { id: 4, name: "Profesora Amable AI", type: "ia", tags: [t("voices.tagSweet"), t("voices.tagEducational")], date: "ElevenLabs Core" },
   ];
 
   return (
@@ -16,20 +18,20 @@ export default function MisVoces() {
       <header className="flex justify-between items-end mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2 text-white flex items-center gap-3">
-            <Mic2 className="w-8 h-8 text-emerald-500" /> Mis Voces
+            <Mic2 className="w-8 h-8 text-emerald-500" /> {t("voices.title")}
           </h1>
-          <p className="text-white/50">Gestiona las voces generadas por IA y tus voces reales clonadas para usar en tus vídeos y personajes.</p>
+          <p className="text-white/50">{t("voices.subtitle")}</p>
         </div>
         <Button className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2">
-           <Upload className="w-4 h-4" /> Clonar Nueva Voz
+           <Upload className="w-4 h-4" /> {t("voices.cloneNew")}
         </Button>
       </header>
 
       <Tabs defaultValue="todas" className="w-full">
         <TabsList className="bg-black/50 border border-white/10 mb-6 h-12">
-          <TabsTrigger value="todas" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-6">Todas las Voces</TabsTrigger>
-          <TabsTrigger value="personalizadas" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-6">Voces Personalizadas (Clonadas)</TabsTrigger>
-          <TabsTrigger value="ia" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-6">Voces IA (Catálogo)</TabsTrigger>
+          <TabsTrigger value="todas" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-6">{t("voices.tabAll")}</TabsTrigger>
+          <TabsTrigger value="personalizadas" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-6">{t("voices.tabCustom")}</TabsTrigger>
+          <TabsTrigger value="ia" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-6">{t("voices.tabAI")}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="todas" className="mt-0">
@@ -40,7 +42,7 @@ export default function MisVoces() {
                     <div>
                       <h3 className="font-bold text-white text-lg flex items-center gap-2">
                          {voz.name}
-                         {voz.type === 'personalizada' && <span className="w-2 h-2 rounded-full bg-emerald-500" title="Clonada/Propia" />}
+                         {voz.type === 'personalizada' && <span className="w-2 h-2 rounded-full bg-emerald-500" title={t("voices.clonedOwn")} />}
                       </h3>
                       <p className="text-xs text-white/40 mt-1">{voz.date}</p>
                     </div>

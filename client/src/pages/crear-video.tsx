@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Video, Users, Clapperboard, Send, PlayCircle, Loader2, Film, Pause, Volume2, VolumeX, Maximize2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import AIProgress from "@/components/ai-progress";
+import { CreditBadge, useCredits } from "@/lib/credits";
 
 type Message = {
   id: string;
@@ -16,6 +19,9 @@ type Message = {
 };
 
 export default function CrearVideo() {
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const { checkCredits, PaywallModal, refreshUser } = useCredits();
   const scrollRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [input, setInput] = useState("");
@@ -29,7 +35,10 @@ export default function CrearVideo() {
   const { data: myCharacters = [] } = useQuery({
     queryKey: ["/api/characters"],
     queryFn: async () => {
-      const res = await fetch("/api/characters");
+      const token = localStorage.getItem("cc_token");
+      const res = await fetch("/api/characters", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (!res.ok) throw new Error("Failed to load characters");
       return res.json();
     },
@@ -102,12 +111,41 @@ export default function CrearVideo() {
     }
   };
 
-  const handleRender = () => {
+  const handleRender = async () => {
+    if (!checkCredits("generate-video")) return;
     setIsRendering(true);
-    setTimeout(() => {
-      setIsRendering(false);
+    try {
+      const selectedNames = myCharacters
+        .filter((c: any) => selectedCharacters.includes(c.id.toString()))
+        .map((c: any) => c.name);
+
+      const token = localStorage.getItem("cc_token");
+      const res = await fetch("/api/ai/generate-script", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          customPrompt: `Genera un storyboard visual detallado para un vídeo basado en esta conversación del director IA. Contexto adicional: ${scriptContext || 'Sin contexto extra'}. Personajes: ${selectedNames.join(', ') || 'Sin personajes asignados'}.`,
+          genre: "Video/Animación",
+          language: "Español",
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          role: 'ai',
+          content: `Storyboard generado con éxito. ${data.script?.substring(0, 200) || 'El vídeo está listo para renderizar.'}...`,
+        }]);
+      }
+
       setVideoUrl("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
-    }, 3000);
+      toast({ title: "Render completado", description: "Preview del vídeo lista para revisión." });
+    } catch (error: any) {
+      toast({ title: "Error en render", description: error.message, variant: "destructive" });
+    } finally {
+      setIsRendering(false);
+    }
   };
 
   const toggleCharacter = (id: string) => {
@@ -130,10 +168,10 @@ export default function CrearVideo() {
         <div className="p-6 border-b border-white/5 bg-[#111322]/80 flex items-center justify-between shrink-0">
            <div className="flex items-center gap-3 text-blue-400">
              <Clapperboard className="w-6 h-6" />
-             <h2 className="text-xl font-bold tracking-tight text-white">Estudio de Vídeo + Director IA</h2>
+             <h2 className="text-xl font-bold tracking-tight text-white">{t("video.title")}</h2>
            </div>
            <span className="bg-blue-500/10 text-blue-300 text-xs px-3 py-1 rounded-full border border-blue-500/20">
-             Modo Asistido Activo
+             {t("video.assistedMode")}
            </span>
         </div>
 
@@ -169,7 +207,7 @@ export default function CrearVideo() {
                 </Button>
                 <div className="flex-1" />
                 <span className="text-xs text-white/60 flex items-center gap-1">
-                  <Film className="w-3 h-3" /> Preview
+                  <Film className="w-3 h-3" /> {t("video.preview")}
                 </span>
                 <Button
                   size="icon"
@@ -251,7 +289,7 @@ export default function CrearVideo() {
           <div className="relative flex items-end gap-4">
             <div className="flex-1 relative">
               <Textarea
-                placeholder="Responde al Director IA o describe tu escena libremente..."
+                placeholder={t("video.chatPlaceholder")}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -279,17 +317,17 @@ export default function CrearVideo() {
 
       <div className="w-[350px] bg-[#111322]/80 flex flex-col p-6 overflow-y-auto">
         <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-6 flex items-center gap-2">
-           <Video className="w-4 h-4" /> Parámetros de Render
+           <Video className="w-4 h-4" /> {t("video.renderParameters")}
         </h3>
 
         <div className="space-y-6 flex-1">
            <div className="space-y-3">
               <div className="flex justify-between items-center">
                  <label className="text-xs font-medium text-white/50 uppercase tracking-widest flex items-center gap-2">
-                   <Users className="w-3 h-3" /> Asignar Actores
+                   <Users className="w-3 h-3" /> {t("video.assignActors")}
                  </label>
               </div>
-              <p className="text-[10px] text-white/40">Selecciona quién aparecerá o narrará este vídeo.</p>
+              <p className="text-[10px] text-white/40">{t("video.assignActorsDesc")}</p>
               <div className="flex flex-col gap-2">
                 {myCharacters.map((char: any) => (
                   <button
@@ -302,24 +340,24 @@ export default function CrearVideo() {
                   </button>
                 ))}
                 {myCharacters.length === 0 && (
-                  <p className="text-xs text-white/30 italic">No hay personajes. Crea uno primero.</p>
+                  <p className="text-xs text-white/30 italic">{t("video.noCharacters")}</p>
                 )}
               </div>
            </div>
 
            <div className="space-y-2">
-              <label className="text-xs font-medium text-white/50 uppercase tracking-widest">Duración Estimada</label>
+              <label className="text-xs font-medium text-white/50 uppercase tracking-widest">{t("video.duration")}</label>
               <select className="w-full bg-black/50 border border-white/10 text-white rounded-md px-3 py-2 text-sm focus:ring-blue-500" data-testid="select-duration">
-                <option>Corto (TikTok/Reel) - 30s</option>
-                <option>Escena Estándar - 2m</option>
-                <option>Capítulo Completo - 10m</option>
-                <option>Video Educativo - 5m</option>
-                <option>Película / Sin Límite - 90m+</option>
+                <option>{t("video.short")}</option>
+                <option>{t("video.medium")}</option>
+                <option>{t("video.long")}</option>
+                <option>{t("video.educational")}</option>
+                <option>{t("video.movie")}</option>
               </select>
            </div>
 
            <div className="space-y-2 pt-4 border-t border-white/5 mt-4">
-              <label className="text-xs font-medium text-white/50 uppercase tracking-widest">Idioma (Voces/Textos)</label>
+              <label className="text-xs font-medium text-white/50 uppercase tracking-widest">{t("nav.language")}</label>
               <select className="w-full bg-black/50 border border-white/10 text-white rounded-md px-3 py-2 text-sm focus:ring-blue-500" data-testid="select-language">
                 <option>Español</option>
                 <option>English</option>
@@ -330,11 +368,11 @@ export default function CrearVideo() {
 
            <div className="space-y-2 pt-4 mt-4 border-t border-white/5">
               <label className="text-xs font-medium text-white/50 uppercase tracking-widest flex items-center gap-2">
-                <Clapperboard className="w-3 h-3" /> Guion Base / Contexto
+                <Clapperboard className="w-3 h-3" /> {t("video.scriptBase")}
               </label>
-              <p className="text-[10px] text-white/40">La IA utilizará este texto como base para generar las escenas.</p>
+              <p className="text-[10px] text-white/40">{t("video.scriptBaseDesc")}</p>
               <Textarea
-                placeholder="Pega aquí el guion o la historia a seguir..."
+                placeholder={t("video.scriptPlaceholder")}
                 value={scriptContext}
                 onChange={(e) => setScriptContext(e.target.value)}
                 className="h-24 resize-none bg-black/50 border-white/10 text-white placeholder:text-white/30 text-xs focus-visible:ring-blue-500"
@@ -343,30 +381,35 @@ export default function CrearVideo() {
            </div>
         </div>
 
-        <Button
-          className="w-full mt-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg h-14 font-bold text-sm"
-          onClick={handleRender}
-          disabled={isRendering || messages.length < 3}
-          data-testid="button-render"
-        >
-          {isRendering ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="w-5 h-5 animate-spin" /> Procesando Render...
-            </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              <PlayCircle className="w-5 h-5" /> GENERAR VÍDEO FINAL
-            </span>
-          )}
-        </Button>
+        <div className="space-y-4 mt-8">
+          <Button
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)] h-14 font-bold text-sm tracking-wide transition-all hover:scale-[1.02]"
+            onClick={handleRender}
+            disabled={isRendering || messages.length < 3}
+            data-testid="button-render"
+          >
+            {isRendering ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin" /> {t("video.rendering")}...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <PlayCircle className="w-5 h-5" /> {t("video.generateFinalVideo")}
+              </span>
+            )}
+          </Button>
+          <div className="flex justify-center mt-2">
+            <CreditBadge service="generate-video" />
+          </div>
 
-        <AIProgress 
-          isActive={isRendering} 
-          type="video" 
-          estimatedSeconds={15}
-          className="mt-6"
-        />
+          <AIProgress 
+            isActive={isRendering} 
+            type="video" 
+            estimatedSeconds={30}
+          />
+        </div>
       </div>
+    <PaywallModal />
     </div>
   );
 }

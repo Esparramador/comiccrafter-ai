@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { Buffer } from "node:buffer";
 
 const manusClient = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.MANUS_API_KEY || process.env.OPENAI_API_KEY,
 });
 
 export async function manusGenerateImage(

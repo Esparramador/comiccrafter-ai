@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,12 +8,15 @@ import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { CreditBadge, useCredits } from "@/lib/credits";
 
 export default function CrearPersonaje() {
+  const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const [mode, setMode] = useState<'ai' | 'manual'>('ai');
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  const { checkCredits, PaywallModal, refreshUser } = useCredits();
 
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
@@ -37,6 +41,7 @@ export default function CrearPersonaje() {
   };
 
   const handleSave = async () => {
+    if (mode === 'ai' && !checkCredits("generate-character-image")) return;
     setIsGenerating(true);
     try {
       if (mode === 'ai') {
@@ -44,6 +49,7 @@ export default function CrearPersonaje() {
           prompt: aiPrompt || "Genera un personaje aleatorio para un cómic cyberpunk"
         });
         const character = await res.json();
+        refreshUser();
         toast({ title: "Personaje creado", description: `${character.name} ha sido generado por IA y guardado.` });
       } else {
         const res = await apiRequest("POST", "/api/characters", {
@@ -87,9 +93,9 @@ export default function CrearPersonaje() {
         >
           <div className="flex items-center gap-3 mb-2">
             <Sparkles className={`w-5 h-5 ${mode === 'ai' ? 'text-purple-400' : 'text-slate-500'}`} />
-            <h3 className={`font-bold ${mode === 'ai' ? 'text-purple-300' : 'text-slate-300'}`}>Generación IA</h3>
+            <h3 className={`font-bold ${mode === 'ai' ? 'text-purple-300' : 'text-slate-300'}`}>{t("character.aiGeneration")}</h3>
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed">Inventa un personaje desde cero usando solo texto e imaginación.</p>
+          <p className="text-xs text-slate-500 leading-relaxed">{t("character.aiGenerationDesc")}</p>
         </button>
 
         <button 
@@ -99,9 +105,9 @@ export default function CrearPersonaje() {
         >
           <div className="flex items-center gap-3 mb-2">
             <Plus className={`w-5 h-5 ${mode === 'manual' ? 'text-blue-400' : 'text-slate-500'}`} />
-            <h3 className={`font-bold ${mode === 'manual' ? 'text-blue-300' : 'text-slate-300'}`}>Ficha Manual</h3>
+            <h3 className={`font-bold ${mode === 'manual' ? 'text-blue-300' : 'text-slate-300'}`}>{t("character.manualFile")}</h3>
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed">Sube tus propias fotos para entrenar la cara del personaje en el cómic.</p>
+          <p className="text-xs text-slate-500 leading-relaxed">{t("character.manualFileDesc")}</p>
         </button>
       </div>
 
@@ -113,18 +119,18 @@ export default function CrearPersonaje() {
               <div>
                 <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
                   <Wand2 className="w-8 h-8 text-purple-500" />
-                  Auto-Generador de Personajes
+                  {t("character.aiGeneratorTitle")}
                 </h1>
-                <p className="text-slate-400">Describe el personaje y la IA se encargará de crear su aspecto, lore y variantes faciales.</p>
+                <p className="text-slate-400">{t("character.aiGeneratorDesc")}</p>
               </div>
 
               <div className="bg-[#111322] border border-white/5 p-8 rounded-2xl shadow-xl space-y-6">
                 <div>
                   <label className="text-xs font-bold text-purple-300 uppercase tracking-widest mb-3 block flex items-center gap-2">
-                    <PenTool className="w-4 h-4" /> Descripción / Prompt
+                    <PenTool className="w-4 h-4" /> {t("character.descriptionPrompt")}
                   </label>
                   <Textarea 
-                    placeholder="Ej: Un mercenario cibernético con un brazo robótico negro, aspecto sombrío, pelo blanco despeinado, lleva una gabardina de cuero... (Déjalo en blanco para que la IA lo invente 100%)"
+                    placeholder={t("character.descriptionPromptPlaceholder")}
                     className="h-32 resize-none bg-black/50 border-white/10 text-white placeholder:text-white/20 text-sm focus-visible:ring-purple-500"
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
@@ -135,7 +141,7 @@ export default function CrearPersonaje() {
                 <div className="bg-purple-500/10 border border-purple-500/20 p-4 rounded-xl flex gap-4">
                   <Sparkles className="w-6 h-6 text-purple-400 shrink-0" />
                   <p className="text-sm text-purple-200/80 leading-relaxed">
-                    Al generar, la IA creará automáticamente su <strong>Hoja de Personaje</strong> (Character Sheet) con su nombre, rol, lore y una imagen de retrato generada por IA.
+                    {t("character.aiInfoBox")}
                   </p>
                 </div>
 
@@ -146,11 +152,14 @@ export default function CrearPersonaje() {
                   data-testid="button-generate-character"
                 >
                   {isGenerating ? (
-                    <span className="flex items-center gap-2"><RefreshCw className="w-5 h-5 animate-spin" /> GENERANDO CON IA...</span>
+                    <span className="flex items-center gap-2"><RefreshCw className="w-5 h-5 animate-spin" /> {t("character.generatingWithAI")}...</span>
                   ) : (
-                    <span className="flex items-center gap-2"><Sparkles className="w-5 h-5" /> INVENTAR PERSONAJE Y GUARDAR</span>
+                    <span className="flex items-center gap-2"><Sparkles className="w-5 h-5" /> {t("character.inventAndSave")}</span>
                   )}
                 </Button>
+                <div className="flex justify-center mt-2">
+                  <CreditBadge service="generate-character-image" />
+                </div>
               </div>
             </div>
           ) : (
@@ -158,66 +167,66 @@ export default function CrearPersonaje() {
               <div>
                 <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
                   <Plus className="w-8 h-8 text-blue-500" />
-                  Creación Manual (Clonación de Rostro)
+                  {t("character.manualCreationTitle")}
                 </h1>
-                <p className="text-slate-400">Rellena la ficha y sube fotos tuyas o de actores reales para que la IA los dibuje en el cómic.</p>
+                <p className="text-slate-400">{t("character.manualCreationDesc")}</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-[#111322] border border-white/5 p-6 rounded-2xl shadow-xl space-y-5">
                    <div>
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Nombre del Personaje</label>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">{t("character.name")}</label>
                       <Input 
                         value={name} onChange={(e) => setName(e.target.value)}
                         className="bg-black/50 border-white/10 focus-visible:ring-blue-500 h-12"
-                        placeholder="Ej: Jax, Sarah..."
+                        placeholder={t("character.namePlaceholder")}
                         data-testid="input-char-name"
                       />
                    </div>
                    <div>
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Rol / Arquetipo</label>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">{t("character.role")}</label>
                       <Input 
                         value={role} onChange={(e) => setRole(e.target.value)}
                         className="bg-black/50 border-white/10 focus-visible:ring-blue-500 h-12"
-                        placeholder="Ej: Villano Principal, Mentor..."
+                        placeholder={t("character.rolePlaceholder")}
                         data-testid="input-char-role"
                       />
                    </div>
                    <div>
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Descripción Física y Lore</label>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">{t("character.description")}</label>
                       <Textarea 
                         value={description} onChange={(e) => setDescription(e.target.value)}
                         className="bg-black/50 border-white/10 focus-visible:ring-blue-500 min-h-[120px] resize-none"
-                        placeholder="Historia de fondo y detalles de su vestimenta recurrente..."
+                        placeholder={t("character.descriptionPlaceholder")}
                         data-testid="input-char-desc"
                       />
                    </div>
                    <div>
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Voz Asignada (ElevenLabs)</label>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">{t("character.assignedVoice")}</label>
                       <select 
                         className="w-full h-12 bg-black/50 border border-white/10 text-white rounded-md px-3 py-2 text-sm focus:ring-blue-500"
                         value={voice} onChange={(e) => setVoice(e.target.value)}
                         data-testid="select-voice"
                       >
-                        <option value="">-- Seleccionar Voz --</option>
-                        <option value="Marcus">Marcus (Grave, Rasposa)</option>
-                        <option value="Sarah">Sarah (Joven, Enérgica)</option>
-                        <option value="Liam">Liam (Intenso, Dramático)</option>
+                        <option value="">-- {t("character.selectVoice")} --</option>
+                        <option value="Marcus">Marcus ({t("character.voiceMarcus")})</option>
+                        <option value="Sarah">Sarah ({t("character.voiceSarah")})</option>
+                        <option value="Liam">Liam ({t("character.voiceLiam")})</option>
                       </select>
                    </div>
                 </div>
 
                 <div className="bg-[#111322] border border-white/5 p-6 rounded-2xl shadow-xl flex flex-col">
                    <label className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                     <Camera className="w-4 h-4" /> Fotos de Referencia
+                     <Camera className="w-4 h-4" /> {t("character.referencePhotos")}
                    </label>
                    
                    <div className="flex-1 border-2 border-dashed border-white/10 rounded-xl p-4 bg-black/30 flex flex-col relative overflow-hidden">
                      {uploadedPhotos.length === 0 ? (
                        <label className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 p-6 text-center cursor-pointer hover:bg-white/5 transition-colors">
                          <Upload className="w-10 h-10 mb-4 opacity-50" />
-                         <p className="font-bold text-white/70 mb-2">Sube entre 3 y 5 fotos de la misma persona</p>
-                         <p className="text-xs">Para resultados perfectos, asegúrate de que el rostro se vea claramente desde distintos ángulos.</p>
+                         <p className="font-bold text-white/70 mb-2">{t("character.uploadPhotosTitle")}</p>
+                         <p className="text-xs">{t("character.uploadPhotosDesc")}</p>
                          <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
                        </label>
                      ) : (
@@ -234,7 +243,7 @@ export default function CrearPersonaje() {
                    <label className="mt-4">
                      <Button variant="outline" className="w-full bg-transparent border-blue-500/30 text-blue-400 hover:bg-blue-500/10" asChild>
                        <span className="cursor-pointer">
-                         <Upload className="w-4 h-4 mr-2" /> Añadir Foto
+                         <Upload className="w-4 h-4 mr-2" /> {t("character.addPhoto")}
                          <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
                        </span>
                      </Button>
@@ -250,7 +259,7 @@ export default function CrearPersonaje() {
                   data-testid="button-save-character"
                 >
                   {isGenerating ? <RefreshCw className="w-5 h-5 animate-spin mr-2" /> : <Save className="w-5 h-5 mr-2" />}
-                  GUARDAR FICHA TÉCNICA
+                  {t("character.saveTechnicalFile")}
                 </Button>
               </div>
             </div>
@@ -258,6 +267,7 @@ export default function CrearPersonaje() {
 
         </div>
       </div>
+    <PaywallModal />
     </div>
   );
 }

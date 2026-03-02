@@ -1,21 +1,190 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCharacterSchema, insertGeneratedImageSchema, insertScriptSchema, insertAppUserSchema, insertServiceLimitSchema, insertSubscriptionPlanSchema } from "@shared/schema";
+import { insertCharacterSchema, insertGeneratedImageSchema, insertScriptSchema, insertAppUserSchema, insertServiceLimitSchema, insertSubscriptionPlanSchema, registerSchema, loginSchema, googleAuthSchema } from "@shared/schema";
 import { openai, generateImageBuffer } from "./replit_integrations/image/client";
 import { manusGenerateImage, manusGenerateImageBuffer, manusChat, manusBatchImages } from "./manus-ai";
-import { createTextTo3D, uploadImageToTripo, createImageTo3D, getTaskStatus, downloadModel } from "./tripo3d";
+import { createTextTo3D, uploadImageToTripo, createImageTo3D, createMultiviewTo3D, retopologyModel, rigModel, retargetAnimation, textureModel, stylizeModel, convertModel, getTaskStatus, downloadModel, getTripoBalance, TRIPO_ANIMATIONS, TRIPO_STYLES, TRIPO_EXPORT_FORMATS } from "./tripo3d";
 import { generateGalleryBatch } from "./generate-gallery";
 import { listVoices, textToSpeech, getVoiceById } from "./elevenlabs";
 import { geminiChat } from "./gemini";
 import { uploadFileToDrive, listDriveFiles } from "./google-drive";
 import { createSpreadsheet, exportDataToSheet, readSheet } from "./google-sheets";
 import { sendEmail } from "./google-mail";
+import * as shopify from "./shopify";
+import { registerWithEmail, loginWithEmail, loginWithGoogle, getCurrentUser, extractToken } from "./auth";
+
+const SUPER_USER_EMAIL = "sadiagiljoan@gmail.com";
+
+const CREDIT_COSTS: Record<string, number> = {
+  "generate-script": 0,
+  "generate-character-text": 0,
+  "generate-character-image": 5,
+  "generate-cover": 5,
+  "generate-comic-page": 5,
+  "generate-image": 5,
+  "manus-gallery": 15,
+  "gallery-batch": 15,
+  "generate-3d": 10,
+  "generate-3d-from-image": 10,
+  "generate-3d-multiview": 35,
+  "3d-retopology": 8,
+  "3d-rig": 15,
+  "3d-animate": 15,
+  "3d-texture": 8,
+  "3d-stylize": 8,
+  "3d-convert": 2,
+  "3d-download": 0,
+  "generate-voice": 3,
+  "generate-video": 8,
+  "gemini-chat": 0,
+  "gemini-analyze": 0,
+  "economist": 0,
+};
+
+async function checkAndDeductCredits(req: any, serviceKey: string): Promise<{ ok: boolean; error?: string; user?: any }> {
+  const cost = CREDIT_COSTS[serviceKey] ?? 0;
+  if (cost === 0) return { ok: true };
+
+  const token = extractToken(req.headers?.authorization);
+  if (!token) return { ok: false, error: "No autenticado. Inicia sesión para usar este servicio." };
+
+  const user = await getCurrentUser(token);
+  if (!user) return { ok: false, error: "Token inválido. Vuelve a iniciar sesión." };
+
+  if (user.email === SUPER_USER_EMAIL) return { ok: true, user };
+
+  if ((user.credits || 0) < cost) {
+    return {
+      ok: false,
+      error: `Créditos insuficientes. Este servicio cuesta ${cost} créditos. Tu saldo: ${user.credits || 0} créditos. Visita la Tienda para comprar más créditos.`,
+    };
+  }
+
+  await storage.updateAppUser(user.id, {
+    credits: (user.credits || 0) - cost,
+    totalGenerations: (user.totalGenerations || 0) + 1,
+  } as any);
+
+  return { ok: true, user };
+}
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+
+  // ── Auth: Register with email/password ──
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, password, name } = registerSchema.parse(req.body);
+      const result = await registerWithEmail(email, password, name);
+
+      shopify.syncUserToShopify(email, name).then(shopifyId => {
+        if (shopifyId) {
+          storage.updateAppUser(result.user.id, { shopifyCustomerId: shopifyId } as any);
+        }
+      }).catch(() => {});
+
+      res.json(result);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
+  });
+
+  // ── Auth: Login with email/password ──
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = loginSchema.parse(req.body);
+      const result = await loginWithEmail(email, password);
+      res.json(result);
+    } catch (e: any) {
+      res.status(401).json({ error: e.message });
+    }
+  });
+
+  // ── Auth: Google Sign-In ──
+  app.post("/api/auth/google", async (req, res) => {
+    try {
+      const { credential } = googleAuthSchema.parse(req.body);
+      const result = await loginWithGoogle(credential);
+
+      if (!result.user.shopifyCustomerId) {
+        shopify.syncUserToShopify(result.user.email, result.user.name || "").then(shopifyId => {
+          if (shopifyId) {
+            storage.updateAppUser(result.user.id, { shopifyCustomerId: shopifyId } as any);
+          }
+        }).catch(() => {});
+      }
+
+      res.json(result);
+    } catch (e: any) {
+      res.status(401).json({ error: e.message });
+    }
+  });
+
+  // ── Auth: Delete account ──
+  app.delete("/api/auth/delete-account", async (req, res) => {
+    try {
+      const token = extractToken(req.headers?.authorization);
+      if (!token) return res.status(401).json({ error: "No autenticado. Inicia sesión para eliminar tu cuenta." });
+
+      const user = await getCurrentUser(token);
+      if (!user) return res.status(401).json({ error: "Token inválido. Vuelve a iniciar sesión." });
+
+      const { confirmEmail } = req.body || {};
+      if (!confirmEmail || confirmEmail.toLowerCase() !== user.email.toLowerCase()) {
+        return res.status(400).json({ error: "El email de confirmación no coincide con tu cuenta." });
+      }
+
+      if (user.email === SUPER_USER_EMAIL) {
+        return res.status(403).json({ error: "La cuenta del administrador no puede ser eliminada." });
+      }
+
+      await storage.deleteAppUser(user.id);
+      console.log(`[DELETE-ACCOUNT] User ${user.email} (ID: ${user.id}) account deleted permanently.`);
+
+      res.json({ success: true, message: "Tu cuenta y todos tus datos han sido eliminados permanentemente." });
+    } catch (e: any) {
+      console.error("Delete account error:", e);
+      res.status(500).json({ error: "Error al eliminar la cuenta. Contacta a soporte si el problema persiste." });
+    }
+  });
+
+  // ── Auth: Get current user ──
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      const token = extractToken(req.headers.authorization);
+      if (!token) return res.status(401).json({ error: "No autenticado" });
+      const user = await getCurrentUser(token);
+      if (!user) return res.status(401).json({ error: "Token inválido" });
+      res.json({ user });
+    } catch (e: any) {
+      res.status(401).json({ error: e.message });
+    }
+  });
+
+  // ── Auth: Update profile ──
+  app.put("/api/auth/profile", async (req, res) => {
+    try {
+      const token = extractToken(req.headers.authorization);
+      if (!token) return res.status(401).json({ error: "No autenticado" });
+      const currentUser = await getCurrentUser(token);
+      if (!currentUser) return res.status(401).json({ error: "Token inválido" });
+      const { name, avatarUrl } = req.body;
+      const updated = await storage.updateAppUser(currentUser.id, { name, avatarUrl });
+      if (!updated) return res.status(404).json({ error: "Usuario no encontrado" });
+      const { passwordHash, ...safe } = updated;
+      res.json({ user: safe });
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
+  });
+
+  // ── Credits: Get cost table ──
+  app.get("/api/credits/costs", (_req, res) => {
+    res.json(CREDIT_COSTS);
+  });
 
   // ── Characters CRUD ──
   app.get("/api/characters", async (_req, res) => {
@@ -134,7 +303,7 @@ export async function registerRoutes(
         }
       }
 
-      const scriptContent = await manusChat(userPrompt, systemPrompt, "gpt-4o");
+      const scriptContent = await geminiChat(userPrompt, systemPrompt).catch(() => manusChat(userPrompt, systemPrompt, "gpt-4o"));
 
       const saved = await storage.createScript({
         title: genre ? `${genre} - Guion IA` : "Guion Generado por IA",
@@ -153,15 +322,23 @@ export async function registerRoutes(
   // ── AI: Generate Character (Manus Enhanced) ──
   app.post("/api/ai/generate-character", async (req, res) => {
     try {
+      const creditCheck = await checkAndDeductCredits(req, "generate-character-image");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["generate-character-image"] });
+
       const { prompt } = req.body;
 
-      const raw = await manusChat(
+      const raw = await geminiChat(
+        prompt || "Genera un personaje aleatorio para un cómic cyberpunk",
+        `Eres un diseñador de personajes para cómics y manga. Dado un prompt, genera un personaje con los siguientes campos en JSON:
+{ "name": "...", "role": "...", "description": "..." }
+El nombre debe ser creativo. El rol puede ser: Protagonista, Antagonista, Secundario, Mentor, etc. La descripción debe incluir apariencia física, personalidad y lore (2-3 frases). Responde SOLO con el JSON.`
+      ).catch(() => manusChat(
         prompt || "Genera un personaje aleatorio para un cómic cyberpunk",
         `Eres un diseñador de personajes para cómics y manga. Dado un prompt, genera un personaje con los siguientes campos en JSON:
 { "name": "...", "role": "...", "description": "..." }
 El nombre debe ser creativo. El rol puede ser: Protagonista, Antagonista, Secundario, Mentor, etc. La descripción debe incluir apariencia física, personalidad y lore (2-3 frases). Responde SOLO con el JSON.`,
         "gpt-4o"
-      );
+      ));
 
       let charData;
       try {
@@ -203,6 +380,9 @@ El nombre debe ser creativo. El rol puede ser: Protagonista, Antagonista, Secund
   // ── AI: Generate Cover Art (Manus Enhanced) ──
   app.post("/api/ai/generate-cover", async (req, res) => {
     try {
+      const creditCheck = await checkAndDeductCredits(req, "generate-cover");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["generate-cover"] });
+
       const { atmosphere, focus, style, format, customPrompt } = req.body;
 
       let imgPrompt = customPrompt || "";
@@ -235,18 +415,26 @@ El nombre debe ser creativo. El rol puede ser: Protagonista, Antagonista, Secund
   // ── AI: Generate Comic Page Panels (Manus Enhanced) ──
   app.post("/api/ai/generate-comic-page", async (req, res) => {
     try {
+      const creditCheck = await checkAndDeductCredits(req, "generate-comic-page");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["generate-comic-page"] });
+
       const { script, style, panelCount, language, customPrompt } = req.body;
 
       const panelNum = panelCount || 5;
       const comicStyle = style || "manga shonen";
 
-      const rawPanels = await manusChat(
+      const rawPanels = await geminiChat(
+        customPrompt || script || "Genera una página de cómic de acción cyberpunk",
+        `Eres un director de arte de manga/cómic. Dada una idea o guion, genera exactamente ${panelNum} descripciones de viñetas para dibujar, junto con los diálogos/textos de cada viñeta. Responde en JSON:
+{ "panels": [ { "imagePrompt": "detailed scene description for image generation...", "dialogue": "Character: text...", "sfx": "sound effect if any" } ] }
+Responde SOLO con JSON válido.`
+      ).catch(() => manusChat(
         customPrompt || script || "Genera una página de cómic de acción cyberpunk",
         `Eres un director de arte de manga/cómic. Dada una idea o guion, genera exactamente ${panelNum} descripciones de viñetas para dibujar, junto con los diálogos/textos de cada viñeta. Responde en JSON:
 { "panels": [ { "imagePrompt": "detailed scene description for image generation...", "dialogue": "Character: text...", "sfx": "sound effect if any" } ] }
 Responde SOLO con JSON válido.`,
         "gpt-4o"
-      );
+      ));
       let panelData;
       try {
         const jsonMatch = rawPanels.match(/\{[\s\S]*\}/);
@@ -295,6 +483,9 @@ Responde SOLO con JSON válido.`,
   // ── AI: Generate Single Image (Manus Enhanced) ──
   app.post("/api/ai/generate-image", async (req, res) => {
     try {
+      const creditCheck = await checkAndDeductCredits(req, "generate-image");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["generate-image"] });
+
       const { prompt, category, size, quality, style } = req.body;
       if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
@@ -328,17 +519,26 @@ Responde SOLO con JSON válido.`,
   // ── Manus AI: Batch Image Gallery Generator ──
   app.post("/api/ai/manus-gallery", async (req, res) => {
     try {
+      const creditCheck = await checkAndDeductCredits(req, "manus-gallery");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["manus-gallery"] });
+
       const { theme, count, style: artStyle } = req.body;
       const numImages = Math.min(count || 5, 10);
 
-      const promptsRaw = await manusChat(
+      const promptsRaw = await geminiChat(
+        `Genera exactamente ${numImages} prompts creativos y detallados para generar imágenes con DALL-E 3 sobre el tema: "${theme || "arte de cómics y manga variado"}". 
+Estilo artístico preferido: ${artStyle || "variado (manga, anime, western comics, cyberpunk, fantasía)"}.
+Cada prompt debe ser diferente y creativo. Responde SOLO con un JSON array:
+["prompt 1", "prompt 2", ...]`,
+        "Eres un director de arte experto en cómics, manga y arte digital. Generas prompts extremadamente detallados y creativos para generación de imágenes IA."
+      ).catch(() => manusChat(
         `Genera exactamente ${numImages} prompts creativos y detallados para generar imágenes con DALL-E 3 sobre el tema: "${theme || "arte de cómics y manga variado"}". 
 Estilo artístico preferido: ${artStyle || "variado (manga, anime, western comics, cyberpunk, fantasía)"}.
 Cada prompt debe ser diferente y creativo. Responde SOLO con un JSON array:
 ["prompt 1", "prompt 2", ...]`,
         "Eres un director de arte experto en cómics, manga y arte digital. Generas prompts extremadamente detallados y creativos para generación de imágenes IA.",
         "gpt-4o"
-      );
+      ));
 
       let prompts: string[] = [];
       try {
@@ -399,6 +599,9 @@ Cada prompt debe ser diferente y creativo. Responde SOLO con un JSON array:
   // ── Tripo3D: Generate 3D Model from Text ──
   app.post("/api/ai/generate-3d", async (req, res) => {
     try {
+      const creditCheck = await checkAndDeductCredits(req, "generate-3d");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["generate-3d"] });
+
       const { prompt } = req.body;
       if (!prompt) return res.status(400).json({ error: "Prompt is required" });
       const result = await createTextTo3D(prompt);
@@ -426,6 +629,9 @@ Cada prompt debe ser diferente y creativo. Responde SOLO con un JSON array:
   // ── Tripo3D: Generate 3D from uploaded image token ──
   app.post("/api/ai/generate-3d-from-image", async (req, res) => {
     try {
+      const creditCheck = await checkAndDeductCredits(req, "generate-3d-from-image");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["generate-3d-from-image"] });
+
       const { imageToken } = req.body;
       if (!imageToken) return res.status(400).json({ error: "Image token required" });
       const result = await createImageTo3D(imageToken);
@@ -447,13 +653,147 @@ Cada prompt debe ser diferente y creativo. Responde SOLO con un JSON array:
     }
   });
 
-  // ── Tripo3D: Download model ──
+  // ── Tripo3D: Download/Export model ──
   app.get("/api/ai/3d-download/:taskId", async (req, res) => {
     try {
       const result = await downloadModel(req.params.taskId);
       res.json(result);
     } catch (e: any) {
       console.error("3D download error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Tripo3D: Retopology ──
+  app.post("/api/ai/3d-retopology", async (req, res) => {
+    try {
+      const creditCheck = await checkAndDeductCredits(req, "3d-retopology");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["3d-retopology"] });
+
+      const { taskId, targetFaceCount, topology } = req.body;
+      if (!taskId) return res.status(400).json({ error: "Task ID required" });
+      const result = await retopologyModel(taskId, { target_face_count: targetFaceCount, topology });
+      res.json(result);
+    } catch (e: any) {
+      console.error("3D retopology error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Tripo3D: Auto-Rig ──
+  app.post("/api/ai/3d-rig", async (req, res) => {
+    try {
+      const creditCheck = await checkAndDeductCredits(req, "3d-rig");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["3d-rig"] });
+
+      const { taskId } = req.body;
+      if (!taskId) return res.status(400).json({ error: "Task ID required" });
+      const result = await rigModel(taskId);
+      res.json(result);
+    } catch (e: any) {
+      console.error("3D rig error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Tripo3D: Retarget Animation ──
+  app.post("/api/ai/3d-animate", async (req, res) => {
+    try {
+      const creditCheck = await checkAndDeductCredits(req, "3d-animate");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["3d-animate"] });
+
+      const { rigTaskId, animation } = req.body;
+      if (!rigTaskId || !animation) return res.status(400).json({ error: "Rig task ID and animation required" });
+      const result = await retargetAnimation(rigTaskId, animation);
+      res.json(result);
+    } catch (e: any) {
+      console.error("3D animate error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Tripo3D: Texture Refinement ──
+  app.post("/api/ai/3d-texture", async (req, res) => {
+    try {
+      const creditCheck = await checkAndDeductCredits(req, "3d-texture");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["3d-texture"] });
+
+      const { taskId, textureQuality, textureAlignment } = req.body;
+      if (!taskId) return res.status(400).json({ error: "Task ID required" });
+      const result = await textureModel(taskId, { texture_quality: textureQuality, texture_alignment: textureAlignment });
+      res.json(result);
+    } catch (e: any) {
+      console.error("3D texture error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Tripo3D: Stylization ──
+  app.post("/api/ai/3d-stylize", async (req, res) => {
+    try {
+      const creditCheck = await checkAndDeductCredits(req, "3d-stylize");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["3d-stylize"] });
+
+      const { taskId, style } = req.body;
+      if (!taskId || !style) return res.status(400).json({ error: "Task ID and style required" });
+      const result = await stylizeModel(taskId, style);
+      res.json(result);
+    } catch (e: any) {
+      console.error("3D stylize error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Tripo3D: Format Conversion ──
+  app.post("/api/ai/3d-convert", async (req, res) => {
+    try {
+      const creditCheck = await checkAndDeductCredits(req, "3d-convert");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["3d-convert"] });
+
+      const { taskId, format, quad, faceLimit, flattenBottom, textureSize, pivotToCenter } = req.body;
+      if (!taskId || !format) return res.status(400).json({ error: "Task ID and format required" });
+      const result = await convertModel(taskId, format, {
+        quad, face_limit: faceLimit, flatten_bottom: flattenBottom,
+        texture_size: textureSize, pivot_to_center_bottom: pivotToCenter,
+      });
+      res.json(result);
+    } catch (e: any) {
+      console.error("3D convert error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Tripo3D: Multiview to 3D ──
+  app.post("/api/ai/generate-3d-multiview", async (req, res) => {
+    try {
+      const creditCheck = await checkAndDeductCredits(req, "generate-3d-multiview");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["generate-3d-multiview"] });
+
+      const { imageTokens } = req.body;
+      if (!imageTokens || !imageTokens.length) return res.status(400).json({ error: "Image tokens required" });
+      const result = await createMultiviewTo3D(imageTokens);
+      res.json(result);
+    } catch (e: any) {
+      console.error("3D multiview error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Tripo3D: Get animations, styles, formats catalog ──
+  app.get("/api/ai/3d-catalog", (_req, res) => {
+    res.json({
+      animations: TRIPO_ANIMATIONS,
+      styles: TRIPO_STYLES,
+      formats: TRIPO_EXPORT_FORMATS,
+    });
+  });
+
+  // ── Tripo3D: Get Tripo balance ──
+  app.get("/api/ai/3d-balance", async (_req, res) => {
+    try {
+      const balance = await getTripoBalance();
+      res.json(balance);
+    } catch (e: any) {
       res.status(500).json({ error: e.message });
     }
   });
@@ -472,6 +812,9 @@ Cada prompt debe ser diferente y creativo. Responde SOLO con un JSON array:
   // ── ElevenLabs: Text to Speech ──
   app.post("/api/ai/generate-voice", async (req, res) => {
     try {
+      const creditCheck = await checkAndDeductCredits(req, "generate-voice");
+      if (!creditCheck.ok) return res.status(402).json({ error: creditCheck.error, creditRequired: CREDIT_COSTS["generate-voice"] });
+
       const { voiceId, text, stability, similarity_boost } = req.body;
       if (!voiceId || !text) return res.status(400).json({ error: "voiceId and text required" });
       const audioBuffer = await textToSpeech(voiceId, text, { stability, similarity_boost });
@@ -760,9 +1103,9 @@ Dame recomendaciones de:
 
       let response: string;
       try {
-        response = await manusChat(userPrompt, systemPrompt, "gpt-4o");
-      } catch {
         response = await geminiChat(userPrompt, systemPrompt);
+      } catch {
+        response = await manusChat(userPrompt, systemPrompt, "gpt-4o");
       }
       res.json({ analysis: response });
     } catch (e: any) {
@@ -780,6 +1123,110 @@ Dame recomendaciones de:
       res.json(result);
     } catch (e: any) {
       console.error("Gmail send error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Shopify Integration ──
+  app.get("/api/shopify/status", async (_req, res) => {
+    res.json({ connected: shopify.isConfigured() });
+  });
+
+  app.get("/api/shopify/shop", async (_req, res) => {
+    try {
+      const shop = await shopify.getShopInfo();
+      res.json(shop);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get("/api/shopify/products", async (_req, res) => {
+    try {
+      const products = await shopify.getProducts();
+      res.json(products);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get("/api/shopify/products/:id", async (req, res) => {
+    try {
+      const product = await shopify.getProduct(Number(req.params.id));
+      res.json(product);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post("/api/shopify/products", async (req, res) => {
+    try {
+      const product = await shopify.createProduct(req.body);
+      res.json(product);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.put("/api/shopify/products/:id", async (req, res) => {
+    try {
+      const product = await shopify.updateProduct(Number(req.params.id), req.body);
+      res.json(product);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete("/api/shopify/products/:id", async (req, res) => {
+    try {
+      await shopify.deleteProduct(Number(req.params.id));
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get("/api/shopify/orders", async (_req, res) => {
+    try {
+      const orders = await shopify.getOrders();
+      res.json(orders);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get("/api/shopify/orders/:id", async (req, res) => {
+    try {
+      const order = await shopify.getOrder(Number(req.params.id));
+      res.json(order);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get("/api/shopify/customers", async (_req, res) => {
+    try {
+      const customers = await shopify.getCustomers();
+      res.json(customers);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get("/api/shopify/collections", async (_req, res) => {
+    try {
+      const collections = await shopify.getCollections();
+      res.json(collections);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post("/api/shopify/draft-orders", async (req, res) => {
+    try {
+      const draftOrder = await shopify.createDraftOrder(req.body);
+      res.json(draftOrder);
+    } catch (e: any) {
       res.status(500).json({ error: e.message });
     }
   });
@@ -813,6 +1260,204 @@ Dame recomendaciones de:
   } catch (e) {
     console.error("Failed to seed service limits:", e);
   }
+
+  // ── Admin: Deploy Shopify Theme (superuser only) ──
+  app.post("/api/admin/deploy-shopify-theme", async (req, res) => {
+    try {
+      const token = extractToken(req.headers?.authorization);
+      if (!token) return res.status(401).json({ error: "No autenticado" });
+      const user = await getCurrentUser(token);
+      if (!user || user.email !== SUPER_USER_EMAIL) return res.status(403).json({ error: "Solo el superusuario puede desplegar temas" });
+
+      const SHOPIFY_STORE = "comic-crafter.myshopify.com";
+      const SHOPIFY_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
+      if (!SHOPIFY_TOKEN) return res.status(500).json({ error: "SHOPIFY_ACCESS_TOKEN no configurado" });
+
+      const API_VERSION = "2024-01";
+      const shopifyApi = async (endpoint: string, method = "GET", body?: any) => {
+        const url = `https://${SHOPIFY_STORE}/admin/api/${API_VERSION}${endpoint}`;
+        const r = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": SHOPIFY_TOKEN },
+          ...(body ? { body: JSON.stringify(body) } : {}),
+        });
+        if (!r.ok) throw new Error(`Shopify ${r.status}: ${await r.text()}`);
+        return r.json();
+      };
+
+      const fs = await import("fs");
+      const path = await import("path");
+      const themeDir = path.resolve(process.cwd(), "shopify-theme");
+
+      const themesData = await shopifyApi("/themes.json");
+      let themeId: number;
+      const existing = themesData.themes.find((t: any) => t.name === "Comic Crafter Pro");
+      if (existing) {
+        themeId = existing.id;
+      } else {
+        const created = await shopifyApi("/themes.json", "POST", { theme: { name: "Comic Crafter Pro", role: "main" } });
+        themeId = created.theme.id;
+      }
+
+      const files: { key: string; value?: string; attachment?: string }[] = [];
+      const dirs = ["layout", "templates", "sections", "snippets", "config", "locales"];
+      for (const dir of dirs) {
+        const dirPath = path.join(themeDir, dir);
+        if (!fs.existsSync(dirPath)) continue;
+        const walk = (base: string, prefix: string) => {
+          for (const entry of fs.readdirSync(base)) {
+            const full = path.join(base, entry);
+            if (fs.statSync(full).isDirectory()) {
+              walk(full, `${prefix}${entry}/`);
+            } else {
+              files.push({ key: `${prefix}${entry}`, value: fs.readFileSync(full, "utf-8") });
+            }
+          }
+        };
+        walk(dirPath, `${dir}/`);
+      }
+
+      const assetsDir = path.join(themeDir, "assets");
+      if (fs.existsSync(assetsDir)) {
+        for (const file of fs.readdirSync(assetsDir)) {
+          const full = path.join(assetsDir, file);
+          if (!fs.statSync(full).isFile()) continue;
+          const ext = path.extname(file).toLowerCase();
+          if ([".css", ".js", ".json", ".svg", ".liquid"].includes(ext)) {
+            files.push({ key: `assets/${file}`, value: fs.readFileSync(full, "utf-8") });
+          } else {
+            files.push({ key: `assets/${file}`, attachment: fs.readFileSync(full).toString("base64") });
+          }
+        }
+      }
+
+      const results: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        try {
+          const body: any = { asset: { key: f.key } };
+          if (f.value !== undefined) body.asset.value = f.value;
+          if (f.attachment !== undefined) body.asset.attachment = f.attachment;
+          await shopifyApi(`/themes/${themeId}/assets.json`, "PUT", body);
+          results.push(`✓ ${f.key}`);
+        } catch (err: any) {
+          results.push(`✗ ${f.key}: ${err.message.substring(0, 80)}`);
+        }
+        if ((i + 1) % 2 === 0) await new Promise(r => setTimeout(r, 500));
+      }
+
+      res.json({ success: true, themeId, filesUploaded: results.filter(r => r.startsWith("✓")).length, totalFiles: files.length, details: results });
+    } catch (e: any) {
+      console.error("Shopify deploy error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── Download Shopify Theme as ZIP ──
+  app.get("/api/admin/download-shopify-theme", async (req, res) => {
+    try {
+      const token = extractToken(req.headers?.authorization);
+      if (!token) return res.status(401).json({ error: "No autenticado" });
+      const user = await getCurrentUser(token);
+      if (!user || user.email !== SUPER_USER_EMAIL) return res.status(403).json({ error: "Solo superusuario" });
+
+      const fs = await import("fs");
+      const path = await import("path");
+      const archiver = (await import("archiver")).default;
+      const themeDir = path.resolve(process.cwd(), "shopify-theme");
+
+      if (!fs.existsSync(themeDir)) return res.status(404).json({ error: "Theme directory not found" });
+
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader("Content-Disposition", "attachment; filename=comic-crafter-theme.zip");
+
+      const archive = archiver("zip", { zlib: { level: 9 } });
+      archive.pipe(res);
+      archive.directory(themeDir, false);
+      await archive.finalize();
+    } catch (e: any) {
+      console.error("Theme download error:", e);
+      if (!res.headersSent) res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ── ZIP Export (behind paywall) ──
+  app.post("/api/export/zip", async (req, res) => {
+    try {
+      const token = extractToken(req.headers?.authorization);
+      if (!token) return res.status(401).json({ error: "Not authenticated" });
+      const user = await getCurrentUser(token);
+      if (!user) return res.status(401).json({ error: "Invalid token" });
+
+      const isSuperuser = user.email === SUPER_USER_EMAIL;
+      const canExport = isSuperuser || user.plan === "pro" || user.plan === "vip";
+      if (!canExport) {
+        return res.status(403).json({ error: "ZIP export requires a Pro or VIP plan. Upgrade in the store." });
+      }
+
+      const { type, ids } = req.body as { type?: string; ids?: number[] };
+      const archiver = (await import("archiver")).default;
+      const archive = archiver("zip", { zlib: { level: 5 } });
+
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader("Content-Disposition", `attachment; filename="comiccrafter-export-${Date.now()}.zip"`);
+      archive.pipe(res);
+
+      const fetchAndAppend = async (url: string, filename: string) => {
+        try {
+          if (url.startsWith("data:")) {
+            const match = url.match(/^data:[^;]+;base64,(.+)$/);
+            if (match) {
+              archive.append(Buffer.from(match[1], "base64"), { name: filename });
+            }
+          } else {
+            const resp = await fetch(url);
+            if (resp.ok) {
+              const buf = Buffer.from(await resp.arrayBuffer());
+              archive.append(buf, { name: filename });
+            }
+          }
+        } catch (e) {
+          console.error(`Failed to fetch ${filename}:`, e);
+        }
+      };
+
+      if (!type || type === "images" || type === "all") {
+        const images = await storage.getAllImages();
+        const filtered = ids && type === "images" ? images.filter(i => ids.includes(i.id)) : images;
+        for (const img of filtered) {
+          const ext = img.imageUrl.startsWith("data:image/png") ? "png" : "png";
+          await fetchAndAppend(img.imageUrl, `images/${img.category}-${img.id}.${ext}`);
+        }
+      }
+
+      if (!type || type === "characters" || type === "all") {
+        const characters = await storage.getAllCharacters();
+        const filtered = ids && type === "characters" ? characters.filter(c => ids.includes(c.id)) : characters;
+        for (const char of filtered) {
+          const info = `Name: ${char.name}\nRole: ${char.role}\nDescription: ${char.description}\nVoice: ${char.voice}\nHas 3D: ${char.has3D}\n`;
+          archive.append(Buffer.from(info, "utf-8"), { name: `characters/${char.name.replace(/[^a-zA-Z0-9]/g, "_")}/info.txt` });
+          if (char.photoUrls) {
+            for (let i = 0; i < char.photoUrls.length; i++) {
+              await fetchAndAppend(char.photoUrls[i], `characters/${char.name.replace(/[^a-zA-Z0-9]/g, "_")}/photo_${i + 1}.png`);
+            }
+          }
+        }
+      }
+
+      if (!type || type === "scripts" || type === "all") {
+        const scripts = await storage.getAllScripts();
+        for (const s of scripts) {
+          archive.append(Buffer.from(s.content, "utf-8"), { name: `scripts/${s.title.replace(/[^a-zA-Z0-9]/g, "_")}_${s.id}.txt` });
+        }
+      }
+
+      await archive.finalize();
+    } catch (e: any) {
+      console.error("ZIP export error:", e);
+      if (!res.headersSent) res.status(500).json({ error: e.message });
+    }
+  });
 
   return httpServer;
 }

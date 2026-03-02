@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Image as ImageIcon, Upload, Mic, Plus, Users, Settings2, Trash2, Box, X, RefreshCw } from "lucide-react";
+import { Sparkles, Image as ImageIcon, Upload, Mic, Plus, Users, Settings2, Trash2, Box, X, RefreshCw, Archive, Loader2 } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { useRef } from "react";
@@ -13,6 +13,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Character } from "@shared/schema";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "@/lib/auth";
 
 function MiniMannequin() {
   const group = useRef<THREE.Group>(null);
@@ -46,14 +48,17 @@ function MiniMannequin() {
 }
 
 export default function Personajes() {
+  const { t } = useTranslation();
+  const { user, isSuperUser } = useAuth();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
   
   const [charName, setCharName] = useState("");
-  const [charRole, setCharRole] = useState("Protagonista");
+  const [charRole, setCharRole] = useState(t("characters.roleProtagonist"));
   const [charDesc, setCharDesc] = useState("");
-  const [charVoice, setCharVoice] = useState("No asignada");
+  const [charVoice, setCharVoice] = useState(t("characters.noVoice"));
   const [charPhotos, setCharPhotos] = useState<string[]>([]);
 
   const { data: characters = [], isLoading } = useQuery<Character[]>({
@@ -68,7 +73,7 @@ export default function Personajes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/characters"] });
       setIsFormOpen(false);
-      toast({ title: "Personaje creado" });
+      toast({ title: t("characters.created") });
     },
   });
 
@@ -80,7 +85,7 @@ export default function Personajes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/characters"] });
       setIsFormOpen(false);
-      toast({ title: "Personaje actualizado" });
+      toast({ title: t("characters.updated") });
     },
   });
 
@@ -90,7 +95,7 @@ export default function Personajes() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/characters"] });
-      toast({ title: "Personaje eliminado" });
+      toast({ title: t("characters.deleted") });
     },
   });
 
@@ -99,9 +104,9 @@ export default function Personajes() {
   const openCreateForm = () => {
     setEditingId(null);
     setCharName("");
-    setCharRole("Nuevo Personaje");
+    setCharRole(t("characters.newCharacter"));
     setCharDesc("");
-    setCharVoice("No asignada");
+    setCharVoice(t("characters.noVoice"));
     setCharPhotos([]);
     setIsFormOpen(true);
   };
@@ -136,7 +141,7 @@ export default function Personajes() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("¿Estás seguro de querer eliminar este personaje?")) {
+    if (confirm(t("characters.confirmDelete"))) {
       deleteMutation.mutate(id);
     }
   };
@@ -159,30 +164,78 @@ export default function Personajes() {
     setCharPhotos(charPhotos.filter((_, i) => i !== index));
   };
 
+  const handleExportZip = async () => {
+    const canExport = isSuperUser || user?.plan === "pro" || user?.plan === "vip";
+    if (!canExport) {
+      toast({ title: t("gallery.exportRequiresPro"), description: t("gallery.upgradeToExport"), variant: "destructive" });
+      return;
+    }
+    setIsExporting(true);
+    try {
+      const token = localStorage.getItem("cc_token");
+      const res = await fetch("/api/export/zip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ type: "characters" }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Export failed");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `comiccrafter-characters-${Date.now()}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast({ title: t("gallery.exportSuccess") });
+    } catch (e: any) {
+      toast({ title: t("gallery.exportError"), description: e.message, variant: "destructive" });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="p-8 max-w-7xl mx-auto h-full flex flex-col animate-in fade-in duration-500">
       <header className="flex justify-between items-end mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2 text-white flex items-center gap-3" data-testid="text-page-title">
-            <Users className="w-8 h-8 text-blue-500" /> Repositorio de Personajes
+            <Users className="w-8 h-8 text-blue-500" /> {t("characters.title")}
           </h1>
-          <p className="text-white/50">Crea, edita y guarda tu reparto. Alterna entre visualización de fotos 2D o modelos 3D interactivos.</p>
+          <p className="text-white/50">{t("characters.subtitle")}</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-3 items-center flex-wrap">
+          <Button
+            onClick={handleExportZip}
+            disabled={isExporting || characters.length === 0}
+            variant="outline"
+            className="border-white/10 text-white/70 hover:text-white hover:bg-white/10 h-10 px-4"
+            data-testid="button-export-characters-zip"
+          >
+            {isExporting ? (
+              <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> {t("gallery.exportingZip")}</span>
+            ) : (
+              <span className="flex items-center gap-2"><Archive className="w-4 h-4" /> {t("characters.exportZip")}</span>
+            )}
+          </Button>
           <div className="bg-black/50 p-1 rounded-lg border border-white/10 flex">
              <button 
                className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-2 ${viewMode === 'photo' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white'}`}
                onClick={() => setViewMode('photo')}
                data-testid="button-view-photo"
              >
-               <ImageIcon className="w-3 h-3" /> Foto 2D
+               <ImageIcon className="w-3 h-3" /> {t("characters.photo2D")}
              </button>
              <button 
                className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-2 ${viewMode === '3d' ? 'bg-blue-600 text-white' : 'text-white/50 hover:text-white'}`}
                onClick={() => setViewMode('3d')}
                data-testid="button-view-3d"
              >
-               <Box className="w-3 h-3" /> Modelo 3D
+               <Box className="w-3 h-3" /> {t("characters.model3D")}
              </button>
           </div>
           <Link href="/crear-personaje">
@@ -190,7 +243,7 @@ export default function Personajes() {
               className="bg-blue-600 hover:bg-blue-500 text-white gap-2 shadow-[0_0_15px_rgba(37,99,235,0.3)]"
               data-testid="button-create-new"
             >
-               <Plus className="w-4 h-4" /> Crear Nuevo
+               <Plus className="w-4 h-4" /> {t("characters.create")}
             </Button>
           </Link>
         </div>
@@ -208,8 +261,8 @@ export default function Personajes() {
                  <Settings2 className="w-5 h-5 text-blue-400" />
                </div>
                <div>
-                 <h2 className="text-xl font-bold text-white">{editingId ? "Editar Personaje" : "Forjar Personaje"}</h2>
-                 <p className="text-xs text-white/50">Añade múltiples fotos para un entrenamiento de IA (LoRA) perfecto.</p>
+                 <h2 className="text-xl font-bold text-white">{editingId ? t("characters.editTitle") : t("characters.forgeTitle")}</h2>
+                 <p className="text-xs text-white/50">{t("characters.forgeSubtitle")}</p>
                </div>
              </div>
            </div>
@@ -217,8 +270,8 @@ export default function Personajes() {
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
                  <label className="text-xs font-medium text-white/70 uppercase tracking-wider flex justify-between items-center">
-                    <span>Fotos de Referencia ({charPhotos.length})</span>
-                    <span className="text-[10px] text-blue-400">Recomendado: 3-5 fotos</span>
+                    <span>{t("characters.refPhotos")} ({charPhotos.length})</span>
+                    <span className="text-[10px] text-blue-400">{t("characters.refRecommended")}</span>
                  </label>
                  
                  <div className="grid grid-cols-2 gap-3">
@@ -236,7 +289,7 @@ export default function Personajes() {
                     
                     <label className="aspect-square rounded-lg border-2 border-dashed border-white/20 bg-black/30 flex flex-col items-center justify-center text-white/40 hover:text-white/70 hover:border-white/40 hover:bg-white/5 transition-all cursor-pointer">
                        <Upload className="w-6 h-6 mb-2" />
-                       <span className="text-[10px] text-center px-2 font-medium">Añadir foto</span>
+                       <span className="text-[10px] text-center px-2 font-medium">{t("characters.addPhoto")}</span>
                        <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
                     </label>
                  </div>
@@ -244,18 +297,18 @@ export default function Personajes() {
 
               <div className="space-y-5">
                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-white/70 uppercase tracking-wider">Nombre del Personaje</label>
+                    <label className="text-xs font-bold text-white/70 uppercase tracking-wider">{t("characters.charName")}</label>
                     <Input 
                       value={charName}
                       onChange={(e) => setCharName(e.target.value)}
                       className="bg-black/50 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-blue-500 h-12" 
-                      placeholder="Ej. Kael Thorne"
+                      placeholder={t("characters.namePlaceholder")}
                       data-testid="input-edit-name"
                     />
                  </div>
 
                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-white/70 uppercase tracking-wider">Rol Principal</label>
+                    <label className="text-xs font-bold text-white/70 uppercase tracking-wider">{t("characters.mainRole")}</label>
                     <Input 
                       value={charRole}
                       onChange={(e) => setCharRole(e.target.value)}
@@ -265,19 +318,19 @@ export default function Personajes() {
                  </div>
                  
                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-white/70 uppercase tracking-wider">Personalidad & Lore</label>
+                    <label className="text-xs font-bold text-white/70 uppercase tracking-wider">{t("characters.loreTitle")}</label>
                     <Textarea 
                       value={charDesc}
                       onChange={(e) => setCharDesc(e.target.value)}
                       className="h-28 resize-none bg-black/50 border-white/10 text-white placeholder:text-white/20 focus-visible:ring-blue-500 text-sm" 
-                      placeholder="Describe su personalidad, miedos, motivaciones..."
+                      placeholder={t("characters.lorePlaceholder")}
                       data-testid="input-edit-desc"
                     />
                  </div>
 
                  <div className="space-y-2">
                     <label className="text-xs font-bold text-white/70 uppercase tracking-wider flex justify-between">
-                       <span>Voz Asignada</span>
+                       <span>{t("characters.assignedVoice")}</span>
                        <span className="text-[10px] text-emerald-400">ElevenLabs Sync</span>
                     </label>
                     <select 
@@ -286,17 +339,17 @@ export default function Personajes() {
                        onChange={(e) => setCharVoice(e.target.value)}
                        data-testid="select-edit-voice"
                     >
-                       <option value="No asignada">Sin voz...</option>
-                       <option value="eleven_jax_01">eleven_jax_01 (Grave)</option>
-                       <option value="eleven_el_04">eleven_el_04 (Suave)</option>
-                       <option value="mi_voz_clonada">Mi Voz (Clonada)</option>
+                       <option value={t("characters.noVoice")}>{t("characters.noVoiceOption")}</option>
+                       <option value="eleven_jax_01">eleven_jax_01 ({t("voices.tagDeep")})</option>
+                       <option value="eleven_el_04">eleven_el_04 ({t("voices.tagSweet")})</option>
+                       <option value="mi_voz_clonada">{t("voices.myClonedVoice")}</option>
                     </select>
                  </div>
               </div>
            </div>
 
            <div className="mt-8 flex gap-3 justify-end border-t border-white/5 pt-6">
-              <Button variant="ghost" onClick={() => setIsFormOpen(false)} className="text-white/70 hover:text-white" data-testid="button-cancel">Cancelar</Button>
+              <Button variant="ghost" onClick={() => setIsFormOpen(false)} className="text-white/70 hover:text-white" data-testid="button-cancel">{t("common.cancel")}</Button>
               <Button 
                 onClick={handleSave} 
                 className="bg-blue-600 hover:bg-blue-500 text-white px-8 h-10 font-bold"
@@ -304,7 +357,7 @@ export default function Personajes() {
                 data-testid="button-save"
               >
                 {(createMutation.isPending || updateMutation.isPending) && <RefreshCw className="w-4 h-4 mr-2 animate-spin" />}
-                Guardar Personaje
+                {t("characters.saveButton")}
               </Button>
            </div>
         </Card>
@@ -313,11 +366,11 @@ export default function Personajes() {
           {characters.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center py-20 text-white/40">
               <Users className="w-16 h-16 mb-4 opacity-30" />
-              <p className="text-lg font-bold mb-2">No hay personajes todavía</p>
-              <p className="text-sm mb-6">Crea tu primer personaje con IA o manualmente</p>
+              <p className="text-lg font-bold mb-2">{t("characters.noCharactersTitle")}</p>
+              <p className="text-sm mb-6">{t("characters.noCharactersHelp")}</p>
               <Link href="/crear-personaje">
                 <Button className="bg-purple-600 hover:bg-purple-500" data-testid="button-create-first">
-                  <Sparkles className="w-4 h-4 mr-2" /> Crear Primer Personaje
+                  <Sparkles className="w-4 h-4 mr-2" /> {t("characters.createFirst")}
                 </Button>
               </Link>
             </div>
@@ -332,7 +385,7 @@ export default function Personajes() {
                    ) : (
                      <div className="text-center text-white/30 z-0 flex flex-col items-center">
                        <ImageIcon className="w-8 h-8 mb-2 opacity-50 text-purple-400" />
-                       <p className="text-[10px] uppercase tracking-widest font-bold">Sin imagen</p>
+                       <p className="text-[10px] uppercase tracking-widest font-bold">{t("characters.noImage")}</p>
                      </div>
                    )
                  ) : (
@@ -349,8 +402,8 @@ export default function Personajes() {
                      ) : (
                         <div className="text-center text-white/30 z-0 flex flex-col items-center">
                            <Box className="w-8 h-8 mb-2 opacity-50 text-blue-400" />
-                           <p className="text-[10px] uppercase tracking-widest font-bold">Sin modelo 3D</p>
-                           <Button variant="link" className="text-xs text-blue-400 mt-2 h-auto py-1 hover:text-blue-300" onClick={() => window.location.href='/forge-3d'}>Generar en Forja</Button>
+                           <p className="text-[10px] uppercase tracking-widest font-bold">{t("characters.no3DModel")}</p>
+                           <Button variant="link" className="text-xs text-blue-400 mt-2 h-auto py-1 hover:text-blue-300" onClick={() => window.location.href='/forge-3d'}>{t("characters.generateInForge")}</Button>
                         </div>
                      )}
                    </>
@@ -360,7 +413,7 @@ export default function Personajes() {
                  
                  {viewMode === 'photo' && char.photoUrls && char.photoUrls.length > 1 && (
                    <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[10px] text-white/90 font-bold z-20 flex items-center gap-1 shadow-lg">
-                      <ImageIcon className="w-3 h-3 text-blue-400" /> {char.photoUrls.length} Referencias
+                      <ImageIcon className="w-3 h-3 text-blue-400" /> {char.photoUrls.length} {t("characters.references")}
                    </div>
                  )}
                  

@@ -90,15 +90,39 @@ export type ComicPage = typeof comicPages.$inferSelect;
 export const appUsers = pgTable("app_users", {
   id: serial("id").primaryKey(),
   email: text("email").notNull().unique(),
+  name: text("name").notNull().default(""),
+  passwordHash: text("password_hash"),
+  googleId: text("google_id").unique(),
+  authProvider: text("auth_provider").notNull().default("email"),
+  avatarUrl: text("avatar_url"),
+  shopifyCustomerId: text("shopify_customer_id"),
   plan: text("plan").notNull().default("free"),
   status: text("status").notNull().default("active"),
+  credits: integer("credits").notNull().default(0),
   totalGenerations: integer("total_generations").notNull().default(0),
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
 export const insertAppUserSchema = createInsertSchema(appUsers).omit({
   id: true,
   createdAt: true,
+  lastLoginAt: true,
+});
+
+export const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(1),
+});
+
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
+export const googleAuthSchema = z.object({
+  credential: z.string(),
 });
 
 export type InsertAppUser = z.infer<typeof insertAppUserSchema>;

@@ -1,0 +1,2 @@
+rootProject.name = 'comiccrafter-twa'
+include ':app'
